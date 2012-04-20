@@ -1,9 +1,20 @@
 package org.appkit.widget;
 
+import com.google.common.base.Preconditions;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.ImmutableList;
+
 import java.util.Arrays;
+import java.util.List;
+
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.TraverseEvent;
+import org.eclipse.swt.events.TraverseListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
@@ -16,9 +27,6 @@ import org.eclipse.swt.widgets.Text;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
 
 /**
  * A more sophisticated MessageBox. Returns -1 if just disposed without clicking any button.
@@ -34,29 +42,39 @@ public final class MBox {
 
 	@SuppressWarnings("unused")
 	private static final Logger L							 = LoggerFactory.getLogger(MBox.class);
+	private static final int DISPOSEANSWER_INT				 = -1;
+	private static final String DISPOSEANSWER_STR			 = "?";
 
 	//~ Instance fields ------------------------------------------------------------------------------------------------
 
 	private final Shell shell;
-	private int answer										 = 0;
-	private ImmutableList<String> options;
+	private final ImmutableList<String> options;
+	private final ArrayListMultimap<Character, Button> hotKeys = ArrayListMultimap.create();
+	private Button defBtn;
+	private int answer										   = 0;
 
 	//~ Constructors ---------------------------------------------------------------------------------------------------
 
 	public MBox(final Shell parentShell, final Type type, final String title, final String message, final int def,
 				final String... optionArray) {
-
 		this.options = ImmutableList.copyOf(Arrays.asList(optionArray));
-		
-		/* The default answer is not the same as the answer returned when the MSGBox is just disposed*/
-		this.answer = -1;
-		
-		Preconditions.checkArgument(this.options.size() > 0, "empy options");
-		Preconditions.checkArgument(def >= 0 && def < this.options.size(), "%s options but default %s specified", this.options.size(), def);
+		Preconditions.checkArgument(this.options.size() > 0, "empty options");
+		Preconditions.checkArgument(
+			(def >= 0) && (def < this.options.size()),
+			"%s options but default %s specified",
+			this.options.size(),
+			def);
 
-		this.shell = new Shell(parentShell, SWT.APPLICATION_MODAL | SWT.DIALOG_TRIM | SWT.SHEET);
+		/* answer when the messagebox is just disposed = clicked away */
+		this.answer     = DISPOSEANSWER_INT;
+
+		/* create a shell */
+		this.shell	    = new Shell(parentShell, SWT.APPLICATION_MODAL | SWT.DIALOG_TRIM | SWT.SHEET);
 		this.shell.setLayout(new GridLayout(2, false));
 
+		//this.shell.addKeyListener(new KeyPressed());
+
+		/* icon */
 		Composite compIcon = new Composite(this.shell, SWT.NONE);
 		compIcon.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 1, 2));
 
@@ -81,8 +99,8 @@ public final class MBox {
 			default:
 				systemImage = SWT.ICON_INFORMATION;
 		}
-		Image image =
-			this.shell.getDisplay().getSystemImage(systemImage);
+
+		Image image = this.shell.getDisplay().getSystemImage(systemImage);
 		label.setImage(image);
 
 		this.shell.setText(title);
@@ -113,12 +131,16 @@ public final class MBox {
 
 		int i	   = 0;
 		Button btn = null;
-		Button defBtn = null;
 		for (final String option : options) {
 			btn = new Button(compButtons, SWT.PUSH);
-			btn.setText(option);
+			btn.setText("&" + option);
 			btn.setLayoutData(new GridData(SWT.NONE, SWT.NONE, false, false));
 			btn.addSelectionListener(new BClicked(i));
+			btn.addTraverseListener(new Traversed());
+			btn.addKeyListener(new KeyPressed());
+
+			/* put Hotkey -> Button Mapping into Map */
+			hotKeys.put(Character.toLowerCase(option.charAt(0)), btn);
 
 			if (i == def) {
 				defBtn = btn;
@@ -126,9 +148,6 @@ public final class MBox {
 
 			i++;
 		}
-
-		shell.setDefaultButton(defBtn);
-		defBtn.setFocus();
 
 		/* Center Button if there is just one */
 		if (options.size() == 1) {
@@ -158,6 +177,7 @@ public final class MBox {
 
 	public int openReturningInt() {
 		this.shell.open();
+		this.defBtn.setFocus();
 
 		while (! this.shell.isDisposed()) {
 			if (! this.shell.getDisplay().readAndDispatch()) {
@@ -169,12 +189,56 @@ public final class MBox {
 	}
 
 	public String openReturningString() {
-		/* If no answer was given, return "?" as a String representation of -1 */
+
 		int answer = this.openReturningInt();
-		return answer == -1 ? "?" : this.options.get(answer);
+		if (answer == DISPOSEANSWER_INT) {
+			return DISPOSEANSWER_STR;
+		} else {
+			return this.options.get(answer);
+		}
 	}
 
 	//~ Inner Classes --------------------------------------------------------------------------------------------------
+
+	public class KeyPressed extends KeyAdapter {
+		@Override
+		public void keyPressed(final KeyEvent event) {
+			if (hotKeys.containsKey(event.character)) {
+
+				List<Button> buttons = hotKeys.get(event.character);
+				if (buttons.size() != 1) {
+
+					/* look which button was selected */
+					int i = 0;
+					for (i = 0; i < buttons.size(); i++) {
+						if (buttons.get(i) == event.widget) {
+							break;
+						}
+					}
+
+					/* select the next */
+					if ((i + 1) < buttons.size()) {
+						i = i + 1;
+					} else {
+						i = 0;
+					}
+
+					buttons.get(i).setFocus();
+				}
+			}
+		}
+	}
+
+	public class Traversed implements TraverseListener {
+		@Override
+		public void keyTraversed(final TraverseEvent event) {
+			if (hotKeys.containsKey(event.character)) {
+				if (hotKeys.get(event.character).size() != 1) {
+					event.doit = false;
+				}
+			}
+		}
+	}
 
 	private final class BClicked extends SelectionAdapter {
 
