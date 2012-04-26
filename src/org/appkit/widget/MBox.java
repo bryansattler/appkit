@@ -1,8 +1,10 @@
 package org.appkit.widget;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Predicates;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
 
 import java.util.Arrays;
 import java.util.List;
@@ -55,15 +57,21 @@ public final class MBox {
 	//~ Constructors ---------------------------------------------------------------------------------------------------
 
 	public MBox(final Shell parentShell, final Type type, final String title, final String message, final int def,
-				final String... optionArray) {
-		this.options = ImmutableList.copyOf(Arrays.asList(optionArray));
-		Preconditions.checkArgument(this.options.size() > 0, "empty options");
+				final String... optionArray) {	
+		List<String> optionList = Arrays.asList(optionArray);
 		Preconditions.checkArgument(
-			(def >= 0) && (def < this.options.size()),
+				Iterables.all(optionList, Predicates.and(Predicates.notNull(),Predicates.not(Predicates.equalTo("")))),
+				"at least one option was null or the empty string");
+
+		Preconditions.checkArgument(optionList.size() > 0, "empty options");
+		Preconditions.checkArgument(
+			(def >= 0) && (def < optionList.size()),
 			"%s options but default %s specified",
-			this.options.size(),
+			optionList.size(),
 			def);
 
+		this.options = ImmutableList.copyOf(optionList);
+		
 		/* answer when the messagebox is just disposed = clicked away */
 		this.answer     = DISPOSEANSWER_INT;
 
