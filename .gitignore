@@ -7,3 +7,5 @@ tools/pmd.html
 tools/pmd.xml
 uilib*.jar
 librsys.jardesc
+
+/swt-appkit.jar
