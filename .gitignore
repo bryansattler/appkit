@@ -1,4 +1,5 @@
 *swp
+.classpath
 vbox-win64-jar.xml
 jar-in-jar-loader.zip
 *.DS_Store
@@ -7,5 +8,4 @@ tools/pmd.html
 tools/pmd.xml
 uilib*.jar
 librsys.jardesc
-
-/swt-appkit.jar
+*.jar
