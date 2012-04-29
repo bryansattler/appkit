@@ -20,8 +20,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * A Templating-component. Has a name, a type, 0...n child-component, associated {@link Options} and a {@link ComponentUI}
- * that does the actually rendering/displaying job.
+ * A Templating-component. Has a name, a type, 0...n child-components, associated {@link Options} and a {@link ComponentUI}
+ * that does the actually job of creating the widget.
  *
  * <ul>
  * <li>For the name only the following characters are valid: a-z,A-Z, '?', '!' and '-'.
@@ -31,14 +31,11 @@ import org.slf4j.LoggerFactory;
  * <br />
  * Examples:
  * <ul>
- * <li> <code>$buttons</code> will return all buttons
+ * <li> <code>$button</code> will return all buttons
  * <li> <code>book-in$button</code> will return all buttons called bookin
  * <li> <code>action.book-in$button</code> will return all buttons called bookin in an composite called action
  * <li> <code>sidebar$label</code> will return all labels in a composite called sidebar
  * </ul>
- * <br />
- * <br />
- * Trying to construct invalid component will throw an IllegalArgumentException.
  */
 public final class Component {
 
@@ -70,6 +67,7 @@ public final class Component {
 	/**
 	 * Creates a component. If children aren't empty the ComponentUI has to be a {@link LayoutUI}.
 	 *
+	 * @throws IllegalArgumentException if component is invalid
 	 */
 	public Component(final String name, final String type, final List<Component> children, final ComponentUI ui,
 					 final Options options) {

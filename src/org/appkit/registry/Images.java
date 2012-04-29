@@ -167,7 +167,7 @@ public final class Images {
 		control.removeDisposeListener(disposeListeners.remove(control));
 
 		/* get the image */
-		Image image;
+		Image image = null;
 		if (control instanceof Label) {
 			image = ((Label) control).getImage();
 		} else if (control instanceof Button) {
@@ -175,7 +175,7 @@ public final class Images {
 		} else if (control instanceof Shell) {
 			image = ((Shell) control).getImage();
 		} else {
-			throw new IllegalStateException();
+			Preconditions.checkState(false);
 		}
 
 		/* decrease usage-counter */

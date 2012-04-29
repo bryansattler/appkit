@@ -1,5 +1,6 @@
 package org.appkit.util;
 
+import com.google.common.base.Joiner;
 import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.HashMultimap;
@@ -7,14 +8,13 @@ import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Multimap;
 import com.google.common.collect.Ordering;
+import com.google.common.collect.SetMultimap;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,7 +34,7 @@ public final class Naming<E> {
 	//~ Instance fields ------------------------------------------------------------------------------------------------
 
 	/* dictionary */
-	private final Multimap<String, E> data = HashMultimap.create();
+	private final SetMultimap<String, E> data = HashMultimap.create();
 
 	/* cache, so that we don't have to check for the instances all the time */
 	private Map<Integer, ImmutableSet<?extends E>> cache;
@@ -45,17 +45,19 @@ public final class Naming<E> {
 	public String toString() {
 
 		StringBuilder sb				   = new StringBuilder();
-
-		sb.append("data:\n");
-
 		List<String> keys = Lists.newArrayList(this.data.keySet());
 		Collections.sort(keys, Ordering.natural());
 		for (final String k : keys) {
-			sb.append("\t");
+			sb.append("");
 			sb.append(k);
-			sb.append(": ");
-			sb.append(this.data.get(k));
-			sb.append("\n");
+			sb.append(": [");
+			List<String> typeNames = Lists.newArrayList();
+			for (E type : this.data.get(k)) {
+				typeNames.add(type.getClass().getSimpleName());
+			}
+			Collections.sort(typeNames, Ordering.natural());
+			sb.append(Joiner.on(", ").join(typeNames));
+			sb.append("]\n");
 		}
 
 		return sb.toString();

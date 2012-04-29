@@ -5,7 +5,5 @@ jar-in-jar-loader.zip
 *.DS_Store
 build
 tools/pmd.html
-tools/pmd.xml
-uilib*.jar
-librsys.jardesc
-*.jar
+tools/pmd.xmlsc
+/*.jar
