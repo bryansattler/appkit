@@ -1,9 +1,8 @@
 *swp
-.classpath
-vbox-win64-jar.xml
-jar-in-jar-loader.zip
 *.DS_Store
+/*.jar
+lib
+.classpath
 build
 tools/pmd.html
 tools/pmd.xmlsc
-/*.jar
