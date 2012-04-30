@@ -11,7 +11,8 @@ import com.google.common.collect.Multiset;
 
 import java.util.Map;
 
-import org.appkit.widget.util.SWTUtils;
+import org.appkit.osdependant.OSUtils;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
@@ -216,9 +217,9 @@ public final class Fonts {
 
 		@Override
 		public String getName(final String defaultName) {
-			if (SWTUtils.isWindows()) {
+			if (OSUtils.isWindows()) {
 				return "Lucida Console";
-			} else if (SWTUtils.isMac()) {
+			} else if (OSUtils.isMac()) {
 				return "Monaco";
 			} else {
 				return defaultName;

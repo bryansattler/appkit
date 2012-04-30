@@ -1,6 +1,7 @@
-package org.appkit.templating.components;
+package org.appkit.widget;
 
 import org.appkit.application.EventContext;
+import org.appkit.templating.LayoutUI;
 import org.appkit.templating.Options;
 
 import org.eclipse.swt.SWT;
@@ -13,25 +14,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /** for creating a component that is a {@link Composite} with a {@link GridLayout} */
-public class ComponentGridUI implements LayoutUI {
+public class GridComposite extends Composite implements LayoutUI {
 
 	//~ Static fields/initializers -------------------------------------------------------------------------------------
 
-	private static final Logger L = LoggerFactory.getLogger(ComponentGridUI.class);
+	private static final Logger L = LoggerFactory.getLogger(GridComposite.class);
 
 	//~ Instance fields ------------------------------------------------------------------------------------------------
 
-	private Composite comp		    = null;
-	private boolean variableColumns = false;
+	private final boolean variableColumns;
 
-	//~ Methods --------------------------------------------------------------------------------------------------------
+	//~ Constructors ---------------------------------------------------------------------------------------------------
 
-	@Override
-	public Composite initialize(final EventContext app, final Composite parent, final String name, final String type,
-								final Options options) {
-
-		int style = SWT.NONE;
-		style |= (options.get("border", false) ? SWT.BORDER : SWT.NONE);
+	public GridComposite(final EventContext context, final Composite parent, final Options options) {
+		super(parent, (options.get("border", false) ? SWT.BORDER : SWT.NONE));
 
 		/* create composite */
 		GridLayout gl = new GridLayout(-1, false);
@@ -46,14 +42,14 @@ public class ComponentGridUI implements LayoutUI {
 			this.variableColumns     = true;
 			gl.numColumns			 = 0;
 		} else {
-			gl.numColumns = Integer.valueOf(columns);
+			this.variableColumns     = false;
+			gl.numColumns			 = Integer.valueOf(columns);
 		}
 
-		this.comp = new Composite(parent, style);
-		this.comp.setLayout(gl);
-
-		return this.comp;
+		this.setLayout(gl);
 	}
+
+	//~ Methods --------------------------------------------------------------------------------------------------------
 
 	@Override
 	public void layoutChild(final Control child, final Options options) {
@@ -66,8 +62,8 @@ public class ComponentGridUI implements LayoutUI {
 
 		if (this.variableColumns) {
 
-			int columns = ((GridLayout) this.comp.getLayout()).numColumns;
-			((GridLayout) this.comp.getLayout()).numColumns = columns + 1;
+			int columns = ((GridLayout) this.getLayout()).numColumns;
+			((GridLayout) this.getLayout()).numColumns = columns + 1;
 		}
 	}
 
@@ -75,7 +71,7 @@ public class ComponentGridUI implements LayoutUI {
 	public void setVisible(final Control child, final boolean visible) {
 		child.setVisible(visible);
 		((GridData) child.getLayoutData()).exclude = ! visible;
-		this.comp.layout();
+		this.layout();
 	}
 
 	private GridData genGridData(final Options options) {

@@ -1,18 +1,21 @@
 package org.appkit.registry;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 import java.io.IOException;
 import java.io.InputStream;
 
 import java.text.MessageFormat;
 
+import java.util.List;
 import java.util.Locale;
 import java.util.Map.Entry;
 import java.util.Properties;
+import java.util.Set;
 
 import org.appkit.templating.Component;
-import org.appkit.templating.components.RadioSetUI;
 import org.appkit.util.ParamSupplier;
 import org.appkit.util.ResourceStreamSupplier;
 
@@ -25,7 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Loads and stores I18N-Strings and provides method for working with them.
+ * Serves as a store for i18n-texts and provides methods for working with them.
  *
  */
 public final class Texts {
@@ -73,76 +76,118 @@ public final class Texts {
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
 	/**
-	 * loads the default-texts using the default-locale from resources.
-	 * Example: on a english-system this would load i18n/en.properties from resources.
+	 * loads i18n-texts using the default locale
+	 *
+	 * @see #fromResources(Locale)
 	 */
 	public static Texts fromResources() {
 		return fromResources(Locale.getDefault());
 	}
 
 	/**
-	 * loads texts using the default-locale for a given component type.
-	 * Example: specifying "orderview" on an english system will load components/orderview.en.properties
-	 */
-	public static Texts forComponent(final String componentType) {
-		return forComponent(componentType, Locale.getDefault());
-	}
-
-	/**
-	 * loads the default-texts using the given locale
+	 * loads i18n-texts using a file from resources and a specified locale
+	 *
+	 * Example: passing Locale.ENGLISH would load i18n/en.properties from resources.
 	 */
 	public static Texts fromResources(final Locale locale) {
 		return new Texts(new ResourceStreamSupplier(), "i18n/" + locale.getLanguage() + ".properties");
 	}
 
 	/**
-	 * loads texts using the given locale for a given component type.
+	 * Translates a component using the default locale
+	 *
+	 * @see #translateComponent(Component, Locale, String)
 	 */
-	public static Texts forComponent(final String componentType, final Locale locale) {
-		return new Texts(
-			new ResourceStreamSupplier(),
-			"components/" + componentType + "." + locale.getLanguage() + ".properties");
+	public static void translateComponent(final Component component) {
+		translateComponent(component, Locale.getDefault(), null);
 	}
 
 	/**
-	 * translates a {@link Component} by using all keys of .properties file to
-	 * find sub-components. Calls setText() {@link Button}s, {@link Text}s and {@link Label}s.
-	 * Other widgets/component are ignored until the implement {@link CustomI18N}.
+	 * Translates a component using the default locale
 	 *
-	 * @see CustomI18N
-	 * @see Component#selectUI(String, Class)
+	 * @see #translateComponent(Component, Locale, String)
 	 */
-	public void translateComponent(final Component component) {
-		for (final Entry<String, String> msg : this.texts.entrySet()) {
+	public static void translateComponent(final Component component, final String customI18NFile) {
+		translateComponent(component, Locale.getDefault(), customI18NFile);
+	}
 
-			Component sub = component.select(msg.getKey());
+	/**
+	 * @see #translateComponent(Component, Locale, String)
+	 */
+	public static void translateComponent(final Component component, final Locale locale) {
+		translateComponent(component, locale, null);
+	}
 
-			if (sub.getUI() instanceof CustomI18N) {
+	/**
+	 * translates a {@link Component} by loading language files from resources and using all keys of the files to
+	 * find containing controls. i18n-texts are set by calling setText() on {@link Button}s, {@link Text}s and {@link Label}s.
+	 * Other controls are ignored until they implement {@link CustomTranlation}.
+	 *
+	 * It works as follows:
+	 * <li> if customI18NFile was specified it is loaded, the filename used is i18n/<customI18NFile>.<language>.properties
+	 * and controls found therein are translated
+	 * <li> the file for the component is loaded, the filename used is i18n/components/<type>.<language>.properties
+	 * and still untranslated controls found therein are translated
+	 * <li> the appkit-defaults are loaded, the filename used is i18n/appkit-default.<language>.properties
+	 * and still untranslated controls found therein are translated
+	 *
+	 * @see Templating
+	 * @see CustomTranlation
+	 */
+	public static void translateComponent(final Component component, final Locale locale, final String customI18NFile) {
 
-				/* custom translation */
-				((CustomI18N) sub.getUI()).translate(msg.getValue());
+		ResourceStreamSupplier supplier = new ResourceStreamSupplier();
 
-			} else {
+		List<String> files			    = Lists.newArrayList();
+		if (customI18NFile != null) {
+			files.add("i18n/" + customI18NFile + "." + locale.getLanguage() + ".properties");
+		}
+		files.add("i18n/components/" + component.getTypeName() + "." + locale.getLanguage() + ".properties");
+		files.add("i18n/appkit-default." + locale.getLanguage() + ".properties");
 
-				/* standard widgets */
-				Control c = sub.getControl();
-				if (c instanceof Button) {
-					((Button) c).setText(msg.getValue());
-				} else if (c instanceof Label) {
-					((Label) c).setText(msg.getValue());
-				} else if (c instanceof Text) {
-					((Text) c).setText(msg.getValue());
-				} else {
-					L.error("don't know how to translate widget: " + sub);
+		Set<Control> translated = Sets.newHashSet();
+		for (final String file : files) {
+
+			Texts texts = new Texts(supplier, file);
+
+			for (final Entry<String, String> msg : texts.asMap().entrySet()) {
+
+				/* get control */
+				Control c = component.select(msg.getKey());
+
+				/* skip already translated */
+				if (translated.contains(c)) {
+					continue;
 				}
 
-				c.getParent().layout();
+				if (c instanceof CustomTranlation) {
+					((CustomTranlation) c).translate(msg.getValue());
+					translated.add(c);
+				} else if (c instanceof Button) {
+					((Button) c).setText(msg.getValue());
+					c.getParent().layout();
+					translated.add(c);
+				} else if (c instanceof Label) {
+					((Label) c).setText(msg.getValue());
+					c.getParent().layout();
+					translated.add(c);
+				} else if (c instanceof Text) {
+					((Text) c).setText(msg.getValue());
+					c.getParent().layout();
+					translated.add(c);
+				} else {
+					L.error("don't know how to translate widget: {}", c);
+				}
 			}
 		}
 	}
 
+	public ImmutableMap<String, String> asMap() {
+		return this.texts;
+	}
+
 	/**
-	 * returns the I18N-string for the given identifier and values
+	 * returns the i18n-text for the given identifier, formatted with the values
 	 *
 	 * @return "<missing identifier>" if no string was found
 	 */
@@ -161,11 +206,11 @@ public final class Texts {
 	//~ Inner Interfaces -----------------------------------------------------------------------------------------------
 
 	/**
-	 * Implement this to make a component translatable. The content of i18nInfo doesn't have to follow a particular format.
+	 * Implement this to make a control translatable. The content of i18nInfo doesn't have to follow a particular format.
 	 * It usually is just a string but for {@link RadioSetUI} for example it contains multiple key-value-pairs to
-	 * translate all it's options.
+	 * translate all of it's options.
 	 */
-	public static interface CustomI18N {
+	public static interface CustomTranlation {
 		public void translate(final String i18nInfo);
 	}
 }

@@ -57,11 +57,12 @@ public final class MBox {
 	//~ Constructors ---------------------------------------------------------------------------------------------------
 
 	public MBox(final Shell parentShell, final Type type, final String title, final String message, final int def,
-				final String... optionArray) {	
+				final String... optionArray) {
+
 		List<String> optionList = Arrays.asList(optionArray);
 		Preconditions.checkArgument(
-				Iterables.all(optionList, Predicates.and(Predicates.notNull(),Predicates.not(Predicates.equalTo("")))),
-				"at least one option was null or the empty string");
+			Iterables.all(optionList, Predicates.and(Predicates.notNull(), Predicates.not(Predicates.equalTo("")))),
+			"at least one option was null or the empty string");
 
 		Preconditions.checkArgument(optionList.size() > 0, "empty options");
 		Preconditions.checkArgument(
@@ -70,13 +71,13 @@ public final class MBox {
 			optionList.size(),
 			def);
 
-		this.options = ImmutableList.copyOf(optionList);
-		
+		this.options     = ImmutableList.copyOf(optionList);
+
 		/* answer when the messagebox is just disposed = clicked away */
-		this.answer     = DISPOSEANSWER_INT;
+		this.answer		 = DISPOSEANSWER_INT;
 
 		/* create a shell */
-		this.shell	    = new Shell(parentShell, SWT.APPLICATION_MODAL | SWT.DIALOG_TRIM | SWT.SHEET);
+		this.shell		 = new Shell(parentShell, SWT.APPLICATION_MODAL | SWT.DIALOG_TRIM | SWT.SHEET);
 		this.shell.setLayout(new GridLayout(2, false));
 
 		//this.shell.addKeyListener(new KeyPressed());
@@ -90,7 +91,7 @@ public final class MBox {
 		gl.marginWidth	    = 10;
 		compIcon.setLayout(gl);
 
-		Label label = new Label(compIcon, SWT.NONE);
+		Label label     = new Label(compIcon, SWT.NONE);
 
 		int systemImage;
 		switch (type) {
@@ -107,7 +108,7 @@ public final class MBox {
 				systemImage = SWT.ICON_INFORMATION;
 		}
 
-		Image image = this.shell.getDisplay().getSystemImage(systemImage);
+		Image image     = this.shell.getDisplay().getSystemImage(systemImage);
 		label.setImage(image);
 
 		this.shell.setText(title);

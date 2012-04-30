@@ -2,7 +2,6 @@ package org.appkit.sample;
 
 import com.google.common.eventbus.Subscribe;
 
-import java.util.Locale;
 import java.util.Properties;
 
 import org.apache.log4j.PropertyConfigurator;
@@ -13,11 +12,9 @@ import org.appkit.overlay.SpinnerOverlay;
 import org.appkit.registry.Texts;
 import org.appkit.templating.Component;
 import org.appkit.templating.Templating;
-import org.appkit.templating.components.DatepickerUI.DateRange;
-import org.appkit.templating.components.SearchUI;
-import org.appkit.templating.components.TableUI;
 import org.appkit.util.SmartExecutor;
 import org.appkit.util.prefs.PrefStore;
+import org.appkit.widget.Datepicker.DateRange;
 import org.appkit.widget.util.TableScrollDetector.ScrollEvent;
 import org.appkit.widget.util.TableScrollDetector.ScrollListener;
 import org.appkit.widget.util.TableUtils;
@@ -42,7 +39,7 @@ public final class Sample {
 	//~ Instance fields ------------------------------------------------------------------------------------------------
 
 	private Shell shell;
-	private Component orders;
+	private Composite compOrders;
 	private SmartExecutor executor;
 	private Overlay overlay;
 
@@ -59,24 +56,18 @@ public final class Sample {
 		/* create templating and load a template */
 		Templating templating = Templating.fromResources();
 
-		/* register the SearchUI component */
-		templating.registerType(SearchUI.class, "search");
-
 		/* for catching all local events (see the methods tagged with @Subscribe) */
 		LocalEventContext eventContext = new LocalEventContext(this);
 
 		/* create the orderview component with the given eventContext */
-		orders = templating.create("orderview");
-		orders.initialize(eventContext, shell);
+		Component orders = templating.create("orderview", eventContext, shell);
+		this.compOrders = orders.getComposite();
 
 		/* translate component */
-		Texts.forComponent("orderview", Locale.ENGLISH).translateComponent(orders);
-
-		/* output naming for debugging purposes */
-		L.debug(orders.getNaming().toString());
+		Texts.translateComponent(orders);
 
 		/* selects the table */
-		Table t = orders.selectUI("orders$table", TableUI.class).getTable();
+		Table t = orders.select("orders", Table.class);
 		t.setHeaderVisible(true);
 
 		/* create columns */
@@ -144,7 +135,7 @@ public final class Sample {
 			this.overlay.dispose();
 		}
 
-		this.overlay = new Overlay(this.executor, (Composite) orders.getControl(), new SpinnerOverlay());
+		this.overlay = new Overlay(this.executor, this.compOrders, new SpinnerOverlay());
 		this.overlay.show();
 	}
 

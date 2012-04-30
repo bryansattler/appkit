@@ -1,11 +1,15 @@
-package org.appkit.templating.components;
+package org.appkit.widget;
+
+import com.google.common.base.Preconditions;
+import com.google.common.base.Splitter;
+import com.google.common.collect.Lists;
 
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Locale;
+import java.util.List;
 
 import org.appkit.application.EventContext;
-import org.appkit.registry.Texts;
+import org.appkit.registry.Texts.CustomTranlation;
 import org.appkit.templating.Options;
 
 import org.eclipse.swt.SWT;
@@ -15,53 +19,48 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.DateTime;
 import org.eclipse.swt.widgets.Label;
 
 /** for creating a component that is a {@link DateTime} */
-public final class DatepickerUI implements ComponentUI {
+public final class Datepicker extends Composite implements CustomTranlation {
 
 	//~ Instance fields ------------------------------------------------------------------------------------------------
 
-	private DateTime dt		    = null;
-	private DateTime dtFrom     = null;
-	private DateTime dtTo	    = null;
-	private Label labelFrom     = null;
-	private Label labelTo	    = null;
-	private Button bEnableFrom  = null;
-	private Button bEnableTo    = null;
+	private final DateTime dt;
+	private final DateTime dtFrom;
+	private final DateTime dtTo;
+	private final Label labelFrom;
+	private final Label labelTo;
+	private final Button bEnableFrom;
+	private final Button bEnableTo;
 	private DateRange daterange;
 
-	//~ Methods --------------------------------------------------------------------------------------------------------
+	//~ Constructors ---------------------------------------------------------------------------------------------------
 
-	/* convenince function for using DatePicker directly */
-	public Control initialize(final EventContext app, final Composite parent, final Options options) {
-		return this.initialize(app, parent, null, null, options);
-	}
+	public Datepicker(final EventContext app, final Composite parent, final Options options) {
+		super(parent, (options.get("border", false) ? SWT.BORDER : SWT.NONE));
 
-	@Override
-	public Control initialize(final EventContext app, final Composite parent, final String name, final String type,
-							  final Options options) {
-
-		int style			    = SWT.NONE;
-		style |= (options.get("border", false) ? SWT.BORDER : SWT.NONE);
-
-		Composite comp     = new Composite(parent, style);
-		GridLayout gl	   = new GridLayout(3, false);
-		gl.marginHeight    = 0;
-		gl.marginWidth     = 0;
-		gl.verticalSpacing = 2;
-		comp.setLayout(gl);
+		GridLayout gl = new GridLayout(3, false);
+		gl.marginHeight		   = 0;
+		gl.marginWidth		   = 0;
+		gl.verticalSpacing     = 2;
+		this.setLayout(gl);
 
 		if (! options.get("range", true)) {
-			this.dt = new DateTime(comp, SWT.DATE | SWT.BORDER | SWT.DROP_DOWN);
+			this.dt = new DateTime(this, SWT.DATE | SWT.BORDER | SWT.DROP_DOWN);
 			this.dt.setLayoutData(new GridData(SWT.NONE, SWT.NONE, false, false, 3, 1));
+			this.labelFrom		 = null;
+			this.dtFrom			 = null;
+			this.bEnableFrom     = null;
+			this.labelTo		 = null;
+			this.dtTo			 = null;
+			this.bEnableTo		 = null;
 		} else {
-			this.labelFrom = new Label(comp, SWT.NONE);
+			this.dt			   = null;
+			this.labelFrom     = new Label(this, SWT.NONE);
 			this.labelFrom.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
-			this.labelFrom.setText(Texts.forComponent("datepicker", Locale.ENGLISH).get("from"));
-			this.dtFrom = new DateTime(comp, SWT.DATE | SWT.BORDER | SWT.DROP_DOWN);
+			this.dtFrom = new DateTime(this, SWT.DATE | SWT.BORDER | SWT.DROP_DOWN);
 			this.dtFrom.setLayoutData(new GridData(SWT.NONE, SWT.CENTER, false, false));
 			this.dtFrom.addSelectionListener(
 				new SelectionAdapter() {
@@ -72,7 +71,7 @@ public final class DatepickerUI implements ComponentUI {
 						}
 					});
 
-			this.bEnableFrom = new Button(comp, SWT.CHECK);
+			this.bEnableFrom = new Button(this, SWT.CHECK);
 			this.bEnableFrom.setLayoutData(new GridData(SWT.NONE, SWT.FILL, false, false));
 			this.bEnableFrom.setSelection(true);
 			this.bEnableFrom.addSelectionListener(
@@ -85,10 +84,9 @@ public final class DatepickerUI implements ComponentUI {
 						}
 					});
 
-			this.labelTo = new Label(comp, SWT.NONE);
+			this.labelTo = new Label(this, SWT.NONE);
 			this.labelTo.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
-			this.labelTo.setText(Texts.forComponent("datepicker", Locale.ENGLISH).get("to"));
-			this.dtTo = new DateTime(comp, SWT.DATE | SWT.BORDER | SWT.DROP_DOWN);
+			this.dtTo = new DateTime(this, SWT.DATE | SWT.BORDER | SWT.DROP_DOWN);
 			this.dtTo.setLayoutData(new GridData(SWT.NONE, SWT.CENTER, false, false));
 			this.dtTo.addSelectionListener(
 				new SelectionAdapter() {
@@ -98,7 +96,7 @@ public final class DatepickerUI implements ComponentUI {
 							app.postEvent(daterange);
 						}
 					});
-			this.bEnableTo = new Button(comp, SWT.CHECK);
+			this.bEnableTo = new Button(this, SWT.CHECK);
 			this.bEnableTo.setLayoutData(new GridData(SWT.NONE, SWT.FILL, false, false));
 			this.bEnableTo.setSelection(true);
 			this.bEnableTo.addSelectionListener(
@@ -113,12 +111,24 @@ public final class DatepickerUI implements ComponentUI {
 		}
 
 		this.setInternalDateRange();
-
-		return comp;
 	}
+
+	//~ Methods --------------------------------------------------------------------------------------------------------
 
 	public DateRange getDateRange() {
 		return this.daterange;
+	}
+
+	@Override
+	public void translate(final String i18nInfo) {
+
+		List<String> texts = Lists.newArrayList(Splitter.on("/").split(i18nInfo));
+		Preconditions.checkArgument(texts.size() == 2, "need two strings, separated by /");
+
+		if (this.labelFrom != null) {
+			this.labelTo.setText(texts.get(0));
+			this.labelFrom.setText(texts.get(1));
+		}
 	}
 
 	private void setInternalDateRange() {

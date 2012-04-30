@@ -1,13 +1,11 @@
-package org.appkit.templating.components;
-
-import org.appkit.templating.Options;
+package org.appkit.templating;
 
 import org.eclipse.swt.widgets.Control;
 
 /**
- * Implementing this to enable your {@link org.appkit.templating.Component} to have children.
+ * Implementing this to enable your {@link org.appkit.widget.Component} to have children.
  */
-public interface LayoutUI extends ComponentUI {
+public interface LayoutUI {
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
 

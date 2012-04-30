@@ -45,7 +45,7 @@ public final class PrefStore {
 	public void store(final String key, final int value) {
 		this.backend.store(key, String.valueOf(value));
 	}
-	
+
 	/**
 	 * stores a boolean
 	 */

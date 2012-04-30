@@ -1,4 +1,4 @@
-package org.appkit.templating.components;
+package org.appkit.widget;
 
 import com.google.common.base.Splitter;
 import com.google.common.collect.Maps;
@@ -7,7 +7,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.appkit.application.EventContext;
-import org.appkit.registry.Texts.CustomI18N;
+import org.appkit.registry.Texts.CustomTranlation;
 import org.appkit.templating.Options;
 
 import org.eclipse.swt.SWT;
@@ -16,51 +16,38 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/** for creating a component that uses multiple {@link Button}s to form a radio-set */
-public class RadioSetUI implements ComponentUI, CustomI18N {
+/** a component that uses multiple {@link Button}s to form a radio-set */
+public class RadioSet extends Composite implements CustomTranlation {
 
 	//~ Static fields/initializers -------------------------------------------------------------------------------------
 
-	private static final Logger L = LoggerFactory.getLogger(RadioSetUI.class);
+	private static final Logger L = LoggerFactory.getLogger(RadioSet.class);
 
 	//~ Instance fields ------------------------------------------------------------------------------------------------
 
-	private Map<String, Button> choices = Maps.newHashMap();
-	private Composite comp			    = null;
-	private String selection		    = "";
+	private final Map<String, Button> choices = Maps.newHashMap();
+	private String selection				  = "";
 
-	//~ Methods --------------------------------------------------------------------------------------------------------
+	//~ Constructors ---------------------------------------------------------------------------------------------------
 
-	/* convenince function for using DatePicker directly */
-	public Control initialize(final EventContext app, final Composite parent, final Options options) {
-		return this.initialize(app, parent, null, null, options);
-	}
-
-	@Override
-	public Control initialize(final EventContext app, final Composite parent, final String name, final String type,
-							  final Options options) {
-
-		int style = SWT.NONE;
-		style |= (options.get("border", false) ? SWT.BORDER : SWT.NONE);
-
-		this.comp = new Composite(parent, style);
+	public RadioSet(final EventContext app, final Composite parent, final Options options) {
+		super(parent, options.get("border", false) ? SWT.BORDER : SWT.NONE);
 
 		GridLayout gl = new GridLayout(1, false);
 		gl.marginHeight			 = 0;
 		gl.marginWidth			 = 0;
 		gl.horizontalSpacing     = 0;
 		gl.verticalSpacing		 = 0;
-		this.comp.setLayout(gl);
+		this.setLayout(gl);
 
 		int i = 0;
 		for (final String choice : options.get("choices")) {
 
-			final Button btn = new Button(this.comp, SWT.RADIO);
+			final Button btn = new Button(this, SWT.RADIO);
 			this.choices.put(choice, btn);
 			btn.addSelectionListener(
 				new SelectionAdapter() {
@@ -79,9 +66,9 @@ public class RadioSetUI implements ComponentUI, CustomI18N {
 			}
 			i++;
 		}
-
-		return comp;
 	}
+
+	//~ Methods --------------------------------------------------------------------------------------------------------
 
 	public String getSelection() {
 		return this.selection;
@@ -98,6 +85,6 @@ public class RadioSetUI implements ComponentUI, CustomI18N {
 			this.choices.get(code).setText(text);
 		}
 
-		this.comp.layout();
+		this.layout();
 	}
 }

@@ -8,29 +8,24 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
-import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
-import org.appkit.templating.components.ButtonUI;
-import org.appkit.templating.components.ComponentGridUI;
-import org.appkit.templating.components.ComponentUI;
-import org.appkit.templating.components.DatepickerUI;
-import org.appkit.templating.components.LabelUI;
-import org.appkit.templating.components.RadioSetUI;
-import org.appkit.templating.components.SpacerUI;
-import org.appkit.templating.components.StackUI;
-import org.appkit.templating.components.TableUI;
-import org.appkit.templating.components.TextUI;
+import org.appkit.application.EventContext;
 import org.appkit.util.ParamSupplier;
 import org.appkit.util.ResourceStringSupplier;
+import org.appkit.widget.Datepicker;
+import org.appkit.widget.GridComposite;
+import org.appkit.widget.RadioSet;
+import org.appkit.widget.Search;
+
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,9 +48,8 @@ public final class Templating {
 
 	private final ParamSupplier<String, String> templateSupplier;
 	private final Gson gson;
-
-	/* mutable */
-	private final Map<String, Class<?extends ComponentUI>> types = Maps.newHashMap();
+	private final Map<String, Class<?extends ControlCreator<?>>> customCreators = Maps.newHashMap();
+	private final Map<String, Class<?extends Control>> types = Maps.newHashMap();
 
 	//~ Constructors ---------------------------------------------------------------------------------------------------
 
@@ -64,19 +58,18 @@ public final class Templating {
 		this.templateSupplier = templateSupplier;
 
 		/* built in types */
-		this.registerType(ButtonUI.class, "button");
-		this.registerType(DatepickerUI.class, "datepicker");
-		this.registerType(LabelUI.class, "label");
-		this.registerType(StackUI.class, "stack");
-		this.registerType(RadioSetUI.class, "radioset");
-		this.registerType(TableUI.class, "table");
-		this.registerType(ComponentGridUI.class, "grid");
-		this.registerType(SpacerUI.class, "spacer");
-		this.registerType(TextUI.class, "text");
+		this.addCustomCreator(ControlCreator.ButtonCreator.class, "button");
+		this.addCustomCreator(ControlCreator.LabelCreator.class, "label");
+		this.addCustomCreator(ControlCreator.TableCreator.class, "table");
+		this.addCustomCreator(ControlCreator.TextCreator.class, "text");
+		this.addType(Search.class, "search");
+		this.addType(Datepicker.class, "datepicker");
+		this.addType(RadioSet.class, "radioset");
+		this.addType(GridComposite.class, "grid");
 
 		/* configure Gson */
 		GsonBuilder gBuilder = new GsonBuilder();
-		gBuilder.registerTypeAdapter(Component.class, new ComponentDeserializer());
+		gBuilder.registerTypeAdapter(WidgetDefinition.class, new WidgetDefinition.Deserializer());
 		gBuilder.registerTypeAdapter(ImmutableList.class, new ImmutableListDeserializer());
 
 		/* ...and construct it */
@@ -85,125 +78,66 @@ public final class Templating {
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
-	/** instantiates Templating which loads from resources.
-	 * It will load the type "orderview" by loading the file 'components/orderview.json' from resource
+	/**
+	 * instantiates Templating which loads from resources.
+	 * Example: the type "orderview" will be loaded from the file 'components/orderview.json' in resources
 	 */
 	public static Templating fromResources() {
 		return new Templating(ResourceStringSupplier.instance());
 	}
 
-	/** registers a new component type
+	/** registers a new control type
 	 *
 	 * @throws IllegalStateException if type was already registered
 	 */
-	public void registerType(final Class<?extends ComponentUI> ui, final String typeName) {
+	public void addType(final Class<?extends Control> type, final String typeName) {
 		Preconditions.checkState(! this.types.containsKey(typeName), "type %s already registered", typeName);
 
-		this.types.put(typeName, ui);
+		this.types.put(typeName, type);
 	}
 
-	/** create a component of the specified type
+	/** registers a custom {@link ControlCreator} for types that don't have a ({@link EventContext}, {@link Composite}, {@link Options}) constructor
+	 *
+	 * @throws IllegalStateException if creator was already registered
+	 */
+	public void addCustomCreator(final Class<?extends ControlCreator<?>> creator, final String typeName) {
+		Preconditions.checkState(
+			! this.customCreators.containsKey(typeName),
+			"custom creator for type %s already registered",
+			typeName);
+
+		this.customCreators.put(typeName, creator);
+	}
+
+	/** load and creates a component of the specified type
 	 *
 	 * @throws IllegalStateException when JSON parsing failed or there other errors
 	 */
-	public Component create(final String componentType) {
-		L.debug("creating component: " + componentType);
+	public Component create(final String componentType, final EventContext context, final Composite parent) {
+		/* get file */
+		L.debug("loading component: {}", componentType);
 
-		String source = this.templateSupplier.get("components/" + componentType + ".json");
-		if (source == null) {
-			L.debug("none found for: " + componentType);
-			return null;
-		}
+		String file   = "components/" + componentType + ".json";
+		String source = this.templateSupplier.get(file);
+		Preconditions.checkArgument(source != null, "file '%s' not found", file);
 
+		/* parse json */
+		WidgetDefinition definition = null;
 		try {
 			L.debug("deserializing component: " + componentType);
-
-			Component component = this.gson.fromJson(source, Component.class);
-
-			return component;
+			definition = this.gson.fromJson(source, WidgetDefinition.class);
 		} catch (final JsonParseException e) {
 			L.error(e.getMessage(), e);
 			throw new IllegalStateException(e.getMessage(), e);
 		}
+
+		/* initialize controls */
+		L.debug("creating component: {}", componentType);
+
+		return new Component(definition);
 	}
 
 	//~ Inner Classes --------------------------------------------------------------------------------------------------
-
-	private final class ComponentDeserializer implements JsonDeserializer<Component> {
-
-		private final Type immutableListType = new TypeToken<ImmutableList<Component>>() {}
-			.getType();
-
-		@Override
-		public Component deserialize(final JsonElement json, final Type type, final JsonDeserializationContext context) {
-
-			JsonObject jsonObject = json.getAsJsonObject();
-
-			/* 1. if component is empty, it's a spacer */
-			if (jsonObject.entrySet().isEmpty()) {
-				return new Component(
-					"no-name",
-					"spacer",
-					ImmutableList.<Component>of(),
-					this.instantiateController("spacer"),
-					Options.empty());
-			}
-
-			/* 2. name (if existent) */
-			JsonElement jsonName = jsonObject.get("name");
-			String name			 = ((jsonName != null) ? jsonName.getAsString() : "no-name");
-
-			/* 3. type, default to 'component' if non-existant */
-			JsonElement jsonType = jsonObject.get("type");
-			String componentType = ((jsonType != null) ? jsonType.getAsString() : "grid");
-
-			L.debug("deserializing: " + componentType);
-
-			/* 4. options = all other parameters (no name, children or type) */
-			Map<String, String> map = Maps.newHashMap();
-			for (final Entry<String, JsonElement> entry : jsonObject.entrySet()) {
-
-				String key		   = entry.getKey();
-				JsonElement option = entry.getValue();
-
-				if (key.equals("name") || key.equals("children") || key.equals("type")) {
-					continue;
-				}
-
-				Preconditions.checkState(option.isJsonPrimitive(), "option %s is no json-primitive", option);
-				map.put(key, option.getAsString());
-			}
-
-			Options options					  = Options.of(map);
-
-			/* 5. deserialize children */
-			ImmutableList<Component> children = null;
-			if (jsonObject.has("children")) {
-				Preconditions.checkState(jsonObject.get("children").isJsonArray(), "children is not an array");
-				children = context.deserialize(jsonObject.get("children").getAsJsonArray(), this.immutableListType);
-			} else {
-				children = ImmutableList.of();
-			}
-
-			/* 6. ui instantiation */
-			ComponentUI compUI = this.instantiateController(componentType);
-
-			return new Component(name, componentType, children, compUI, options);
-		}
-
-		private ComponentUI instantiateController(final String type) {
-			Preconditions.checkArgument(types.containsKey(type), "no type '%s' registered", type);
-			try {
-				return types.get(type).newInstance();
-			} catch (final InstantiationException e) {
-				L.error(e.getMessage(), e);
-				throw new IllegalArgumentException(e.getMessage(), e);
-			} catch (final IllegalAccessException e) {
-				L.error(e.getMessage(), e);
-				throw new IllegalArgumentException(e.getMessage(), e);
-			}
-		}
-	}
 
 	private static final class ImmutableListDeserializer implements JsonDeserializer<ImmutableList<?>> {
 		@Override
