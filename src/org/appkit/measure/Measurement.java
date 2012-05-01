@@ -61,8 +61,8 @@ public final class Measurement {
 	 * @param doIt actually do the measurement
 	 * @param name name of the measurement
 	 */
-	public static void run(final boolean doIt, final String name) {
-		run(doIt, null, name);
+	public static void start(final boolean doIt, final String name) {
+		start(doIt, null, name);
 	}
 
 	/**
@@ -71,7 +71,7 @@ public final class Measurement {
 	 * @param doIt actually do the measurement
 	 * @param name name of the measurement
 	 */
-	public static void run(final boolean doIt, final String name, final Object data) {
+	public static void start(final boolean doIt, final String name, final Object data) {
 		if (! doIt) {
 			return;
 		}

@@ -57,41 +57,98 @@ Templating templating = Templating.fromResources();
 
 /* create the orderView component */
 Component orderView = templating.create("orderview", shell);
-this.compOrders = orderview.getComposite();
 
 /* select widgets and work with them */
 Table t = orderView.select("orders", Table.class);
 Label l = orderView.select("sidebar.stores", Label.class);
 ```
 
-> ### EventHandling
-> * Simple wrappers to write less cluttered event-handling code using Guava's EventBus
+### EventHandling
+Write less cluttered event-handling code using Guava's EventBus.
 
-> ### Utilities
-> * Registries for handling Colors, Fonts and Images
-> * Store and load user-preferences
-> * Throttle Runnables
-> * Display overlays on Composites
-> * Do measurements of your code run-time
-> …
+```java
+public Sample() {
+	/* …*/
 
-> ### Various widget utilities
-> * Automatically resize table columns
-> * save / restore column-order and weights
-> * save / restore Shell position, maximised state etc.
-> * ScrollListener for Table
-> …
+	/* for catching all local events (see the methods tagged with @Subscribe) */
+	LocalEventContext eventContext = new LocalEventContext(this);
 
-> ### Various useful widgets
-> * better MessageBox
-> * SearchFrom
-> * better SaveFileDialog
+	/* create the orderview component with the given eventContext */
+	Component orderView = templating.create("orderview", eventContext, shell);
+	this.compOrders = orderView.getComposite();
+
+	/* … */
+	shell.open();
+}
+
+@Subscribe
+public void daterangeChange(final DateRange daterange) {
+	L.debug("we got a date-range of our date picker: " + daterange);
+}
+
+```
+
+### Registries for Colors, Fonts and Images ###
+Automatic assigning, caching, disposing etc. etc.
+
+```java
+Button btw = new Button(parent, SWT.PUSH);
+Fonts.set(btn, Fonts.BOLD);
+Colors.setForeground(btn, 140, 120, 100); // RGB
+Images.set(btn, ImageTypes.LOGO); // ImageTypes is an enum providing filenames
+```
+
+### User-preferences ###
+
+```java
+PrefStore prefStore = PrefStore.createJavaPrefStore("org/appkit/sample");
+int option = prefStore.get("option_name", 2); // 2 is the default
+```
+
+
+### Overlays ###
+
+TODO
+
+### Measurements ### 
+Do measurements of your code run-time.
+```java
+Measurement.Listener statistic = new SimpleStatistic();
+Measurement.setListener(statistic);
+/*…*/
+Measurement.start(DEBUG_ENABLED, "expensive_op", data); // data can be added options
+/* crunch crunch */
+Measurement.stop();
+/* … */
+L.debug("Stats: {}", statistic.getResults());
+```
+
+### Utilties for SWT-Widgets ###
+```java
+/* six table-coumns equally amount available size */
+TableUtils.fillTableWidth(table);
+/* restore and save column-weights and order */
+TableUtils.rememberColumnWeights(prefStore, executor, table, "MyTable");
+TableUtils.rememberColumnOrder(prefStore, executor, table, "MyTable");
+/* resize columns proportionally if table is resized */
+TableUtils.autosizeColumns(t);
+/* save and restore shell size, position and maximised state */
+ShellUtils.rememberSizeAndPosition(prefStore, executor, shell, "My Shell", defWidth, defHeight, defX, defY);
+```
+
+### More
+
+* better MessageBox, SearchForm, SaveFileDialog
+* throttle expensive Runnables
+* ScrollListener for Table
+* ...
 
 TODOs / Ideas
 ------------------------
 
 > ### General
 > * Help for adding (Win)Sparkle-Integration
+> * Guava Caches for registries and Naming
 > * Unit tests
 > * Help creating browser-based widgets (links and images are a problem)
 > * Help integrating swing-widgets
