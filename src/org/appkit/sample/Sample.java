@@ -56,9 +56,10 @@ public final class Sample {
 		/* for saving and loading Preferences */
 		PrefStore prefStore = PrefStore.createJavaPrefStore("org/appkit/sample");
 
-		/* create a convenient Executor
-		   executor = SmartExecutor.create();
-		   /* for catching all local events (see the methods tagged with @Subscribe) */
+		/* create a convenient Executor */
+		executor = SmartExecutor.start();
+
+		/* for catching all local events (see the methods tagged with @Subscribe) */
 		LocalEventContext eventContext = new LocalEventContext(this);
 
 		/* create templating */

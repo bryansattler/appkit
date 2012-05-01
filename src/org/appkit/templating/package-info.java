@@ -1,5 +1,5 @@
 /**
- * JSON templating of user-interface-components
+ * JSON Templating for UI components
  */
 package org.appkit.templating;
 

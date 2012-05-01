@@ -7,7 +7,7 @@ import org.appkit.util.Throttle;
 import org.eclipse.swt.custom.SashForm;
 
 /**
- * various utility-functions for working with {@link SashForm}s
+ * Various functions for working with {@link SashForm}s
  *
  */
 public final class SashFormUtils {

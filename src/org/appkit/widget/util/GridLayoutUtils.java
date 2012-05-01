@@ -4,6 +4,10 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Control;
 
+/**
+ * Various functions for working with {@link GridLayout}s
+ *
+ */
 public final class GridLayoutUtils {
 
 	//~ Methods --------------------------------------------------------------------------------------------------------

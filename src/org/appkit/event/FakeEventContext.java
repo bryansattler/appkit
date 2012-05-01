@@ -1,5 +1,8 @@
 package org.appkit.event;
 
+/**
+ * A no-op {@link EventContext}.
+ */
 public final class FakeEventContext implements EventContext {
 
 	//~ Methods --------------------------------------------------------------------------------------------------------

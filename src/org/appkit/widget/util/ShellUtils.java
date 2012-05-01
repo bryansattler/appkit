@@ -9,7 +9,7 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Shell;
 
 /**
- * various utility-functions for working with {@link Shell}s
+ * Various functions for working with {@link Shell}s
  *
  */
 public final class ShellUtils {

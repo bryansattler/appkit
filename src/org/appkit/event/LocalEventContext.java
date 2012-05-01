@@ -8,7 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * An {@link EventContext} which delivers events to the object passed in the constructor.
+ * An {@link EventContext} which delivers events to the target-object passed in the constructor.
  * It uses event-bus, the target-object has to define public void methods with the desired
  * event-type as single parameter and the {@link Subscribe} annotation.
  */
@@ -25,9 +25,7 @@ public final class LocalEventContext implements EventContext {
 	//~ Constructors ---------------------------------------------------------------------------------------------------
 
 	/**
-	 * a new LocalEventContext
-	 *
-	 * @param object to which deliver events
+	 * a new LocalEventContext, which delivers events to an object
 	 */
 	public LocalEventContext(final Object object) {
 		this.localBus			  = new EventBus();

@@ -12,7 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * various utility-functions for working with {@link Tree}s
+ * Various functions for working with {@link Tree}s
  *
  */
 public final class TreeUtils {

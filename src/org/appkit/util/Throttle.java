@@ -2,7 +2,7 @@ package org.appkit.util;
 
 
 /**
- * A throttle to be used to throttle expensive calls triggered by often-recurring events.
+ * A throttle to limit expensive calls triggered by often-recurring events.
  *
  * @see SmartExecutor
  */

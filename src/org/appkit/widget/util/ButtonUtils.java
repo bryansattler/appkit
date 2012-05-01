@@ -8,7 +8,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Menu;
 
 /**
- * Various utility-functions for working with {@link Button}s
+ * Various functions for working with {@link Button}s
  *
  */
 public final class ButtonUtils {

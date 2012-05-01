@@ -3,9 +3,6 @@ package org.appkit.util;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import com.google.common.util.concurrent.SimpleTimeLimiter;
-import com.google.common.util.concurrent.TimeLimiter;
-
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -19,7 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * An Executor that provides commonly-used methods for running Runnables and is a {@link Throttle}.
+ * An {@link Executor} that provides commonly-used methods.
  * It uses a Scheduler-Thread to schedule and run tasks.
  *
  */
@@ -53,19 +50,19 @@ public final class SmartExecutor implements Executor {
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
-	/** creates a new SmartExecutor with a cached thread-pool. It has to be shutdown after use. */
-	public static SmartExecutor create() {
+	/** Creates a new instance based on a cached thread-pool. It has to be shutdown after use. */
+	public static SmartExecutor start() {
 		return new SmartExecutor(null);
 	}
 
-	/** creates a new SmartExecutor using the given executor-service */
-	public static SmartExecutor createUsing(final ExecutorService executorService) {
+	/** Creates a new instance using the given executor-service */
+	public static SmartExecutor startUsing(final ExecutorService executorService) {
 		return new SmartExecutor(executorService);
 	}
 
-	/** shut the executor down
+	/** Shut the executor down
 	 *
-	 * @throws IllegalStateException if this executor was created on top of another
+	 * @throws IllegalStateException if this executor was created based on another ExecutorService
 	 *
 	 */
 	public void shutdown() {
@@ -75,37 +72,35 @@ public final class SmartExecutor implements Executor {
 		this.executorService.shutdownNow();
 	}
 
-	/** execute a Runnable once */
+	/** Schedules a Runnable to run once */
 	@Override
 	public void execute(final Runnable runnable) {
 		this.executorService.execute(runnable);
 	}
 
-	/** schedule a Runnable to be executed after a fixed period of time */
+	/** Schedules a Runnable to be executed after a fixed period of time */
 	public void schedule(final long delay, final TimeUnit timeUnit, final Runnable runnable) {
 		this.taskQueue.put(new DelayedRunnable(runnable, delay, timeUnit));
 	}
 
-	/** schedule a Runnable to be executed using a fixed delay between the end of a run and the start of the next */
+	/** Schedules a Runnable to be executed using a fixed delay between the end of a run and the start of the next */
 	public void scheduleAtFixedRate(final long period, final TimeUnit timeUnit, final Runnable runnable) {
 		this.taskQueue.put(new RepeatingRunnable(runnable, period, timeUnit));
 	}
 
-	/** cancel a scheduled repeating runnable */
+	/** Cancels a scheduled repeating runnable */
 	public void cancelRepeatingRunnable(final Runnable runnable) {
 		this.cancelledTasks.add(runnable);
 	}
 
+	/** Creates a new {@link Throttle} with the given delay */
 	public Throttle createThrottle(final long delay, final TimeUnit timeUnit) {
 		return new UUIDThrottle(delay, timeUnit);
 	}
 
+	/** Creates a new {@link Ticker} with the given delay */
 	public Ticker createTicker(final long delay, final TimeUnit timeUnit) {
 		return new MyTicker(delay, timeUnit);
-	}
-
-	public TimeLimiter createTimeLimiter() {
-		return new SimpleTimeLimiter(this.executorService);
 	}
 
 	//~ Inner Classes --------------------------------------------------------------------------------------------------

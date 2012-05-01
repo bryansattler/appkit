@@ -4,7 +4,7 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Control;
 
 /**
- * Various utility-functions
+ * Various utility-functions.
  *
  */
 public final class SWTUtils {

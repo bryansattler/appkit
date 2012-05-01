@@ -15,6 +15,9 @@ import java.util.Map;
 
 import org.eclipse.swt.SWT;
 
+/**
+ * provides OS-specific utilities
+ */
 public class OSUtils {
 
 	//~ Static fields/initializers -------------------------------------------------------------------------------------
@@ -28,6 +31,9 @@ public class OSUtils {
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
+	/**
+	 * check if application is running on windows
+	 */
 	public static boolean isWindows() {
 		if (SWT.getPlatform().equalsIgnoreCase("win32") || SWT.getPlatform().equalsIgnoreCase("win64")) {
 			return true;
@@ -36,6 +42,9 @@ public class OSUtils {
 		return false;
 	}
 
+	/**
+	 * check if application is running on Mac OSX / cocoa.
+	 */
 	public static boolean isMac() {
 		if (SWT.getPlatform().equalsIgnoreCase("cocoa") || SWT.getPlatform().equalsIgnoreCase("carbon")) {
 			return true;
@@ -45,7 +54,7 @@ public class OSUtils {
 	}
 
 	/**
-	 * Returns the correct userDataFolder on OSX and all windows version for the given application name.
+	 * Returns the correct userDataFolder for the given application name.
 	 */
 	public static String userDataFolder(final String applicationName) {
 

@@ -25,12 +25,11 @@ import org.slf4j.LoggerFactory;
 
 /** <b>SWT Font cache/registry</b>
  * <br />
- * <br />
  * Creates, assigns and caches {@link Font}s. Fonts can be set on a {@link Control}.
- * Use of the color is deregistered when the control is disposed or manually via the <code>putBack</code> methods.
+ * Use of the font is deregistered when the control is disposed, when a different Font is set via this registry
+ * or manually via the {{@link #putBack(Control)}-method.
  * <br />
- * <br />
- * This uses a simple counter to keep of track of usage of Fonts. If the usage drops to 0, the font
+ * This uses a simple counter to keep of track of usage. If it drops to 0, the font
  * is disposed.
  */
 public final class Fonts {
@@ -146,6 +145,9 @@ public final class Fonts {
 
 	//~ Inner Interfaces -----------------------------------------------------------------------------------------------
 
+	/**
+	 * styles for usage with the fonts-registry
+	 */
 	public interface Style {
 		int getHeight(final int defaultHeight);
 
@@ -165,6 +167,9 @@ public final class Fonts {
 		}
 	}
 
+	/**
+	 * default font, but bold
+	 */
 	public static class Bold implements Style {
 		@Override
 		public int getHeight(final int defaultHeight) {
@@ -187,6 +192,9 @@ public final class Fonts {
 		}
 	}
 
+	/**
+	 * default font, but bold and height increased by 4
+	 */
 	public static class HugeBold implements Style {
 		@Override
 		public int getHeight(final int defaultHeight) {
@@ -209,6 +217,9 @@ public final class Fonts {
 		}
 	}
 
+	/**
+	 * monospace font, returns "Lucida Console" on Windows and "Monaco" on Mac.
+	 */
 	public static class Monospace implements Style {
 		@Override
 		public int getHeight(final int defaultHeight) {

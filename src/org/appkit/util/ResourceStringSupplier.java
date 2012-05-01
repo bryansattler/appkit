@@ -12,7 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * a ParamSupplier which returns Strings loaded from resources
+ * A {@link ParamSupplier} which returns a String by loading a file from resources.
  *
  */
 public class ResourceStringSupplier implements ParamSupplier<String, String> {

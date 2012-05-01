@@ -14,8 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * a simple Measurement.Listener which keeps track of max,min and avg values of each measurement
- * with a specific name
+ * a {@link Measurement.Listener} which keeps track of max, min and avg duration of a batch of measurements, grouped by their name.
  *
  */
 public class SimpleStatistic implements Measurement.Listener {

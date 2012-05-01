@@ -14,7 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * various utility-functions for working with {@link Table}s
+ * Various functions for working with {@link Table}s
  *
  */
 public final class TableUtils {

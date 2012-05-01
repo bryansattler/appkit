@@ -2,8 +2,8 @@ package org.appkit.event;
 
 
 /**
- * A context that is handed to an object that fires events. The events will be fired in this
- * context, which means that the objects registered in the context will receive it. Registration
+ * The context in which an objects fires events. The events will be fired in this
+ * context, which means that the objects registered to the context will receive it. Registration
  * is specified by the implementation.
  *
  * @see LocalEventContext

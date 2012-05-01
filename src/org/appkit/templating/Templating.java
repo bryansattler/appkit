@@ -34,9 +34,9 @@ import org.slf4j.LoggerFactory;
 import sun.reflect.generics.reflectiveObjects.ParameterizedTypeImpl;
 
 /**
- * Templating enables you to load Interface-description out of JSON. Other/different formats may follow.
+ * Templating enables loading Interface-Descriptions out of JSON. More formats may follow. <br />
  *
- * It creates a {@link Component} which can be used to work with the Interface in an easy-to-use way.
+ * The {@link #create(String, Composite)} method creates a {@link Component} which can be used to work with the Interface in an easy-to-use way:
  *
  */
 public final class Templating {
@@ -54,16 +54,16 @@ public final class Templating {
 
 	//~ Constructors ---------------------------------------------------------------------------------------------------
 
-	/** instantiates Templating which loads json via the given <code>templateSupplier</code> */
+	/** Instantiates Templating with a <code>templateSupplier</code> to load the JSON-files. */
 	public Templating(final ParamSupplier<String, String> templateSupplier) {
 		this.templateSupplier = templateSupplier;
 
 		/* built in types */
-		this.addCustomCreator(new ControlCreator.ButtonCreator(), "button");
-		this.addCustomCreator(new ControlCreator.LabelCreator(), "label");
-		this.addCustomCreator(new ControlCreator.TableCreator(), "table");
-		this.addCustomCreator(new ControlCreator.SpacerCreator(), "spacer");
-		this.addCustomCreator(new ControlCreator.TextCreator(), "text");
+		this.addCustomCreator(new DefaultCreators.ButtonCreator(), "button");
+		this.addCustomCreator(new DefaultCreators.LabelCreator(), "label");
+		this.addCustomCreator(new DefaultCreators.TableCreator(), "table");
+		this.addCustomCreator(new DefaultCreators.SpacerCreator(), "spacer");
+		this.addCustomCreator(new DefaultCreators.TextCreator(), "text");
 		this.addType(Search.class, "search");
 		this.addType(Datepicker.class, "datepicker");
 		this.addType(RadioSet.class, "radioset");
@@ -81,14 +81,16 @@ public final class Templating {
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
 	/**
-	 * instantiates Templating which loads from resources.
-	 * Example: the type "orderview" will be loaded from the file 'components/orderview.json' in resources
+	 * Instantiates Templating which loads templates from resources.
+	 * <br />
+	 * Example: the type "orderview" will be loaded from the file <code>components/orderview.json</code> in resources
 	 */
 	public static Templating fromResources() {
 		return new Templating(ResourceStringSupplier.instance());
 	}
 
-	/** registers a new control type
+	/**
+	 * Registers a new type of control.
 	 *
 	 * @throws IllegalStateException if type was already registered
 	 */
@@ -98,7 +100,8 @@ public final class Templating {
 		this.types.put(typeName, type);
 	}
 
-	/** registers a custom {@link ControlCreator} for types that don't have a ({@link EventContext}, {@link Composite}, {@link Options}) constructor
+	/**
+	 * Registers a custom {@link ControlCreator} for types that don't have a ({@link EventContext}, {@link Composite}, {@link Options}) constructor
 	 *
 	 * @throws IllegalStateException if creator was already registered
 	 */
@@ -111,17 +114,19 @@ public final class Templating {
 		this.customCreators.put(typeName, creator);
 	}
 
-	/** load and creates a component of the specified type
+	/**
+	 * Creates a component of the specified type.
 	 *
-	 * @throws IllegalStateException when JSON parsing failed or there other errors
+	 * @throws IllegalStateException when JSON loading or parsing failed
 	 */
 	public Component create(final String componentName, final Composite parent) {
 		return this.create(componentName, EventContext.FAKE, parent);
 	}
 
-	/** loads and creates a component of the specified type with a given event-context
+	/**
+	 * Creates a component of the specified type with a given {@link EventContext}
 	 *
-	 * @throws IllegalStateException when JSON parsing failed or there other errors
+	 * @throws IllegalStateException when JSON loading or parsing failed
 	 */
 	public Component create(final String componentName, final EventContext context, final Composite parent) {
 		/* get file */

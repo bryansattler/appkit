@@ -31,16 +31,15 @@ import org.slf4j.LoggerFactory;
 
 /** <b>SWT Image cache/registry</b>
  * <br />
+ * Creates, assigns and caches {@link Image}s. Images can be set on a {@link Button}s, {@link Label}s, {@link Shell}s or
+ * an {@link Control} for which an {@link ImageInterface} is added.
+ * Use of an image is deregistered when the control is disposed, if a different Images is set via this registry
+ * or manually via the {@link #putBack(Control)} method.
  * <br />
- * Creates, assigns and caches {@link Image}s. Images can be set on a {@link Control}.
- * Use of an image is deregistered when the control is disposed or manually via the <code>putBack</code> methods.
- * <br />
- * <br />
- * This uses a simple counter to keep of track of usage of Images. If the usage drops to 0, the image
+ * This uses a simple counter to keep of track of usage. If it drops to 0, the image
  * is disposed.
  * <br />
- * <br />
- * The methods expect {@link Supplier}s for keys. This can be implemented easily by an Enum for example.
+ * The methods expect {@link Supplier}s for keys. These can be easily implemented by an Enum for example.
  */
 public final class Images {
 
@@ -72,7 +71,7 @@ public final class Images {
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
 	/**
-	 * registers an ImageInterface for a control
+	 * Tells Images how to set an Image on a certain type.
 	 */
 	public static <E extends Object> void addImageSetter(final Class<E> clazz, final ImageInterface setter) {
 		setters.put(clazz, setter);
@@ -81,7 +80,7 @@ public final class Images {
 	/**
 	 * Sets an image on the control. The InputStream for loading the image
 	 * is retrieved by passing the key received from the
-	 * <code>keySupplier</code> into the a {@link ResourceStreamSupplier}.
+	 * <code>keySupplier</code> into a {@link ResourceStreamSupplier}.
 	 *
 	 * @throws IllegalStateException if called from a non-Display thread
 	 * @throws IllegalArgumentException if image couldn't be set
@@ -91,22 +90,21 @@ public final class Images {
 	}
 
 	/**
-	 * sets an image on the control. The InputStream for loading the image
+	 * Sets an image on the control. The InputStream for loading the image
 	 * is retrieved by passing the key received from the
-	 * <code>keySupplier</code> into the <code>dataSupplier</code>
+	 * <code>keySupplier</code> into the <code>dataSupplier</code>.
 	 *
 	 * @throws IllegalStateException if called from a non-Display thread
 	 * @throws IllegalArgumentException if image couldn't be set
 	 */
 	public static <E> void set(final Control control, final Supplier<E> keySupplier,
-							   final ParamSupplier<E, InputStream> dataSupplier) {
-		/* check for UI-thread and if control is imageable */
+							   final ParamSupplier<E, InputStream> streamSupplier) {
 		Preconditions.checkState(
 			Display.getCurrent() != null,
 			"Images is to be used from the display-thread exclusively!");
 		Preconditions.checkArgument(
 			setters.containsKey(control.getClass()),
-			"don't know how to set image on {}, add a image-setter first",
+			"don't know how to set image on {}, add an ImageInterface first",
 			control);
 
 		/* if we already set an image on this control, remove it */
@@ -125,7 +123,7 @@ public final class Images {
 
 		} else {
 
-			InputStream in = dataSupplier.get(key);
+			InputStream in = streamSupplier.get(key);
 			if (in == null) {
 				L.error("data supplier returned no InputStream for {}", key);
 				return;
@@ -156,11 +154,16 @@ public final class Images {
 	}
 
 	/**
-	 * deregisters use of an image of a control
+	 * Manually deregisters use of an image of a control
 	 *
+	 * @throws IllegalStateException if called from a non-Display thread
 	 * @throws IllegalStateException if control isn't registered
 	 */
 	public static void putBack(final Control control) {
+		/* check for UI-thread */
+		Preconditions.checkState(
+			Display.getCurrent() != null,
+			"Images is to be used from the display-thread exclusively!");
 		Preconditions.checkState(disposeListeners.containsKey(control), "control {} not registered", control);
 
 		/* remove control out of registry and remove listener */
@@ -192,10 +195,13 @@ public final class Images {
 
 	//~ Inner Interfaces -----------------------------------------------------------------------------------------------
 
+	/**
+	 * Implement this to enable the use of Images for a custom-control.
+	 *
+	 */
 	public static interface ImageInterface {
-		void setImage(final Object control, final Image image);
-
-		Image getImage(final Object control);
+		void setImage(final Control control, final Image image);
+		Image getImage(final Control control);
 	}
 
 	//~ Inner Classes --------------------------------------------------------------------------------------------------
@@ -209,36 +215,36 @@ public final class Images {
 
 	private static final class LabelImageInterface implements ImageInterface {
 		@Override
-		public void setImage(final Object o, final Image image) {
+		public void setImage(final Control o, final Image image) {
 			((Label) o).setImage(image);
 		}
 
 		@Override
-		public Image getImage(final Object o) {
+		public Image getImage(final Control o) {
 			return ((Label) o).getImage();
 		}
 	}
 
 	private static final class ButtonImageInterface implements ImageInterface {
 		@Override
-		public void setImage(final Object o, final Image image) {
+		public void setImage(final Control o, final Image image) {
 			((Button) o).setImage(image);
 		}
 
 		@Override
-		public Image getImage(final Object o) {
+		public Image getImage(final Control o) {
 			return ((Button) o).getImage();
 		}
 	}
 
 	private static final class ShellImageInterface implements ImageInterface {
 		@Override
-		public void setImage(final Object o, final Image image) {
+		public void setImage(final Control o, final Image image) {
 			((Shell) o).setImage(image);
 		}
 
 		@Override
-		public Image getImage(final Object o) {
+		public Image getImage(final Control o) {
 			return ((Shell) o).getImage();
 		}
 	}

@@ -3,7 +3,7 @@ package org.appkit.util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/** a Runnable that logs all RuntimeException */
+/** A Runnable that logs all RuntimeExceptions. */
 public abstract class LoggingRunnable implements Runnable {
 
 	//~ Static fields/initializers -------------------------------------------------------------------------------------
@@ -21,6 +21,6 @@ public abstract class LoggingRunnable implements Runnable {
 		}
 	}
 
-	/** overwrite to call your standard <code>run()</code> method */
+	/** Overwrite this instead of the standard <code>run()</code> method. */
 	public abstract void runChecked();
 }

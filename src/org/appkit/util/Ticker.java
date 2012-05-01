@@ -10,8 +10,10 @@ public interface Ticker {
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
+	/** Tells this Ticker to notify the {@link TickReceiver} */
 	void notify(final TickReceiver receiver);
 
+	/** Stops this Ticker */
 	void stop();
 
 	//~ Inner Interfaces -----------------------------------------------------------------------------------------------

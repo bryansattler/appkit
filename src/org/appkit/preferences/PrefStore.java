@@ -1,10 +1,10 @@
 package org.appkit.preferences;
 
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
 
 /**
- * A simple preferences store. All retrieval methods require a default to be specified, which will
+ * A simple preferences store.
+ * All retrieval methods require a default to be specified, which will
  * be returned when the key isn't found or type-conversion from String fails.
  *
  */
@@ -33,28 +33,28 @@ public final class PrefStore {
 	}
 
 	/**
-	 * stores a String
+	 * store a String
 	 */
 	public void store(final String key, final String value) {
 		this.backend.store(key, value);
 	}
 
 	/**
-	 * stores an int
+	 * store an int
 	 */
 	public void store(final String key, final int value) {
 		this.backend.store(key, String.valueOf(value));
 	}
 
 	/**
-	 * stores a boolean
+	 * store a boolean
 	 */
 	public void store(final String key, final boolean value) {
 		this.backend.store(key, String.valueOf(value));
 	}
 
 	/**
-	 * retrieves a String
+	 * retrieve a String
 	 *
 	 * @param def default to be returned if key wasn't found
 	 */
@@ -69,7 +69,7 @@ public final class PrefStore {
 	}
 
 	/**
-	 * retrieves an int
+	 * retrieve an int
 	 *
 	 * @param def default to be returned if key wasn't found or {@link Integer#valueOf(int)} failed.
 	 */
@@ -88,7 +88,7 @@ public final class PrefStore {
 	}
 
 	/**
-	 * retrieves a boolean
+	 * retrieve a boolean
 	 *
 	 * @param def default to be returned if key wasn't found or stored property is no boolean ("true" or "false")
 	 */
@@ -109,55 +109,34 @@ public final class PrefStore {
 	}
 
 	/**
-	 * removes a property
+	 * remove a property
 	 */
 	public void remove(final String property) {
 		this.backend.remove(property);
 	}
 
 	/**
-	 * returns all stored property-keys
-	 */
-	public ImmutableSet<String> getKeys() {
-		return this.backend.getKeys();
-	}
-
-	/**
-	 * returns all stored property-keys starting with a string
-	 */
-	public ImmutableSet<String> getKeys(final String match) {
-
-		ImmutableSet.Builder<String> matchingKeys = ImmutableSet.builder();
-		for (final String key : this.backend.getKeys()) {
-			if (key.startsWith(match)) {
-				matchingKeys.add(key);
-			}
-		}
-
-		return matchingKeys.build();
-	}
-
-	/**
 	 * returns all stored properties as a map
 	 */
-	public ImmutableMap<String, String> getMap() {
+	public ImmutableMap<String, String> asMap() {
 
 		ImmutableMap.Builder<String, String> hm = ImmutableMap.builder();
-		for (final String key : this.getKeys()) {
-			hm.put(key, this.get(key, null));
+		for (final String key : this.backend.getKeys()) {
+			hm.put(key, this.backend.get(key));
 		}
 
 		return hm.build();
 	}
 
 	/**
-	 * returns all stored properties starting with a string as a map
+	 * returns all stored properties starting with a prefix as a map
 	 */
-	public ImmutableMap<String, String> getMap(final String match) {
+	public ImmutableMap<String, String> asMap(final String prefix) {
 
 		ImmutableMap.Builder<String, String> hm = ImmutableMap.builder();
-		for (final String key : this.getKeys(match)) {
-			hm.put(key, this.get(key, null));
+		for (final String key : this.backend.getKeys()) {
+			if (key.startsWith(prefix))
+				hm.put(key, this.backend.get(key));
 		}
 
 		return hm.build();
@@ -166,12 +145,12 @@ public final class PrefStore {
 	/**
 	 * returns all stored properties as a map of integer
 	 *
-	 * @param def map-value if matched property couldn't be converted to an integer
+	 * @param def value if matched property couldn't be converted to an integer
 	 */
-	public ImmutableMap<String, Integer> getMap(final int def) {
+	public ImmutableMap<String, Integer> asMap(final int def) {
 
 		ImmutableMap.Builder<String, Integer> hm = ImmutableMap.builder();
-		for (final String key : this.getKeys()) {
+		for (final String key : this.backend.getKeys()) {
 			hm.put(key, this.get(key, def));
 		}
 
@@ -179,35 +158,47 @@ public final class PrefStore {
 	}
 
 	/**
-	 * returns all stored properties,  as a map of integer
+	 * returns all stored properties, starting with a prefix as a map of integer
 	 *
-	 * @param def map-value if matched property couldn't be converted to an integer
+	 * @param def value if matched property couldn't be converted to an integer
 	 */
-	public ImmutableMap<String, Integer> getMap(final String match, final int def) {
+	public ImmutableMap<String, Integer> asMap(final String prefix, final int def) {
 
 		ImmutableMap.Builder<String, Integer> hm = ImmutableMap.builder();
-		for (final String key : this.getKeys(match)) {
+		for (final String key : this.backend.getKeys()) {
+			if (key.startsWith(prefix))
+				hm.put(key, this.get(key, def));
+		}
+
+		return hm.build();
+	}
+
+	/**
+	 * returns all stored properties as a map of boolean
+	 *
+	 * @param def value if matched property couldn't be converted to a boolean
+	 */
+	public ImmutableMap<String, Boolean> asMap(final boolean def) {
+
+		ImmutableMap.Builder<String, Boolean> hm = ImmutableMap.builder();
+		for (final String key : this.backend.getKeys()) {
 			hm.put(key, this.get(key, def));
 		}
 
 		return hm.build();
 	}
 
-	public ImmutableMap<String, Boolean> getMap(final boolean def) {
+	/**
+	 * returns all stored properties starting with a prefix as a map of boolean
+	 *
+	 * @param def value if matched property couldn't be converted to a boolean
+	 */
+	public ImmutableMap<String, Boolean> asMap(final String prefix, final boolean def) {
 
 		ImmutableMap.Builder<String, Boolean> hm = ImmutableMap.builder();
-		for (final String key : this.getKeys()) {
-			hm.put(key, this.get(key, def));
-		}
-
-		return hm.build();
-	}
-
-	public ImmutableMap<String, Boolean> getMap(final String match, final boolean def) {
-
-		ImmutableMap.Builder<String, Boolean> hm = ImmutableMap.builder();
-		for (final String key : this.getKeys(match)) {
-			hm.put(key, this.get(key, def));
+		for (final String key : this.backend.getKeys()) {
+			if (key.startsWith(prefix))
+				hm.put(key, this.get(key, def));
 		}
 
 		return hm.build();

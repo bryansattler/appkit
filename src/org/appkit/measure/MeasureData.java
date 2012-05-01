@@ -2,7 +2,7 @@ package org.appkit.measure;
 
 
 /**
- * A single finished measurement. A measurement has a name, a start-time, a duration
+ * Data of a single measurement. Contains a name, a start-time, a duration and
  * optionally associated data.
  *
  */

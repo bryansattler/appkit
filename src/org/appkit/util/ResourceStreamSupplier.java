@@ -10,7 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * a ParamSupplier which returns an InputStream by loading from resources
+ * A {@link ParamSupplier} which returns an InputStream by loading a file from resources.
  *
  */
 public class ResourceStreamSupplier implements ParamSupplier<String, InputStream> {
