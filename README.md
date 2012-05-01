@@ -1,4 +1,5 @@
-### swt-appkit - easing development of swt-applications ###
+swt-appkit - easing development of swt-applications
+-----
 
 Homepage: [http://fab1an.github.com/appkit/](http://fab1an.github.com/appkit/)    
      
@@ -8,11 +9,6 @@ It's a kit, not a framework, in the sense that it tries not to force you to chan
 application-structure. Instead you can gradually adapt your code to use parts and features,
 which you might find useful.
 
-Code-Samples and more Information at: [http://fab1an.github.com/appkit/](http://fab1an.github.com/appkit/)
-
-### Links ###
-
-* Homepage: [http://fab1an.github.com/appkit/](http://fab1an.github.com/appkit/)
 * API-Documentation: [JavaDoc](http://fab1an.github.com/appkit/javadoc/)
 * Email: fabian.zeindl@gmail.com
 * Latest build: [swt-appkit.jar](http://fab1an.github.com/appkit/swt-appkit.jar)
