@@ -7,7 +7,7 @@ swt-appkit - easing development of swt-applications
 * Latest build: [swt-appkit.jar](http://fab1an.github.com/appkit/swt-appkit.jar)
 * Discussion: [appkit@googlegroups.com] (http://groups.google.com/group/appkit)
 * SampleCode: [Sample.java](http://github.com/fab1an/appkit/blob/master/src/org/appkit/sample/Sample.java)
-There's a sample application in the source which shows some of the features.
+* License: Code is released under the LGPL2.
 
 Idea
 -------
@@ -33,28 +33,20 @@ Dependencies
 * [slf4j-api-1.6.4](http://slf4j.org/) simple logging facade for java, provides pluggable logging (static binding, no need for configuration)
 * [swt-3.7.1](http://www.eclipse.org/swt) SWT
 
-License
--------------
-
-Code is released under the LGPL.
-
 Thank you / Donations
 ------------------------------------
 
 If you want you can [flattr](http://flattr.com/profile/cel1ne) me, or send a Paypal donation to the email above.
 
-Features / Overview
+Features
 -------------------------------
 
 ### Templating ###
 
 Use a Json-File: [orderview.json](http://fab1an.github.com/appkit/orderview.json)
-![imgJson][]
+![Sample JSON](http://fab1an.github.com/appkit/orderview-json.png)
 to create Interfaces:
-![imgUI][]
-
-[imgUI]: http://fab1an.github.com/appkit/Orderview-Sample.png "Sample UI" height=100px
-[imgJson]: http://fab1an.github.com/appkit/orderview-json.png "Sample UI" height=100px
+![Sample UI](http://fab1an.github.com/appkit/Orderview-Sample.png)
 
 ```java
 Shell = new Shell();
