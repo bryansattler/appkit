@@ -1,22 +1,15 @@
 TODOs / Ideas
 ------------------------
 
-* Table that shows results fast
-* typical "+","-" buttons for the mac
-* DebugViewer
-* LicenseViewer for linked opensource-libraries
-* ProgressBar with soft animation
-* Wrapper that measures the duration of EventHandlers
-* Help for adding (Win)Sparkle-Integration
+* (Win)Sparkle
 * Guava Caches for registries and Naming
-* Unit tests
-* Help creating browser-based widgets (links and images are a problem)
-* Help integrating swing-widgets
-
-Templating:
-* More formats (YAML?)
-* MigLayout
-* Editing Help: fast reloading of templates
-* Editing Help: activate all composite borders
-* Editing Help: gridlayout configuration
-* Editing Help: write back json to format it properly
+* Widget: async Table that shows results fast
+* Widget: typical "+","-" buttons for the mac
+* Widget: DebugViewer, LicenseViewer
+* Widget: ProgressBar with soft animation
+* Templating: YAML?
+* Templating: MigLayout
+* Templating: GridLayout Config
+* Templating: fast reloading of templates
+* Templating: activate all composite borders
+* Templating: format JSON
