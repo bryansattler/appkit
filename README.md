@@ -109,6 +109,7 @@ Images.set(btn, ImageTypes.LOGO); // ImageTypes is an enum providing filenames
 ```java
 PrefStore prefStore = PrefStore.createJavaPrefStore("org/appkit/sample");
 int option = prefStore.get("option_name", 2); // 2 is the default
+boolean debugEnabled = prefStore.get("debug", false); // false is the default
 ```
 
 
