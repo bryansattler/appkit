@@ -154,10 +154,10 @@ which you might find useful.</p>
     <span class="c1">// ...</span>
 
     <span class="cm">/* get all local events (see the methods tagged with @Subscribe) */</span>
-    <span class="n">LocalEventContext</span> <span class="n">eventContext</span> <span class="o">=</span> <span class="k">new</span> <span class="n">LocalEventContext</span><span class="o">(</span><span class="k">this</span><span class="o">);</span>
+    <span class="n">LocalEventContext</span> <span class="n">context</span> <span class="o">=</span> <span class="k">new</span> <span class="n">LocalEventContext</span><span class="o">(</span><span class="k">this</span><span class="o">);</span>
 
-    <span class="cm">/* create the orderview component with the given eventContext */</span>
-    <span class="n">Component</span> <span class="n">orderView</span> <span class="o">=</span> <span class="n">templating</span><span class="o">.</span><span class="na">create</span><span class="o">(</span><span class="s">"orderview"</span><span class="o">,</span> <span class="n">eventContext</span><span class="o">,</span> <span class="n">shell</span><span class="o">);</span>
+    <span class="cm">/* create the orderview component with the given event-context */</span>
+    <span class="n">Component</span> <span class="n">orderView</span> <span class="o">=</span> <span class="n">templating</span><span class="o">.</span><span class="na">create</span><span class="o">(</span><span class="s">"orderview"</span><span class="o">,</span> <span class="n">context</span><span class="o">,</span> <span class="n">shell</span><span class="o">);</span>
 
     <span class="c1">// ...</span>
     <span class="n">shell</span><span class="o">.</span><span class="na">open</span><span class="o">();</span>
