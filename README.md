@@ -130,7 +130,7 @@ Measurement.stop();
 L.debug("Stats: {}", statistic.getResults());
 ```
 
-### Utilties for SWT-Widgets ###
+### Must-have Utilities for SWT-Widgets ###
 ```java
 /* size table-coumns equally among available size */
 TableUtils.fillTableWidth(table);
@@ -144,12 +144,9 @@ TableUtils.autosizeColumns(table);
 
 /* save and restore shell size, position and maximised state */
 ShellUtils.rememberSizeAndPosition(prefStore, executor, shell, "My Shell", defWidth, defHeight, defX, defY);
+
+/* add a DropDown Menu to a Button */
+ButtonUtils.setDropDownMenu(btn, menu);
 ```
 
-### More
-
-* better MessageBox, SearchForm, SaveFileDialog
-* throttle expensive Runnables
-* ScrollListener for Table
-* ...
-
+### … better MessageBox, ScrollListener for Tables, Throttling of often-running Runnables…
