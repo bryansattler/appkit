@@ -1,8 +1,7 @@
 package org.appkit.widget;
 
-import org.appkit.application.EventContext;
+import org.appkit.event.EventContext;
 import org.appkit.templating.LayoutUI;
-import org.appkit.templating.Options;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -65,13 +64,6 @@ public class GridComposite extends Composite implements LayoutUI {
 			int columns = ((GridLayout) this.getLayout()).numColumns;
 			((GridLayout) this.getLayout()).numColumns = columns + 1;
 		}
-	}
-
-	@Override
-	public void setVisible(final Control child, final boolean visible) {
-		child.setVisible(visible);
-		((GridData) child.getLayoutData()).exclude = ! visible;
-		this.layout();
 	}
 
 	private GridData genGridData(final Options options) {

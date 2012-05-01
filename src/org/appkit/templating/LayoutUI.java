@@ -1,5 +1,7 @@
 package org.appkit.templating;
 
+import org.appkit.widget.Options;
+
 import org.eclipse.swt.widgets.Control;
 
 /**
@@ -11,7 +13,4 @@ public interface LayoutUI {
 
 	/** layout a child with the given layout-options */
 	public void layoutChild(final Control child, final Options options);
-
-	/** set the visibility of a child */
-	public void setVisible(final Control child, final boolean visible);
 }

@@ -1,4 +1,4 @@
-package org.appkit.registry;
+package org.appkit.util;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
@@ -16,8 +16,6 @@ import java.util.Properties;
 import java.util.Set;
 
 import org.appkit.templating.Component;
-import org.appkit.util.ParamSupplier;
-import org.appkit.util.ResourceStreamSupplier;
 
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Control;
@@ -142,7 +140,7 @@ public final class Texts {
 		if (customI18NFile != null) {
 			files.add("i18n/" + customI18NFile + "." + locale.getLanguage() + ".properties");
 		}
-		files.add("i18n/components/" + component.getTypeName() + "." + locale.getLanguage() + ".properties");
+		files.add("i18n/components/" + component.getName() + "." + locale.getLanguage() + ".properties");
 		files.add("i18n/appkit-default." + locale.getLanguage() + ".properties");
 
 		Set<Control> translated = Sets.newHashSet();

@@ -1,5 +1,6 @@
 package org.appkit.templating;
 
+import com.google.common.base.CharMatcher;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
@@ -15,32 +16,70 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.appkit.widget.Options;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public final class WidgetDefinition {
 
+	//~ Static fields/initializers -------------------------------------------------------------------------------------
+
+	private static final CharMatcher NAMEFILTER =
+		CharMatcher.inRange('a', 'z').or(CharMatcher.inRange('0', '9')).or(CharMatcher.anyOf("?!-"));
+
 	//~ Instance fields ------------------------------------------------------------------------------------------------
 
-	private String name;
-	private String type;
-	private ImmutableList<WidgetDefinition> children;
-	private Options options;
+	private WidgetDefinition parentDef;
+	private final String name;
+	private final String type;
+	private final ImmutableList<WidgetDefinition> children;
+	private final Options options;
 
 	//~ Constructors ---------------------------------------------------------------------------------------------------
 
 	public WidgetDefinition(final String name, final String type, final List<WidgetDefinition> children,
 							final Options options) {
-		this.name		  = name;
-		this.type		  = type;
-		this.children     = ImmutableList.copyOf(children);
-		this.options	  = options;
+		Preconditions.checkNotNull(type);
+		Preconditions.checkNotNull(children);
+		Preconditions.checkNotNull(options);
+		Preconditions.checkArgument(
+			(name == null) || ! name.isEmpty(),
+			"name can be non-existant, but it most not be empty");
+		Preconditions.checkArgument(
+			(name == null) || NAMEFILTER.matchesAllOf(name),
+			"'%s' didn't satisfy name-filter (%s)",
+			name,
+			NAMEFILTER);
+
+		this.parentDef						    = null;
+		this.name							    = name;
+		this.type							    = type;
+		this.children						    = ImmutableList.copyOf(children);
+		this.options						    = options;
 	}
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
-	public String getName() {
-		return name;
+	public void setParent(final WidgetDefinition parentDef) {
+		Preconditions.checkState(this.parentDef == null, "parent is not null");
+		this.parentDef = parentDef;
+	}
+
+	public String getFullName() {
+		if ((this.parentDef != null) && ! this.parentDef.getFullName().equals("")) {
+			if (this.name == null) {
+				return this.parentDef.getFullName();
+			} else {
+				return this.parentDef.getFullName() + "." + this.name;
+			}
+		} else {
+			if (this.name == null) {
+				return "";
+			} else {
+				return this.name;
+			}
+		}
 	}
 
 	public String getType() {
@@ -74,12 +113,12 @@ public final class WidgetDefinition {
 
 			/* 1. if component is empty, it's a spacer */
 			if (jsonObject.entrySet().isEmpty()) {
-				return new WidgetDefinition("no-name", "spacer", ImmutableList.<WidgetDefinition>of(), Options.empty());
+				return new WidgetDefinition(null, "spacer", ImmutableList.<WidgetDefinition>of(), Options.empty());
 			}
 
-			/* 2. name, defaults to 'no-name' if non-existent */
+			/* 2. name */
 			JsonElement jsonName = jsonObject.get("name");
-			String name			 = ((jsonName != null) ? jsonName.getAsString().toLowerCase() : "no-name");
+			String name			 = ((jsonName != null) ? jsonName.getAsString().toLowerCase() : null);
 
 			/* 3. type, defaults to 'grid' if non-existent */
 			JsonElement jsonType    = jsonObject.get("type");
@@ -111,7 +150,12 @@ public final class WidgetDefinition {
 				children = ImmutableList.of();
 			}
 
-			return new WidgetDefinition(name, componentType, children, options);
+			WidgetDefinition def = new WidgetDefinition(name, componentType, children, options);
+			for (final WidgetDefinition childDef : def.getChildren()) {
+				childDef.setParent(def);
+			}
+
+			return def;
 		}
 	}
 }

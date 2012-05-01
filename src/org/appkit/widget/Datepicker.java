@@ -8,9 +8,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import org.appkit.application.EventContext;
-import org.appkit.registry.Texts.CustomTranlation;
-import org.appkit.templating.Options;
+import org.appkit.event.EventContext;
+import org.appkit.util.Texts.CustomTranlation;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -38,7 +37,7 @@ public final class Datepicker extends Composite implements CustomTranlation {
 
 	//~ Constructors ---------------------------------------------------------------------------------------------------
 
-	public Datepicker(final EventContext app, final Composite parent, final Options options) {
+	public Datepicker(final EventContext context, final Composite parent, final Options options) {
 		super(parent, (options.get("border", false) ? SWT.BORDER : SWT.NONE));
 
 		GridLayout gl = new GridLayout(3, false);
@@ -67,7 +66,7 @@ public final class Datepicker extends Composite implements CustomTranlation {
 						@Override
 						public void widgetSelected(final SelectionEvent event) {
 							setInternalDateRange();
-							app.postEvent(daterange);
+							context.postEvent(daterange);
 						}
 					});
 
@@ -80,7 +79,7 @@ public final class Datepicker extends Composite implements CustomTranlation {
 						public void widgetSelected(final SelectionEvent event) {
 							dtFrom.setEnabled(bEnableFrom.getSelection());
 							setInternalDateRange();
-							app.postEvent(daterange);
+							context.postEvent(daterange);
 						}
 					});
 
@@ -93,7 +92,7 @@ public final class Datepicker extends Composite implements CustomTranlation {
 						@Override
 						public void widgetSelected(final SelectionEvent event) {
 							setInternalDateRange();
-							app.postEvent(daterange);
+							context.postEvent(daterange);
 						}
 					});
 			this.bEnableTo = new Button(this, SWT.CHECK);
@@ -105,7 +104,7 @@ public final class Datepicker extends Composite implements CustomTranlation {
 						public void widgetSelected(final SelectionEvent event) {
 							dtTo.setEnabled(bEnableTo.getSelection());
 							setInternalDateRange();
-							app.postEvent(daterange);
+							context.postEvent(daterange);
 						}
 					});
 		}

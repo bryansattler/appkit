@@ -6,14 +6,14 @@ import java.util.Properties;
 
 import org.apache.log4j.PropertyConfigurator;
 
-import org.appkit.application.LocalEventContext;
+import org.appkit.event.LocalEventContext;
 import org.appkit.overlay.Overlay;
 import org.appkit.overlay.SpinnerOverlay;
-import org.appkit.registry.Texts;
+import org.appkit.preferences.PrefStore;
 import org.appkit.templating.Component;
 import org.appkit.templating.Templating;
 import org.appkit.util.SmartExecutor;
-import org.appkit.util.prefs.PrefStore;
+import org.appkit.util.Texts;
 import org.appkit.widget.Datepicker.DateRange;
 import org.appkit.widget.util.TableScrollDetector.ScrollEvent;
 import org.appkit.widget.util.TableScrollDetector.ScrollListener;
@@ -49,25 +49,30 @@ public final class Sample {
 		/* Log4J Configuration */
 		PropertyConfigurator.configure(log4jProperties());
 
-		/* create a shell */
+		/* New Shell */
 		shell					  = new Shell();
 		shell.setLayout(new FillLayout());
 
-		/* create templating and load a template */
-		Templating templating = Templating.fromResources();
+		/* for saving and loading Preferences */
+		PrefStore prefStore = PrefStore.createJavaPrefStore("org/appkit/sample");
 
-		/* for catching all local events (see the methods tagged with @Subscribe) */
+		/* create a convenient Executor
+		   executor = SmartExecutor.create();
+		   /* for catching all local events (see the methods tagged with @Subscribe) */
 		LocalEventContext eventContext = new LocalEventContext(this);
 
+		/* create templating */
+		Templating templating = Templating.fromResources();
+
 		/* create the orderview component with the given eventContext */
-		Component orders = templating.create("orderview", eventContext, shell);
-		this.compOrders = orders.getComposite();
+		Component orderview = templating.create("orderview", eventContext, shell);
+		this.compOrders = orderview.getComposite();
 
 		/* translate component */
-		Texts.translateComponent(orders);
+		Texts.translateComponent(orderview);
 
 		/* selects the table */
-		Table t = orders.select("orders", Table.class);
+		Table t = orderview.select("orders", Table.class);
 		t.setHeaderVisible(true);
 
 		/* create columns */
@@ -83,9 +88,6 @@ public final class Sample {
 			TableItem i1 = new TableItem(t, SWT.NONE);
 			i1.setText("item " + i);
 		}
-
-		PrefStore prefStore = PrefStore.createJavaPrefStore("org/appkit/sample");
-		executor = SmartExecutor.create();
 
 		/* divide table equally among columns */
 		TableUtils.fillTableWidth(t);
@@ -109,7 +111,6 @@ public final class Sample {
 				});
 
 		shell.open();
-
 		while (! shell.isDisposed()) {
 			if (! shell.getDisplay().readAndDispatch()) {
 				shell.getDisplay().sleep();

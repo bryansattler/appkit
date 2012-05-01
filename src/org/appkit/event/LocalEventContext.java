@@ -1,4 +1,4 @@
-package org.appkit.application;
+package org.appkit.event;
 
 import com.google.common.eventbus.DeadEvent;
 import com.google.common.eventbus.EventBus;

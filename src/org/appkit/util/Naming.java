@@ -3,12 +3,13 @@ package org.appkit.util;
 import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Multimap;
 import com.google.common.collect.Ordering;
 import com.google.common.collect.Sets;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -49,20 +50,28 @@ public final class Naming<E> {
 	public String toString() {
 
 		StringBuilder sb = new StringBuilder();
-		sb.append("matcher criteria:\n");
+		sb.append("string matcher: ");
 		sb.append(this.stringMatcher.toString());
-		sb.append("\n");
+		sb.append("\nclass matcher: ");
 		sb.append(this.classMatcher.toString());
-		sb.append("\ndata:\n\n");
+		sb.append("\n\ndata (primary keys):\n");
 
-		List<String> primKeys = Lists.newArrayList();
-		for (final E o : this.data) {
-			primKeys.add(this.stringMatcher.toStringPrimaryKey(o));
+		List<E> listData				  = Lists.newArrayList(this.data);
+		Multimap<String, String> multimap = LinkedListMultimap.create();
+		for (int i = 0; i < listData.size(); i++) {
+
+			E o = listData.get(i);
+			multimap.put(this.stringMatcher.toStringPrimaryKey(o), this.classMatcher.toStringPrimaryKey(o));
 		}
-		Collections.sort(primKeys, Ordering.natural());
-		for (final String k : primKeys) {
-			sb.append(k);
-			sb.append("\n");
+
+		for (final String name : Ordering.natural().sortedCopy(multimap.keys())) {
+			for (final String value : multimap.get(name)) {
+				sb.append("   ");
+				sb.append(name);
+				sb.append(": ");
+				sb.append(value);
+				sb.append("\n");
+			}
 		}
 
 		return sb.toString();
@@ -98,9 +107,9 @@ public final class Naming<E> {
 	 * @throws IllegalStateException if naming was already sealed
 	 * @throws IllegalArgumentException if name or object is null
 	 */
-	public void register(final E object) {
+	public void put(final E object) {
 		Preconditions.checkState(! this.isSealed(), "naming was already sealed");
-		Preconditions.checkArgument((object != null), "nulls are not allowedl");
+		Preconditions.checkArgument((object != null), "nulls are not allowed");
 
 		/* reference-able via exact name */
 		this.data.add(object);
@@ -131,14 +140,17 @@ public final class Naming<E> {
 	 * @throws IllegalStateException if not exactly 1 was found
 	 */
 	public <T extends E> T select(final String str, final Class<T> clazz) {
+		Preconditions.checkArgument(
+			(str == null) || ! str.isEmpty(),
+			"name-query should not be '', omit it entirely instead");
 
 		ImmutableSet<T> results = this.find(str, clazz);
 
 		Preconditions.checkState(
 			results.size() == 1,
-			"query '%s' / %s returned %s results instead of exactly 1",
-			str,
-			clazz.getSimpleName(),
+			"query %s / %s returned %s results instead of exactly 1",
+			((str == null) ? "*" : ("'" + str + "'")),
+			((clazz == null) ? "*" : clazz.getSimpleName()),
 			results.size());
 
 		return results.iterator().next();
@@ -183,10 +195,19 @@ public final class Naming<E> {
 		/* find results */
 		ImmutableSet.Builder<T> builder = ImmutableSet.builder();
 		for (final E object : this.data) {
-			if (this.classMatcher.matches(object, clazz) && this.stringMatcher.matches(object, str)) {
-				;
+
+			boolean match = true;
+			if ((clazz != null) && ! this.classMatcher.matches(object, clazz)) {
+				match = false;
 			}
-			builder.add((T) object);
+
+			if (match && (str != null) && ! this.stringMatcher.matches(object, str)) {
+				match = false;
+			}
+
+			if (match) {
+				builder.add((T) object);
+			}
 		}
 
 		ImmutableSet<T> results = builder.build();

@@ -6,11 +6,11 @@ import com.google.common.collect.Lists;
 import java.util.Queue;
 
 /**
- * This static class starts, keeps track of and stops measurement. Measurement can be nested,
+ * This class takes care of starting, stopping and keeping track of measurements. Measurements can be nested,
  * the internal state is managed using {@link ThreadLocal} variables.
  *
- * Every method has a boolean switch to turn off measurement, so it can be kept in the code
- * and turned of for performance reasons.
+ * Every method has a boolean switch to turn off measurement, so that it can be kept in the code
+ * and turned off for performance reasons.
  *
  */
 public final class Measurement {
@@ -25,14 +25,7 @@ public final class Measurement {
 			}
 		};
 
-	private static final ThreadLocal<Measurement.Listener> listener			 =
-		new ThreadLocal<Measurement.Listener>() {
-			@Override
-			protected Measurement.Listener initialValue() {
-				return null;
-			}
-		};
-
+	private static Measurement.Listener listener							 = null;
 
 	//~ Instance fields ------------------------------------------------------------------------------------------------
 
@@ -43,7 +36,6 @@ public final class Measurement {
 
 	//~ Constructors ---------------------------------------------------------------------------------------------------
 
-	/** instatiate a measurement */
 	private Measurement(final String name, final Object data) {
 		this.start				  = System.currentTimeMillis();
 		this.name				  = name;
@@ -54,44 +46,13 @@ public final class Measurement {
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
 	/**
-	 * sets a Listener to be notified of a new measurement
+	 * Sets a {@link Measurement.Listener} to be notified of a new measurement. It needs
+	 * to be thread-safe, if Measurements occur over more than one thread.
+	 *
 	 * @see SimpleStatistic
 	 */
-	public static void notify(final Measurement.Listener listener) {
-		Measurement.listener.set(listener);
-	}
-
-	/**
-	 * performs a zero-duration measurement = a mark
-	 *
-	 * @param doIt actually do the measurement
-	 * @param name name of the measurement
-	 * @return the finished measurement
-	 */
-	public static MeasureData mark(final boolean doIt, final String name) {
-		return mark(doIt, null, name);
-	}
-
-	/**
-	 * performs a zero-duration measurement = a mark and attach data to it
-	 *
-	 * @param doIt actually do the measurement
-	 * @param name name of the measurement
-	 * @param data data to be attached
-	 * @return the finished measurement
-	 */
-	public static MeasureData mark(final boolean doIt, final String name, final Object data) {
-		if (! doIt) {
-			return null;
-		}
-
-		MeasureData md = new MeasureData(name, data, System.currentTimeMillis());
-		Listener l     = listener.get();
-		if (l != null) {
-			l.notify(md);
-		}
-
-		return md;
+	public static void setListener(final Measurement.Listener newListener) {
+		listener = newListener;
 	}
 
 	/**
@@ -131,9 +92,8 @@ public final class Measurement {
 		}
 
 		MeasureData md = rM.poll().stopMeasurement();
-		Listener l     = listener.get();
-		if (l != null) {
-			l.notify(md);
+		if (listener != null) {
+			listener.notify(md);
 		}
 
 		return md;
@@ -148,6 +108,11 @@ public final class Measurement {
 	//~ Inner Interfaces -----------------------------------------------------------------------------------------------
 
 	public static interface Listener {
+
+		/**
+		 * Notifies this Listener of new MeasureData. If Measurements occur over multiple threads, this
+		 * needs to be made thread-safe.
+		 */
 		void notify(final MeasureData data);
 	}
 }

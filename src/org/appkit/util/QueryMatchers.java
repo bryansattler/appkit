@@ -61,12 +61,12 @@ public final class QueryMatchers {
 
 		@Override
 		public final String toString() {
-			return "matching all prefixes";
+			return "matching assignable classes";
 		}
 
 		@Override
 		public final String toStringPrimaryKey(final Object object) {
-			return object.getClass().getSimpleName();
+			return object.toString();
 		}
 	}
 }

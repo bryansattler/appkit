@@ -1,4 +1,4 @@
-package org.appkit.util.prefs;
+package org.appkit.preferences;
 
 import com.google.common.collect.ImmutableSet;
 

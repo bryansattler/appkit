@@ -2,8 +2,9 @@ package org.appkit.templating;
 
 import java.util.List;
 
-import org.appkit.application.EventContext;
+import org.appkit.event.EventContext;
 import org.appkit.registry.Fonts;
+import org.appkit.widget.Options;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Button;
@@ -21,6 +22,13 @@ public interface ControlCreator<E extends Control> {
 	E initialize(final EventContext context, final Composite parent, final Options options);
 
 	//~ Inner Classes --------------------------------------------------------------------------------------------------
+
+	class SpacerCreator implements ControlCreator<Label> {
+		@Override
+		public Label initialize(final EventContext context, final Composite parent, final Options options) {
+			return new Label(parent, SWT.NONE);
+		}
+	}
 
 	class ButtonCreator implements ControlCreator<Button> {
 		@Override

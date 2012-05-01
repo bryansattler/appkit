@@ -2,7 +2,7 @@ package org.appkit.widget;
 
 import java.io.File;
 
-import org.appkit.registry.Texts;
+import org.appkit.util.Texts;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.FileDialog;

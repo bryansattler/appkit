@@ -6,9 +6,8 @@ import com.google.common.collect.Maps;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.appkit.application.EventContext;
-import org.appkit.registry.Texts.CustomTranlation;
-import org.appkit.templating.Options;
+import org.appkit.event.EventContext;
+import org.appkit.util.Texts.CustomTranlation;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -34,7 +33,7 @@ public class RadioSet extends Composite implements CustomTranlation {
 
 	//~ Constructors ---------------------------------------------------------------------------------------------------
 
-	public RadioSet(final EventContext app, final Composite parent, final Options options) {
+	public RadioSet(final EventContext context, final Composite parent, final Options options) {
 		super(parent, options.get("border", false) ? SWT.BORDER : SWT.NONE);
 
 		GridLayout gl = new GridLayout(1, false);
@@ -54,7 +53,7 @@ public class RadioSet extends Composite implements CustomTranlation {
 						@Override
 						public void widgetSelected(final SelectionEvent event) {
 							if (btn.getSelection()) {
-								app.postEvent(choice);
+								context.postEvent(choice);
 							}
 						}
 					});

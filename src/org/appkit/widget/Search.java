@@ -6,10 +6,9 @@ import com.google.common.collect.Lists;
 
 import java.util.List;
 
-import org.appkit.application.EventContext;
+import org.appkit.event.EventContext;
 import org.appkit.osdependant.OSUtils;
-import org.appkit.registry.Texts.CustomTranlation;
-import org.appkit.templating.Options;
+import org.appkit.util.Texts.CustomTranlation;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.FocusEvent;
@@ -42,7 +41,7 @@ public final class Search extends Composite implements CustomTranlation {
 
 	//~ Constructors ---------------------------------------------------------------------------------------------------
 
-	public Search(final EventContext app, final Composite parent, final Options options) {
+	public Search(final EventContext context, final Composite parent, final Options options) {
 		super(parent, SWT.NONE);
 
 		boolean delButtonNeeded								 = true;
@@ -78,7 +77,9 @@ public final class Search extends Composite implements CustomTranlation {
 		Preconditions.checkArgument(texts.size() == 2, "need two strings, separated by /");
 
 		label.setText(texts.get(0));
-		bDelete.setText(texts.get(1));
+		if (bDelete != null) {
+			bDelete.setText(texts.get(1));
+		}
 	}
 
 	public Text getTextWidget() {

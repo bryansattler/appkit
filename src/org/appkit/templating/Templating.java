@@ -16,11 +16,12 @@ import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
 
-import org.appkit.application.EventContext;
+import org.appkit.event.EventContext;
 import org.appkit.util.ParamSupplier;
 import org.appkit.util.ResourceStringSupplier;
 import org.appkit.widget.Datepicker;
 import org.appkit.widget.GridComposite;
+import org.appkit.widget.Options;
 import org.appkit.widget.RadioSet;
 import org.appkit.widget.Search;
 
@@ -48,7 +49,7 @@ public final class Templating {
 
 	private final ParamSupplier<String, String> templateSupplier;
 	private final Gson gson;
-	private final Map<String, Class<?extends ControlCreator<?>>> customCreators = Maps.newHashMap();
+	private final Map<String, ControlCreator<?>> customCreators = Maps.newHashMap();
 	private final Map<String, Class<?extends Control>> types = Maps.newHashMap();
 
 	//~ Constructors ---------------------------------------------------------------------------------------------------
@@ -58,10 +59,11 @@ public final class Templating {
 		this.templateSupplier = templateSupplier;
 
 		/* built in types */
-		this.addCustomCreator(ControlCreator.ButtonCreator.class, "button");
-		this.addCustomCreator(ControlCreator.LabelCreator.class, "label");
-		this.addCustomCreator(ControlCreator.TableCreator.class, "table");
-		this.addCustomCreator(ControlCreator.TextCreator.class, "text");
+		this.addCustomCreator(new ControlCreator.ButtonCreator(), "button");
+		this.addCustomCreator(new ControlCreator.LabelCreator(), "label");
+		this.addCustomCreator(new ControlCreator.TableCreator(), "table");
+		this.addCustomCreator(new ControlCreator.SpacerCreator(), "spacer");
+		this.addCustomCreator(new ControlCreator.TextCreator(), "text");
 		this.addType(Search.class, "search");
 		this.addType(Datepicker.class, "datepicker");
 		this.addType(RadioSet.class, "radioset");
@@ -100,7 +102,7 @@ public final class Templating {
 	 *
 	 * @throws IllegalStateException if creator was already registered
 	 */
-	public void addCustomCreator(final Class<?extends ControlCreator<?>> creator, final String typeName) {
+	public void addCustomCreator(final ControlCreator<?> creator, final String typeName) {
 		Preconditions.checkState(
 			! this.customCreators.containsKey(typeName),
 			"custom creator for type %s already registered",
@@ -113,18 +115,26 @@ public final class Templating {
 	 *
 	 * @throws IllegalStateException when JSON parsing failed or there other errors
 	 */
-	public Component create(final String componentType, final EventContext context, final Composite parent) {
-		/* get file */
-		L.debug("loading component: {}", componentType);
+	public Component create(final String componentName, final Composite parent) {
+		return this.create(componentName, EventContext.FAKE, parent);
+	}
 
-		String file   = "components/" + componentType + ".json";
+	/** loads and creates a component of the specified type with a given event-context
+	 *
+	 * @throws IllegalStateException when JSON parsing failed or there other errors
+	 */
+	public Component create(final String componentName, final EventContext context, final Composite parent) {
+		/* get file */
+		L.debug("loading component: {}", componentName);
+
+		String file   = "components/" + componentName + ".json";
 		String source = this.templateSupplier.get(file);
 		Preconditions.checkArgument(source != null, "file '%s' not found", file);
 
 		/* parse json */
 		WidgetDefinition definition = null;
 		try {
-			L.debug("deserializing component: " + componentType);
+			L.debug("deserializing component: {}", componentName);
 			definition = this.gson.fromJson(source, WidgetDefinition.class);
 		} catch (final JsonParseException e) {
 			L.error(e.getMessage(), e);
@@ -132,9 +142,9 @@ public final class Templating {
 		}
 
 		/* initialize controls */
-		L.debug("creating component: {}", componentType);
+		L.debug("creating component: {}", componentName);
 
-		return new Component(definition);
+		return new Component(componentName, definition, parent, context, customCreators, types);
 	}
 
 	//~ Inner Classes --------------------------------------------------------------------------------------------------

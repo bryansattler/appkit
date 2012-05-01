@@ -1,4 +1,4 @@
-package org.appkit.application;
+package org.appkit.event;
 
 public final class FakeEventContext implements EventContext {
 

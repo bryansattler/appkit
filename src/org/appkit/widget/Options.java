@@ -1,4 +1,4 @@
-package org.appkit.templating;
+package org.appkit.widget;
 
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Preconditions;
@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Holds options for component and provides methods for working with. For retrieval operations
- * defaults have to be specified, similar to {@link org.appkit.util.prefs.PrefStore}.
+ * defaults have to be specified, similar to {@link org.appkit.preferences.PrefStore}.
  *
  * <li>For keys of options only the following characters are valid: a-z,A-Z, '?', '_' and '-'.
  * <li>boolean options values can be "true","false","yes" or "no"
