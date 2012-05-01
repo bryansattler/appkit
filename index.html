@@ -1,0 +1,232 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Appkit by fab1an</title>
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="javascripts/respond.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <!--[if lt IE 8]>
+    <link rel="stylesheet" href="stylesheets/ie.css">
+    <![endif]-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+  </head>
+  <body>
+      <div id="header">
+        <nav>
+          <li class="fork"><a href="https://github.com/fab1an/appkit">View On GitHub</a></li>
+          <li class="downloads"><a href="https://github.com/fab1an/appkit/zipball/master">ZIP</a></li>
+          <li class="downloads"><a href="https://github.com/fab1an/appkit/tarball/master">TAR</a></li>
+          <li class="title">DOWNLOADS</li>
+        </nav>
+      </div><!-- end header -->
+
+    <div class="wrapper">
+
+      <section>
+        <div id="title">
+          <h1>Appkit</h1>
+          <p>swt-appkit - easing development of swt-applications</p>
+          <hr>
+          <span class="credits left">Project maintained by <a href="https://github.com/fab1an">fab1an</a></span>
+          <span class="credits right">Hosted on GitHub Pages &mdash; Theme by <a href="http://twitter.com/#!/michigangraham">mattgraham</a></span>
+        </div>
+
+        <h1>swt-appkit - easing development of swt-applications</h1>
+
+<ul>
+<li>API-Documentation: <a href="http://fab1an.github.com/appkit/javadoc/">JavaDoc</a>
+</li>
+<li>Email: <a href="mailto:fabian.zeindl@gmail.com">fabian.zeindl@gmail.com</a>
+</li>
+<li>Latest build: <a href="http://fab1an.github.com/appkit/swt-appkit.jar">swt-appkit.jar</a>
+</li>
+<li>Discussion: <a href="http://groups.google.com/group/appkit">appkit@googlegroups.com</a>
+</li>
+<li>SampleCode: <a href="http://github.com/fab1an/appkit/blob/master/src/org/appkit/sample/Sample.java">Sample.java</a>
+</li>
+<li>License: Code is released under the LGPL2.</li>
+</ul><h2>Idea</h2>
+
+<p>SWT-Appkit is a collection of utilities aiming to improve and help coding with SWT and
+building better, more comprehensive, modern applications.
+It's a kit, not a framework, in the sense that it tries not to force you to change your
+application-structure. Instead you can gradually adapt your code to use parts and features,
+which you might find useful.</p>
+
+<p>The API was designed with the following principles:</p>
+
+<ul>
+<li>Almost all SWT-related calls have to be done in the Display-Thread, which enables you to use static methods more freely. </li>
+<li>Heavy use of the Google Guava-toolkit, which enables you to write more modern and fun Java-code.</li>
+<li>Fail-fast and safe-guarding of IllegalArguments etc. by using Guava's Preconditions.</li>
+<li>Convention over Configuration</li>
+</ul><h2>Dependencies</h2>
+
+<ul>
+<li>
+<a href="http://google-gson.googlecode.com">gson-2.0</a> fast json parsing library</li>
+<li>
+<a href="http://guava-libraries.googlecode.com/">guava-11.0.2</a> google's core java-libraries</li>
+<li>
+<a href="http://github.com/twall/jna">jna-3.4</a> java native access, only necessary to get correct ApplicationData Folder on Windows (O_o)</li>
+<li>
+<a href="http://slf4j.org/">slf4j-api-1.6.4</a> simple logging facade for java, provides pluggable logging (static binding, no need for configuration)</li>
+<li>
+<a href="http://www.eclipse.org/swt">swt-3.7.1</a> SWT</li>
+</ul><h2>Thank you / Donations</h2>
+
+<p>If you want you can <a href="http://flattr.com/profile/cel1ne">flattr</a> me, or send a Paypal donation to the email above.</p>
+
+<h2>Features</h2>
+
+<h3>Templating</h3>
+
+<p>Use a Json-File: <a href="http://fab1an.github.com/appkit/orderview.json">orderview.json</a> to create Interfaces:<br><img src="http://fab1an.github.com/appkit/orderview-json.png" height="150px"><img src="http://fab1an.github.com/appkit/Orderview-Sample.png" height="150px"></p>
+
+<div class="highlight">
+<pre><span class="n">Shell</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Shell</span><span class="o">();</span>
+<span class="n">shell</span><span class="o">.</span><span class="na">setLayout</span><span class="o">(</span><span class="k">new</span> <span class="n">FillLayout</span><span class="o">());</span>
+
+<span class="cm">/* create templating */</span>
+<span class="n">Templating</span> <span class="n">templating</span> <span class="o">=</span> <span class="n">Templating</span><span class="o">.</span><span class="na">fromResources</span><span class="o">();</span>
+
+<span class="cm">/* create the orderView component */</span>
+<span class="n">Component</span> <span class="n">orderView</span> <span class="o">=</span> <span class="n">templating</span><span class="o">.</span><span class="na">create</span><span class="o">(</span><span class="s">"orderview"</span><span class="o">,</span> <span class="n">shell</span><span class="o">);</span>
+
+<span class="cm">/* select widgets and work with them */</span>
+<span class="n">Table</span> <span class="n">t</span> <span class="o">=</span> <span class="n">orderView</span><span class="o">.</span><span class="na">select</span><span class="o">(</span><span class="s">"orders"</span><span class="o">,</span> <span class="n">Table</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+<span class="n">Label</span> <span class="n">l</span> <span class="o">=</span> <span class="n">orderView</span><span class="o">.</span><span class="na">select</span><span class="o">(</span><span class="s">"sidebar.stores"</span><span class="o">,</span> <span class="n">Label</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+</pre>
+</div>
+
+
+<h3>Translate your Application</h3>
+
+<div class="highlight">
+<pre><span class="cm">/* manual translations */</span>
+<span class="n">Texts</span> <span class="n">texts</span> <span class="o">=</span> <span class="n">Texts</span><span class="o">.</span><span class="na">fromResources</span><span class="o">();</span>
+<span class="n">label</span><span class="o">.</span><span class="na">setText</span><span class="o">(</span><span class="n">texts</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">"label_size"</span><span class="o">,</span> <span class="n">opt1</span><span class="o">,</span> <span class="n">opt2</span><span class="o">));</span>
+
+<span class="cm">/* translate components automatically */</span>
+<span class="n">Texts</span><span class="o">.</span><span class="na">translateComponent</span><span class="o">(</span><span class="n">orderView</span><span class="o">);</span>
+</pre>
+</div>
+
+
+<h3>EventHandling</h3>
+
+<p>Write less cluttered event-handling code using Guava's EventBus.</p>
+
+<div class="highlight">
+<pre><span class="kd">public</span> <span class="nf">Sample</span><span class="o">()</span> <span class="o">{</span>
+    <span class="c1">// ...</span>
+
+    <span class="cm">/* for catching all local events (see the methods tagged with @Subscribe) */</span>
+    <span class="n">LocalEventContext</span> <span class="n">eventContext</span> <span class="o">=</span> <span class="k">new</span> <span class="n">LocalEventContext</span><span class="o">(</span><span class="k">this</span><span class="o">);</span>
+
+    <span class="cm">/* create the orderview component with the given eventContext */</span>
+    <span class="n">Component</span> <span class="n">orderView</span> <span class="o">=</span> <span class="n">templating</span><span class="o">.</span><span class="na">create</span><span class="o">(</span><span class="s">"orderview"</span><span class="o">,</span> <span class="n">eventContext</span><span class="o">,</span> <span class="n">shell</span><span class="o">);</span>
+
+    <span class="c1">// ...</span>
+    <span class="n">shell</span><span class="o">.</span><span class="na">open</span><span class="o">();</span>
+<span class="o">}</span>
+
+<span class="nd">@Subscribe</span>
+<span class="kd">public</span> <span class="kt">void</span> <span class="nf">daterangeChange</span><span class="o">(</span><span class="kd">final</span> <span class="n">DateRange</span> <span class="n">daterange</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">L</span><span class="o">.</span><span class="na">debug</span><span class="o">(</span><span class="s">"we got a date-range of our date picker: {}"</span><span class="o">,</span> <span class="n">daterange</span><span class="o">);</span>
+<span class="o">}</span>
+</pre>
+</div>
+
+
+<h3>Registries for Colors, Fonts and Images</h3>
+
+<p>Automatic assigning, caching, disposing etc.</p>
+
+<div class="highlight">
+<pre><span class="n">Button</span> <span class="n">btn</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Button</span><span class="o">(</span><span class="n">parent</span><span class="o">,</span> <span class="n">SWT</span><span class="o">.</span><span class="na">PUSH</span><span class="o">);</span>
+<span class="n">Fonts</span><span class="o">.</span><span class="na">set</span><span class="o">(</span><span class="n">btn</span><span class="o">,</span> <span class="n">Fonts</span><span class="o">.</span><span class="na">BOLD</span><span class="o">);</span>
+<span class="n">Colors</span><span class="o">.</span><span class="na">setForeground</span><span class="o">(</span><span class="n">btn</span><span class="o">,</span> <span class="mi">140</span><span class="o">,</span> <span class="mi">120</span><span class="o">,</span> <span class="mi">100</span><span class="o">);</span> <span class="c1">// RGB</span>
+<span class="n">Images</span><span class="o">.</span><span class="na">set</span><span class="o">(</span><span class="n">btn</span><span class="o">,</span> <span class="n">ImageTypes</span><span class="o">.</span><span class="na">LOGO</span><span class="o">);</span> <span class="c1">// ImageTypes is an enum providing filenames</span>
+</pre>
+</div>
+
+
+<h3>Preference storing and loading</h3>
+
+<div class="highlight">
+<pre><span class="n">PrefStore</span> <span class="n">prefStore</span> <span class="o">=</span> <span class="n">PrefStore</span><span class="o">.</span><span class="na">createJavaPrefStore</span><span class="o">(</span><span class="s">"org/appkit/sample"</span><span class="o">);</span>
+<span class="kt">int</span> <span class="n">option</span> <span class="o">=</span> <span class="n">prefStore</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">"option_name"</span><span class="o">,</span> <span class="mi">2</span><span class="o">);</span> <span class="c1">// 2 is the default</span>
+<span class="kt">boolean</span> <span class="n">debugEnabled</span> <span class="o">=</span> <span class="n">prefStore</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">"debug"</span><span class="o">,</span> <span class="kc">false</span><span class="o">);</span> <span class="c1">// false is the default</span>
+</pre>
+</div>
+
+
+<h3>Overlays</h3>
+
+<p>TODO</p>
+
+<h3>Measurements</h3>
+
+<p>Do measurements of your code run-time.</p>
+
+<div class="highlight">
+<pre><span class="n">Measurement</span><span class="o">.</span><span class="na">Listener</span> <span class="n">statistic</span> <span class="o">=</span> <span class="k">new</span> <span class="n">SimpleStatistic</span><span class="o">();</span>
+<span class="n">Measurement</span><span class="o">.</span><span class="na">setListener</span><span class="o">(</span><span class="n">statistic</span><span class="o">);</span>
+<span class="n">Measurement</span><span class="o">.</span><span class="na">start</span><span class="o">(</span><span class="n">DEBUG_ENABLED</span><span class="o">,</span> <span class="s">"expensive_op"</span><span class="o">,</span> <span class="n">data</span><span class="o">);</span> <span class="c1">// data is optional</span>
+
+<span class="cm">/* munching, crunching numbers */</span>
+
+<span class="n">Measurement</span><span class="o">.</span><span class="na">stop</span><span class="o">();</span>
+<span class="n">L</span><span class="o">.</span><span class="na">debug</span><span class="o">(</span><span class="s">"Stats: {}"</span><span class="o">,</span> <span class="n">statistic</span><span class="o">.</span><span class="na">getResults</span><span class="o">());</span>
+</pre>
+</div>
+
+
+<h3>Must-have Utilities for SWT-Widgets</h3>
+
+<div class="highlight">
+<pre><span class="cm">/* size table-coumns equally among available size */</span>
+<span class="n">TableUtils</span><span class="o">.</span><span class="na">fillTableWidth</span><span class="o">(</span><span class="n">table</span><span class="o">);</span>
+
+<span class="cm">/* restore and save column-weights and order */</span>
+<span class="n">TableUtils</span><span class="o">.</span><span class="na">rememberColumnWeights</span><span class="o">(</span><span class="n">prefStore</span><span class="o">,</span> <span class="n">executor</span><span class="o">,</span> <span class="n">table</span><span class="o">,</span> <span class="s">"MyTable"</span><span class="o">);</span>
+<span class="n">TableUtils</span><span class="o">.</span><span class="na">rememberColumnOrder</span><span class="o">(</span><span class="n">prefStore</span><span class="o">,</span> <span class="n">executor</span><span class="o">,</span> <span class="n">table</span><span class="o">,</span> <span class="s">"MyTable"</span><span class="o">);</span>
+
+<span class="cm">/* resize columns proportionally if table was resized */</span>
+<span class="n">TableUtils</span><span class="o">.</span><span class="na">autosizeColumns</span><span class="o">(</span><span class="n">table</span><span class="o">);</span>
+
+<span class="cm">/* save and restore shell size, position and maximised state */</span>
+<span class="n">ShellUtils</span><span class="o">.</span><span class="na">rememberSizeAndPosition</span><span class="o">(</span><span class="n">prefStore</span><span class="o">,</span> <span class="n">executor</span><span class="o">,</span> <span class="n">shell</span><span class="o">,</span> <span class="s">"My Shell"</span><span class="o">,</span> <span class="n">defWidth</span><span class="o">,</span> <span class="n">defHeight</span><span class="o">,</span> <span class="n">defX</span><span class="o">,</span> <span class="n">defY</span><span class="o">);</span>
+
+<span class="cm">/* add a DropDown Menu to a Button */</span>
+<span class="n">ButtonUtils</span><span class="o">.</span><span class="na">setDropDownMenu</span><span class="o">(</span><span class="n">btn</span><span class="o">,</span> <span class="n">menu</span><span class="o">);</span>
+</pre>
+</div>
+
+
+<h3>… better MessageBox, ScrollListener for Tables, Throttling of often-running Runnables…</h3>
+      </section>
+
+    </div>
+    <!--[if !IE]><script>fixScale(document);</script><!--<![endif]-->
+              <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("UA-31336098-1");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
+
+  </body>
+</html>
