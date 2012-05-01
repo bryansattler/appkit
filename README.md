@@ -43,9 +43,8 @@ Features
 
 ### Templating ###
 
-Use a Json-File: [orderview.json](http://fab1an.github.com/appkit/orderview.json)     
-<img src="http://fab1an.github.com/appkit/orderview-json.png" height="150px"/>    
-to create Interfaces:    
+Use a Json-File: [orderview.json](http://fab1an.github.com/appkit/orderview.json) to create Interfaces:    
+<img src="http://fab1an.github.com/appkit/orderview-json.png" height="150px"/>
 <img src="http://fab1an.github.com/appkit/Orderview-Sample.png" height="150px"/>    
 
 ```java
