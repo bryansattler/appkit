@@ -1,11 +1,9 @@
-org.appkit.application
+org.appkit.event
 org.appkit.measure
 org.appkit.osdependant
 org.appkit.overlay
+org.appkit.preferences
 org.appkit.registry
 org.appkit.templating
-org.appkit.templating.components
 org.appkit.util
-org.appkit.util.prefs
-org.appkit.widget
 org.appkit.widget.util
