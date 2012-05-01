@@ -109,10 +109,10 @@ which you might find useful.</p>
 <h3>Templating</h3>
 
 <p>Use json-files to create interfaces: <a href="http://fab1an.github.com/appkit/orderview.json">orderview.json</a><br>
+<br />
 <img src="http://fab1an.github.com/appkit/orderview-json.png" height="150px"><img src="http://fab1an.github.com/appkit/Orderview-Sample.png" height="150px"></p>
 
 <p>You can use a simple query-syntax to get back to your familiar SWT-widgets.</p>
-<br />
 <div class="highlight">
 <pre><span class="n">Shell</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Shell</span><span class="o">();</span>
 <span class="n">shell</span><span class="o">.</span><span class="na">setLayout</span><span class="o">(</span><span class="k">new</span> <span class="n">FillLayout</span><span class="o">());</span>
@@ -153,7 +153,7 @@ which you might find useful.</p>
 <pre><span class="kd">public</span> <span class="nf">Sample</span><span class="o">()</span> <span class="o">{</span>
     <span class="c1">// ...</span>
 
-    <span class="cm">/* for catching all local events (see the methods tagged with @Subscribe) */</span>
+    <span class="cm">/* get all local events (see the methods tagged with @Subscribe) */</span>
     <span class="n">LocalEventContext</span> <span class="n">eventContext</span> <span class="o">=</span> <span class="k">new</span> <span class="n">LocalEventContext</span><span class="o">(</span><span class="k">this</span><span class="o">);</span>
 
     <span class="cm">/* create the orderview component with the given eventContext */</span>
@@ -180,7 +180,7 @@ which you might find useful.</p>
 <pre><span class="n">Button</span> <span class="n">btn</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Button</span><span class="o">(</span><span class="n">parent</span><span class="o">,</span> <span class="n">SWT</span><span class="o">.</span><span class="na">PUSH</span><span class="o">);</span>
 <span class="n">Fonts</span><span class="o">.</span><span class="na">set</span><span class="o">(</span><span class="n">btn</span><span class="o">,</span> <span class="n">Fonts</span><span class="o">.</span><span class="na">BOLD</span><span class="o">);</span>
 <span class="n">Colors</span><span class="o">.</span><span class="na">setForeground</span><span class="o">(</span><span class="n">btn</span><span class="o">,</span> <span class="mi">140</span><span class="o">,</span> <span class="mi">120</span><span class="o">,</span> <span class="mi">100</span><span class="o">);</span> <span class="c1">// RGB</span>
-<span class="n">Images</span><span class="o">.</span><span class="na">set</span><span class="o">(</span><span class="n">btn</span><span class="o">,</span> <span class="n">ImageTypes</span><span class="o">.</span><span class="na">LOGO</span><span class="o">);</span> <span class="c1">// ImageTypes is an enum providing filenames</span>
+<span class="n">Images</span><span class="o">.</span><span class="na">set</span><span class="o">(</span><span class="n">btn</span><span class="o">,</span> <span class="n">Imgs</span><span class="o">.</span><span class="na">LOGO</span><span class="o">);</span> <span class="c1">// Imgs is an enum providing filenames</span>
 </pre>
 </div>
 
@@ -235,7 +235,7 @@ which you might find useful.</p>
 <span class="n">TableUtils</span><span class="o">.</span><span class="na">autosizeColumns</span><span class="o">(</span><span class="n">table</span><span class="o">);</span>
 
 <span class="cm">/* save and restore shell size, position and maximised state */</span>
-<span class="n">ShellUtils</span><span class="o">.</span><span class="na">rememberSizeAndPosition</span><span class="o">(</span><span class="n">prefStore</span><span class="o">,</span> <span class="n">executor</span><span class="o">,</span> <span class="n">shell</span><span class="o">,</span> <span class="s">"My Shell"</span><span class="o">,</span> <span class="n">defWidth</span><span class="o">,</span> <span class="n">defHeight</span><span class="o">,</span> <span class="n">defX</span><span class="o">,</span> <span class="n">defY</span><span class="o">);</span>
+<span class="n">ShellUtils</span><span class="o">.</span><span class="na">rememberSizeAndPosition</span><span class="o">(</span><span class="n">prefStore</span><span class="o">,</span> <span class="n">executor</span><span class="o">,</span> <span class="n">shell</span><span class="o">,</span> <span class="s">"My Shell"</span><span class="o">,<br /></span> <span class="n">defWidth</span><span class="o">,</span> <span class="n">defHeight</span><span class="o">,</span> <span class="n">defX</span><span class="o">,</span> <span class="n">defY</span><span class="o">);</span>
 
 <span class="cm">/* add a DropDown Menu to a Button */</span>
 <span class="n">ButtonUtils</span><span class="o">.</span><span class="na">setDropDownMenu</span><span class="o">(</span><span class="n">btn</span><span class="o">,</span> <span class="n">menu</span><span class="o">);</span>
