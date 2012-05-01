@@ -35,7 +35,7 @@
         <nav>
           <li class="fork"><a href="https://github.com/fab1an/appkit">View On GitHub</a></li>
           <li class="downloads"><a href="https://github.com/fab1an/appkit/zipball/master">Repo as ZIP</a></li>
-          <li class="downloads"><a href="https://fab1an.github.com/appkit/swt-appkit.jar">latest swt-appkit.JAR</a></li>
+          <li class="downloads"><a href="https://fab1an.github.com/appkit/swt-appkit.jar">latest JAR</a></li>
           <li class="title">DOWNLOADS</li>
         </nav>
       </div><!-- end header -->
@@ -59,7 +59,7 @@ It's a kit, not a framework, in the sense that it tries not to force you to chan
 application-structure. Instead you can gradually adapt your code to use parts and features,
 which you might find useful.</p>
 
-<p>The API was designed with the following principles:</p>
+<p>The API was designed with the following principles in mind:</p>
 
 <ul>
 <li>Almost all SWT-related calls have to be done in the Display-Thread, which enables you to use static methods more freely. </li>
@@ -68,7 +68,7 @@ which you might find useful.</p>
 <li>Convention over Configuration</li>
 </ul>
 
-<h3>At a glance</h3>
+<h3>Links</h3>
 <ul>
 <li>API-Documentation: <a href="http://fab1an.github.com/appkit/javadoc/">JavaDoc</a>
 </li>
@@ -108,8 +108,10 @@ which you might find useful.</p>
 
 <h3>Templating</h3>
 
-<p>Use a Json-File: <a href="http://fab1an.github.com/appkit/orderview.json">orderview.json</a> to create Interfaces:<br><img src="http://fab1an.github.com/appkit/orderview-json.png" height="150px"><img src="http://fab1an.github.com/appkit/Orderview-Sample.png" height="150px"></p>
+<p>Use json-files to create interfaces: <a href="http://fab1an.github.com/appkit/orderview.json">orderview.json</a><br>
+<img src="http://fab1an.github.com/appkit/orderview-json.png" height="150px"><img src="http://fab1an.github.com/appkit/Orderview-Sample.png" height="150px"></p>
 
+<p>You can use a simple query-syntax to get back to the regular old swt-widgets</p>
 <div class="highlight">
 <pre><span class="n">Shell</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Shell</span><span class="o">();</span>
 <span class="n">shell</span><span class="o">.</span><span class="na">setLayout</span><span class="o">(</span><span class="k">new</span> <span class="n">FillLayout</span><span class="o">());</span>
@@ -126,8 +128,9 @@ which you might find useful.</p>
 </pre>
 </div>
 
-
-<h3>Translate your Application</h3>
+<br />
+<h3>Internationalization / i18n Support</h3>
+<p>Load language files to translate your applications. Templates can be translates automatically.</h3>
 
 <div class="highlight">
 <pre><span class="cm">/* manual translations */</span>
@@ -140,7 +143,8 @@ which you might find useful.</p>
 </div>
 
 
-<h3>EventHandling</h3>
+<br />
+<h3>Event Handling</h3>
 
 <p>Write less cluttered event-handling code using Guava's EventBus.</p>
 
@@ -166,9 +170,10 @@ which you might find useful.</p>
 </div>
 
 
+<br />
 <h3>Registries for Colors, Fonts and Images</h3>
 
-<p>Automatic assigning, caching, disposing etc.</p>
+<p>Automatic assigning, caching, disposing of Colors, Fonts and Images. Most of the time you don't need more than one line.</p>
 
 <div class="highlight">
 <pre><span class="n">Button</span> <span class="n">btn</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Button</span><span class="o">(</span><span class="n">parent</span><span class="o">,</span> <span class="n">SWT</span><span class="o">.</span><span class="na">PUSH</span><span class="o">);</span>
@@ -179,7 +184,9 @@ which you might find useful.</p>
 </div>
 
 
-<h3>Preference storing and loading</h3>
+<br />
+<h3>Preference-Store</h3>
+<p>A sane approach to user-preferences.</p>
 
 <div class="highlight">
 <pre><span class="n">PrefStore</span> <span class="n">prefStore</span> <span class="o">=</span> <span class="n">PrefStore</span><span class="o">.</span><span class="na">createJavaPrefStore</span><span class="o">(</span><span class="s">"org/appkit/sample"</span><span class="o">);</span>
@@ -188,11 +195,12 @@ which you might find useful.</p>
 </pre>
 </div>
 
-
+<br />
 <h3>Overlays</h3>
 
-<p>TODO</p>
+<p>Render Overlays over Composites. They can also be animated. Code-Sample coming soon.</p>
 
+<br />
 <h3>Measurements</h3>
 
 <p>Do measurements of your code run-time.</p>
@@ -209,8 +217,10 @@ which you might find useful.</p>
 </pre>
 </div>
 
+<br />
 
-<h3>Must-have Utilities for SWT-Widgets</h3>
+<h3>Various utilities for working with SWT</h3>
+<p>A collection of tools i find myself reimplementing in every project.</p>
 
 <div class="highlight">
 <pre><span class="cm">/* size table-coumns equally among available size */</span>
@@ -232,7 +242,14 @@ which you might find useful.</p>
 </div>
 
 
-<h3>… better MessageBox, ScrollListener for Tables, Throttling of often-running Runnables…</h3>
+<br />
+<h3>… and more</h3>
+<ul>
+<li>better MessageBox</li>
+<li>ScrollListener for Tables</li>
+<li>Throttling of often-running Runnables</li>
+<li>…</li>
+</ul>
       </section>
 
     </div>
