@@ -43,10 +43,10 @@ Features
 
 ### Templating ###
 
-Use a Json-File: [orderview.json](http://fab1an.github.com/appkit/orderview.json)
-![Sample JSON](http://fab1an.github.com/appkit/orderview-json.png)
-to create Interfaces:
-![Sample UI](http://fab1an.github.com/appkit/Orderview-Sample.png)
+Use a Json-File: [orderview.json](http://fab1an.github.com/appkit/orderview.json)     
+![Sample JSON](http://fab1an.github.com/appkit/orderview-json.png height="50px")     
+to create Interfaces:    
+![Sample UI](http://fab1an.github.com/appkit/Orderview-Sample.png height="50px")     
 
 ```java
 Shell = new Shell();
