@@ -3,13 +3,10 @@ package org.appkit.widget;
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
-import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Multimap;
 
-import java.util.Collection;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -45,32 +42,11 @@ public class Options {
 	//~ Constructors ---------------------------------------------------------------------------------------------------
 
 	private Options(final Map<String, String> options) {
-
-		/* run through options */
-		Multimap<String, String> mmap = HashMultimap.create();
-		for (final Map.Entry<String, String> opt : options.entrySet()) {
-			if (! opt.getKey().equals("options")) {
-				mmap.put(opt.getKey(), opt.getValue());
-			} else {
-				for (final String subOpt : Splitter.on(' ').trimResults().split(opt.getValue())) {
-					mmap.put(subOpt, "yes");
-				}
-			}
-		}
-
-		Map<String, String> map = Maps.newHashMap();
-		for (final Map.Entry<String, Collection<String>> entry : mmap.asMap().entrySet()) {
-
-			String key = entry.getKey();
-
+		for (final String key : options.keySet()) {
 			Preconditions.checkArgument(nameFilter.matchesAllOf(key), "only a-z, '-' and '?' allowed in name");
-			Preconditions.checkArgument(entry.getValue().size() == 1, "specify option '%s' contradicts itself", key);
-			map.put(key, entry.getValue().iterator().next());
 		}
-
-		this.options = ImmutableMap.copyOf(map);
-
-		L.debug("created options: " + this.options);
+		this.options = ImmutableMap.copyOf(options);
+		L.debug("created options: {}", this.options);
 	}
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
@@ -80,9 +56,20 @@ public class Options {
 		return new Options(ImmutableMap.<String, String>of());
 	}
 
-	/** creates empty Options from the given map*/
+	/** creates Options from the given map*/
 	public static Options of(final Map<String, String> options) {
 		return new Options(options);
+	}
+
+	/** creates Options with multiple boolean keys set to "true" */
+	public static Options set(final String... booleanKeys) {
+
+		Map<String, String> map = Maps.newHashMap();
+		for (final String key : booleanKeys) {
+			map.put(key, "true");
+		}
+
+		return new Options(map);
 	}
 
 	/**
@@ -94,7 +81,7 @@ public class Options {
 		Map<String, String> newOptions = Maps.newHashMap();
 		newOptions.putAll(this.options);
 
-		for (final Entry<String, String> entry : defaults.getMap().entrySet()) {
+		for (final Entry<String, String> entry : defaults.asMap().entrySet()) {
 			if (! newOptions.containsKey(entry.getKey())) {
 				newOptions.put(entry.getKey(), entry.getValue());
 			}
@@ -162,7 +149,7 @@ public class Options {
 	 *
 	 * @throws IllegalArgumentException if the key was "options" since this is special key that will be split into booleans
 	 */
-	public ImmutableList<String> get(final String key) {
+	public ImmutableList<String> getList(final String key) {
 		Preconditions.checkArgument(! key.equals("options"), "'options' is translated into boolean options");
 
 		String option = this.options.get(key);
@@ -176,7 +163,7 @@ public class Options {
 	/**
 	 * returns this options as a map
 	 */
-	public ImmutableMap<String, String> getMap() {
+	public ImmutableMap<String, String> asMap() {
 		return this.options;
 	}
 }

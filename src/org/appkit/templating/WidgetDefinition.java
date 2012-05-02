@@ -2,6 +2,7 @@ package org.appkit.templating;
 
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Preconditions;
+import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import com.google.gson.JsonDeserializationContext;
@@ -98,11 +99,8 @@ public final class WidgetDefinition {
 
 	public static final class Deserializer implements JsonDeserializer<WidgetDefinition> {
 
-		@SuppressWarnings("unused")
-		private static final Logger L							 =
-			LoggerFactory.getLogger(WidgetDefinition.Deserializer.class);
-		private final Type immutableListType					 =
-			new TypeToken<ImmutableList<WidgetDefinition>>() {}
+		private static final Logger L		 = LoggerFactory.getLogger(WidgetDefinition.Deserializer.class);
+		private final Type immutableListType = new TypeToken<ImmutableList<WidgetDefinition>>() {}
 			.getType();
 
 		@Override
@@ -127,16 +125,33 @@ public final class WidgetDefinition {
 			/* 4. options = all other parameters (no name, children or type) */
 			Map<String, String> map = Maps.newHashMap();
 			for (final Entry<String, JsonElement> entry : jsonObject.entrySet()) {
+				Preconditions.checkState(
+					entry.getValue().isJsonPrimitive(),
+					"option %s is no json-primitive",
+					entry.getValue());
 
-				String key		   = entry.getKey().toLowerCase();
-				JsonElement option = entry.getValue();
+				String key   = entry.getKey().toLowerCase();
+				String value = entry.getValue().getAsString().toLowerCase();
 
+				/* don't put name, children or type in options */
 				if (key.equals("name") || key.equals("children") || key.equals("type")) {
 					continue;
 				}
 
-				Preconditions.checkState(option.isJsonPrimitive(), "option %s is no json-primitive", option);
-				map.put(key, option.getAsString().toLowerCase());
+				if (! key.equals("options")) {
+					Preconditions.checkState(! map.containsKey(key), "option key '%s' specified more than once!", key);
+					map.put(key, value);
+				} else {
+					L.debug("splitting up bool-list (options: '{}')", value);
+					for (final String subOpt : Splitter.on(' ').trimResults().split(value)) {
+						Preconditions.checkState(
+							! map.containsKey(subOpt),
+							"option key '%s' (found in bool-list (options: '%s') specified more than once!",
+							subOpt,
+							value);
+						map.put(subOpt, "true");
+					}
+				}
 			}
 
 			Options options							 = Options.of(map);

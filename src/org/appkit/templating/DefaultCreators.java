@@ -36,7 +36,7 @@ public class DefaultCreators {
 			Label label = new Label(parent, SWT.NONE);
 			label.setText("< empty >");
 
-			List<String> fontInfo = options.get("font");
+			List<String> fontInfo = options.getList("font");
 			if (! fontInfo.isEmpty()) {
 				if (fontInfo.contains("bold")) {
 					Fonts.set(label, Fonts.BOLD);

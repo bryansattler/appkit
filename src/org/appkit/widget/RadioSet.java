@@ -44,7 +44,7 @@ public class RadioSet extends Composite implements CustomTranlation {
 		this.setLayout(gl);
 
 		int i = 0;
-		for (final String choice : options.get("choices")) {
+		for (final String choice : options.getList("choices")) {
 
 			final Button btn = new Button(this, SWT.RADIO);
 			this.choices.put(choice, btn);
