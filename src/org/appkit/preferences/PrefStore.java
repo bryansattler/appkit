@@ -129,29 +129,15 @@ public final class PrefStore {
 	}
 
 	/**
-	 * returns all stored properties starting with a prefix as a map
+	 * returns all stored properties, starting with a prefix as a map of strings
 	 */
-	public ImmutableMap<String, String> asMap(final String prefix) {
+	public ImmutableMap<String, String> getPrefixMap(final String prefix) {
 
 		ImmutableMap.Builder<String, String> hm = ImmutableMap.builder();
 		for (final String key : this.backend.getKeys()) {
-			if (key.startsWith(prefix))
-				hm.put(key, this.backend.get(key));
-		}
-
-		return hm.build();
-	}
-
-	/**
-	 * returns all stored properties as a map of integer
-	 *
-	 * @param def value if matched property couldn't be converted to an integer
-	 */
-	public ImmutableMap<String, Integer> asMap(final int def) {
-
-		ImmutableMap.Builder<String, Integer> hm = ImmutableMap.builder();
-		for (final String key : this.backend.getKeys()) {
-			hm.put(key, this.get(key, def));
+			if (key.startsWith(prefix)) {
+				hm.put(key, this.get(key, null));
+			}
 		}
 
 		return hm.build();
@@ -162,27 +148,13 @@ public final class PrefStore {
 	 *
 	 * @param def value if matched property couldn't be converted to an integer
 	 */
-	public ImmutableMap<String, Integer> asMap(final String prefix, final int def) {
+	public ImmutableMap<String, Integer> getPrefixMap(final String prefix, final int def) {
 
 		ImmutableMap.Builder<String, Integer> hm = ImmutableMap.builder();
 		for (final String key : this.backend.getKeys()) {
-			if (key.startsWith(prefix))
+			if (key.startsWith(prefix)) {
 				hm.put(key, this.get(key, def));
-		}
-
-		return hm.build();
-	}
-
-	/**
-	 * returns all stored properties as a map of boolean
-	 *
-	 * @param def value if matched property couldn't be converted to a boolean
-	 */
-	public ImmutableMap<String, Boolean> asMap(final boolean def) {
-
-		ImmutableMap.Builder<String, Boolean> hm = ImmutableMap.builder();
-		for (final String key : this.backend.getKeys()) {
-			hm.put(key, this.get(key, def));
+			}
 		}
 
 		return hm.build();
@@ -193,12 +165,13 @@ public final class PrefStore {
 	 *
 	 * @param def value if matched property couldn't be converted to a boolean
 	 */
-	public ImmutableMap<String, Boolean> asMap(final String prefix, final boolean def) {
+	public ImmutableMap<String, Boolean> getPrefixMap(final String prefix, final boolean def) {
 
 		ImmutableMap.Builder<String, Boolean> hm = ImmutableMap.builder();
 		for (final String key : this.backend.getKeys()) {
-			if (key.startsWith(prefix))
+			if (key.startsWith(prefix)) {
 				hm.put(key, this.get(key, def));
+			}
 		}
 
 		return hm.build();
