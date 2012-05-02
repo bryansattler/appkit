@@ -13,8 +13,8 @@ public interface EventContext {
 
 	//~ Static fields/initializers -------------------------------------------------------------------------------------
 
-	/** the fake event context, events fired in this context will go nowhere */
-	public static final EventContext FAKE = new FakeEventContext();
+	/** the no-op event context, events fired in this context will go nowhere */
+	public static final EventContext NOOP = new NoOpEventContext();
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
 

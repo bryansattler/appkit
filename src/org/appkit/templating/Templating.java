@@ -120,7 +120,7 @@ public final class Templating {
 	 * @throws IllegalStateException when JSON loading or parsing failed
 	 */
 	public Component create(final String componentName, final Composite parent) {
-		return this.create(componentName, EventContext.FAKE, parent);
+		return this.create(componentName, EventContext.NOOP, parent);
 	}
 
 	/**
