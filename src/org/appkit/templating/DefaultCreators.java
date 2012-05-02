@@ -15,6 +15,8 @@ import org.eclipse.swt.widgets.Text;
 
 public class DefaultCreators {
 
+	//~ Inner Classes --------------------------------------------------------------------------------------------------
+
 	static class SpacerCreator implements ControlCreator<Label> {
 		@Override
 		public Label initialize(final EventContext context, final Composite parent, final Options options) {

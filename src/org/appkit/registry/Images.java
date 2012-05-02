@@ -201,6 +201,7 @@ public final class Images {
 	 */
 	public static interface ImageInterface {
 		void setImage(final Control control, final Image image);
+
 		Image getImage(final Control control);
 	}
 
