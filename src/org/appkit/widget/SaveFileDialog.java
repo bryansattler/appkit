@@ -60,7 +60,7 @@ public class SaveFileDialog {
 					MBox mb		   = new MBox(dlg.getParent(), MBox.Type.INFO, title, message, 1, option1, option2);
 
 					// If they click Yes, we're done and we drop out. If
-					if (mb.openReturningInt() == 0) {
+					if (mb.showReturningInt() == 0) {
 						done = true;
 					}
 				} else {

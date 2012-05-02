@@ -80,8 +80,6 @@ public final class MBox {
 		this.shell		 = new Shell(parentShell, SWT.APPLICATION_MODAL | SWT.DIALOG_TRIM | SWT.SHEET);
 		this.shell.setLayout(new GridLayout(2, false));
 
-		//this.shell.addKeyListener(new KeyPressed());
-
 		/* icon */
 		Composite compIcon = new Composite(this.shell, SWT.NONE);
 		compIcon.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 1, 2));
@@ -111,7 +109,7 @@ public final class MBox {
 		Image image     = this.shell.getDisplay().getSystemImage(systemImage);
 		label.setImage(image);
 
-		this.shell.setText(title);
+		this.shell.setText((title != null) ? title : "");
 
 		if (message.length() < 1000) {
 
@@ -179,11 +177,21 @@ public final class MBox {
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
-	public void open() {
-		this.openReturningInt();
+	public static void show(final Shell parentShell, final Type type, final String message) {
+		show(parentShell, type, null, message);
 	}
 
-	public int openReturningInt() {
+	public static void show(final Shell parentShell, final Type type, final String title, final String message) {
+
+		MBox mbox = new MBox(parentShell, type, null, message, 0, "OK");
+		mbox.show();
+	}
+
+	public void show() {
+		this.showReturningInt();
+	}
+
+	public int showReturningInt() {
 		this.shell.open();
 		this.defBtn.setFocus();
 
@@ -196,9 +204,9 @@ public final class MBox {
 		return this.answer;
 	}
 
-	public String openReturningString() {
+	public String showReturningString() {
 
-		int answer = this.openReturningInt();
+		int answer = this.showReturningInt();
 		if (answer == DISPOSEANSWER_INT) {
 			return DISPOSEANSWER_STR;
 		} else {
