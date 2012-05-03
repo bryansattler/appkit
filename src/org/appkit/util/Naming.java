@@ -50,10 +50,10 @@ public final class Naming<E> {
 	public String toString() {
 
 		StringBuilder sb = new StringBuilder();
-		sb.append("Naming (" + (this.isSealed() ? "" : "NOT") + " sealed)");
-		sb.append("string matcher: ");
+		sb.append("Naming (" + (this.isSealed() ? "" : "NOT ") + "sealed)\n");
+		sb.append("   string matcher: ");
 		sb.append(this.stringMatcher.toString());
-		sb.append("\nclass matcher: ");
+		sb.append("\n   class matcher: ");
 		sb.append(this.classMatcher.toString());
 		sb.append("\n\ndata (primary keys):\n");
 
@@ -171,7 +171,7 @@ public final class Naming<E> {
 	 * @see #find(String, Class)
 	 */
 	public <T extends E> boolean selectable(final Class<T> clazz) {
-		return this.find(null, clazz).size() > 0;
+		return this.find(null, clazz).size() == 1;
 	}
 
 	/**
@@ -180,7 +180,7 @@ public final class Naming<E> {
 	 * @see #find(String, Class)
 	 */
 	public boolean selectable(final String str) {
-		return this.find(str, null).size() > 0;
+		return this.find(str, null).size() == 1;
 	}
 
 	/**
@@ -189,7 +189,7 @@ public final class Naming<E> {
 	 * @see #find(String, Class)
 	 */
 	public <T extends E> boolean selectable(final String str, final Class<T> clazz) {
-		return this.find(str, null).size() > 0;
+		return this.find(str, null).size() == 1;
 	}
 
 	/**
