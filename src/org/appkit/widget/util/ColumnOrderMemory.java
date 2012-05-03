@@ -95,7 +95,7 @@ public final class ColumnOrderMemory {
 
 		final String orderString = Joiner.on(",").join(order);
 
-		Runnable runnable		 =
+		Runnable runnable =
 			new LoggingRunnable() {
 				@Override
 				public void runChecked() {

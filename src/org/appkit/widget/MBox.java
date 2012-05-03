@@ -89,7 +89,7 @@ public final class MBox {
 		gl.marginWidth	    = 10;
 		compIcon.setLayout(gl);
 
-		Label label     = new Label(compIcon, SWT.NONE);
+		Label label = new Label(compIcon, SWT.NONE);
 
 		int systemImage;
 		switch (type) {
@@ -106,7 +106,7 @@ public final class MBox {
 				systemImage = SWT.ICON_INFORMATION;
 		}
 
-		Image image     = this.shell.getDisplay().getSystemImage(systemImage);
+		Image image = this.shell.getDisplay().getSystemImage(systemImage);
 		label.setImage(image);
 
 		this.shell.setText((title != null) ? title : "");

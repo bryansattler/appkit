@@ -52,7 +52,7 @@ public final class Search extends Composite implements CustomTranlation {
 		this.setLayout(new GridLayout((delButtonNeeded ? 3 : 2), false));
 		((GridLayout) this.getLayout()).horizontalSpacing     = -1;
 
-		this.label											  = new Label(this, SWT.NONE);
+		this.label = new Label(this, SWT.NONE);
 		this.label.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
 
 		if (delButtonNeeded) {

@@ -4,7 +4,6 @@ import com.google.common.collect.Maps;
 
 import com.sun.jna.Library;
 import com.sun.jna.Native;
-import com.sun.jna.Platform;
 import com.sun.jna.PointerType;
 import com.sun.jna.win32.W32APIFunctionMapper;
 import com.sun.jna.win32.W32APITypeMapper;
@@ -19,15 +18,6 @@ import org.eclipse.swt.SWT;
  * provides OS-specific utilities
  */
 public class OSUtils {
-
-	//~ Static fields/initializers -------------------------------------------------------------------------------------
-
-	private static Map<String, Object> OPTIONS = Maps.newHashMap();
-
-	static {
-		OPTIONS.put(Library.OPTION_TYPE_MAPPER, W32APITypeMapper.UNICODE);
-		OPTIONS.put(Library.OPTION_FUNCTION_MAPPER, W32APIFunctionMapper.UNICODE);
-	}
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
@@ -61,17 +51,22 @@ public class OSUtils {
 		// default
 		String folder = "." + File.separator;
 
-		if (Platform.isMac()) {
+		if (isMac()) {
 			folder = System.getProperty("user.home") + File.separator + "Library" + File.separator
 					 + "Application Support";
-		} else if (Platform.isWindows()) {
+		} else if (isWindows()) {
 
-			HWND hwndOwner = null;
-			int nFolder    = Shell32.CSIDL_LOCAL_APPDATA;
-			HANDLE hToken  = null;
-			int dwFlags    = Shell32.SHGFP_TYPE_CURRENT;
-			char pszPath[] = new char[Shell32.MAX_PATH];
-			int hResult    = Shell32.INSTANCE.SHGetFolderPath(hwndOwner, nFolder, hToken, dwFlags, pszPath);
+			Map<String, Object> options = Maps.newHashMap();
+			options.put(Library.OPTION_TYPE_MAPPER, W32APITypeMapper.UNICODE);
+			options.put(Library.OPTION_FUNCTION_MAPPER, W32APIFunctionMapper.UNICODE);
+
+			HWND hwndOwner   = null;
+			int nFolder		 = Shell32.CSIDL_LOCAL_APPDATA;
+			HANDLE hToken    = null;
+			int dwFlags		 = Shell32.SHGFP_TYPE_CURRENT;
+			char pszPath[]   = new char[Shell32.MAX_PATH];
+			Shell32 instance = (Shell32) Native.loadLibrary("shell32", Shell32.class, options);
+			int hResult		 = instance.SHGetFolderPath(hwndOwner, nFolder, hToken, dwFlags, pszPath);
 			if (Shell32.S_OK == hResult) {
 
 				String path = new String(pszPath);
@@ -97,8 +92,6 @@ public class OSUtils {
 		@SuppressWarnings("unused")
 		public static final int SHGFP_TYPE_DEFAULT							  = 1;
 		public static final int S_OK										  = 0;
-		static Shell32 INSTANCE												  =
-			(Shell32) Native.loadLibrary("shell32", Shell32.class, OPTIONS);
 
 		/**
 		 * see http://msdn.microsoft.com/en-us/library/bb762181(VS.85).aspx

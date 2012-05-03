@@ -93,7 +93,7 @@ public final class ColumnWeightMemory {
 		/* store */
 		final String widthString = Joiner.on(",").join(this.colController.calculateWeights());
 
-		Runnable runnable		 =
+		Runnable runnable =
 			new LoggingRunnable() {
 				@Override
 				public void runChecked() {

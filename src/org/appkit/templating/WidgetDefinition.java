@@ -125,18 +125,19 @@ public final class WidgetDefinition {
 			/* 4. options = all other parameters (no name, children or type) */
 			Map<String, String> map = Maps.newHashMap();
 			for (final Entry<String, JsonElement> entry : jsonObject.entrySet()) {
-				Preconditions.checkState(
-					entry.getValue().isJsonPrimitive(),
-					"option %s is no json-primitive",
-					entry.getValue());
 
-				String key   = entry.getKey().toLowerCase();
-				String value = entry.getValue().getAsString().toLowerCase();
+				String key = entry.getKey().toLowerCase();
 
-				/* don't put name, children or type in options */
+				/* skip name, type and children */
 				if (key.equals("name") || key.equals("children") || key.equals("type")) {
 					continue;
 				}
+
+				String value = entry.getValue().getAsString().toLowerCase();
+				Preconditions.checkState(
+					entry.getValue().isJsonPrimitive(),
+					"option is no json primitive: '%s'",
+					entry.getValue());
 
 				if (! key.equals("options")) {
 					Preconditions.checkState(! map.containsKey(key), "option key '%s' specified more than once!", key);

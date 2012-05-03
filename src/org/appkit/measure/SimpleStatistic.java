@@ -38,7 +38,7 @@ public class SimpleStatistic implements Measurement.Listener {
 
 	public String getResults() {
 
-		StringBuilder sb  = new StringBuilder();
+		StringBuilder sb = new StringBuilder();
 
 		int maxNameLength =
 			Ordering.natural().max(
@@ -70,8 +70,8 @@ public class SimpleStatistic implements Measurement.Listener {
 							}
 						});
 
-			int count							 = 0;
-			double avg							 = 0;
+			int count  = 0;
+			double avg = 0;
 			for (final Long d : durations) {
 				if (count == 0) {
 					avg = d;
