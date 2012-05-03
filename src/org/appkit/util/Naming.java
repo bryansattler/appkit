@@ -3,13 +3,12 @@ package org.appkit.util;
 import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Multimap;
 import com.google.common.collect.Ordering;
 import com.google.common.collect.Sets;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -32,16 +31,14 @@ public final class Naming<E> {
 
 	//~ Instance fields ------------------------------------------------------------------------------------------------
 
-	private final Set<E> data								 = Sets.newHashSet();
-	private final StringQueryMatcher<?super E> stringMatcher;
-	private final ClassQueryMatcher<?super E> classMatcher;
+	private final Set<E> data						  = Sets.newHashSet();
+	private final QueryMatcher<?super E> queryMatcher;
 	private Map<Integer, ImmutableSet<?>> cache;
 
 	//~ Constructors ---------------------------------------------------------------------------------------------------
 
-	private Naming(final StringQueryMatcher<?super E> stringMatcher, final ClassQueryMatcher<?super E> classMatcher) {
-		this.stringMatcher									 = stringMatcher;
-		this.classMatcher									 = classMatcher;
+	private Naming(final QueryMatcher<?super E> queryMatcher) {
+		this.queryMatcher							  = queryMatcher;
 	}
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
@@ -51,42 +48,27 @@ public final class Naming<E> {
 
 		StringBuilder sb = new StringBuilder();
 		sb.append("Naming (" + (this.isSealed() ? "" : "NOT ") + "sealed)\n");
-		sb.append("   string matcher: ");
-		sb.append(this.stringMatcher.toString());
-		sb.append("\n   class matcher: ");
-		sb.append(this.classMatcher.toString());
+		sb.append("   querymatcher: ");
+		sb.append(this.queryMatcher.toString());
 		sb.append("\n\ndata (primary keys):\n");
 
-		List<E> listData				  = Lists.newArrayList(this.data);
-		Multimap<String, String> multimap = LinkedListMultimap.create();
-		for (int i = 0; i < listData.size(); i++) {
-
-			E o = listData.get(i);
-			multimap.put(this.stringMatcher.toStringPrimaryKey(o), this.classMatcher.toStringPrimaryKey(o));
+		List<String> keyList = Lists.newArrayList();
+		for (final E o : this.data) {
+			keyList.add(this.queryMatcher.toStringPrimaryKey(o));
 		}
-
-		for (final String name : Ordering.natural().sortedCopy(multimap.keys())) {
-			for (final String value : multimap.get(name)) {
-				sb.append("   ");
-				sb.append(name);
-				sb.append(": ");
-				sb.append(value);
-				sb.append("\n");
-			}
+		Collections.sort(keyList, Ordering.natural());
+		for (final String name : keyList) {
+			sb.append("   ");
+			sb.append(name);
+			sb.append("\n");
 		}
 
 		return sb.toString();
 	}
 
-	/** creates a new Naming, using a {@link QueryMatchers.AssignableClassMatcher} */
-	public static <E> Naming<E> create(final StringQueryMatcher<?super E> stringMatcher) {
-		return new Naming<E>(stringMatcher, QueryMatchers.ASSIGNABLE_CLASS);
-	}
-
 	/** creates a new Naming */
-	public static <E> Naming<E> create(final StringQueryMatcher<?super E> stringMatcher,
-									   final ClassQueryMatcher<?super E> classQueryMatcher) {
-		return new Naming<E>(stringMatcher, classQueryMatcher);
+	public static <E> Naming<E> create(final QueryMatcher<?super E> queryMatcher) {
+		return new Naming<E>(queryMatcher);
 	}
 
 	/**
@@ -143,15 +125,6 @@ public final class Naming<E> {
 	 *
 	 * @see #find(String, Class)
 	 */
-	public <T extends E> int count(final Class<T> clazz) {
-		return this.find(null, clazz).size();
-	}
-
-	/**
-	 * returns the count of matching objects
-	 *
-	 * @see #find(String, Class)
-	 */
 	public <T extends E> int count(final String str) {
 		return this.find(str, null).size();
 	}
@@ -161,17 +134,17 @@ public final class Naming<E> {
 	 *
 	 * @see #find(String, Class)
 	 */
-	public <T extends E> int count(final String str, final Class<T> clazz) {
-		return this.find(str, null).size();
+	public <T extends E> int count(final Class<T> clazz) {
+		return this.find(null, clazz).size();
 	}
 
 	/**
-	 * checks if a query returns exactly one match
+	 * returns the count of matching objects
 	 *
 	 * @see #find(String, Class)
 	 */
-	public <T extends E> boolean selectable(final Class<T> clazz) {
-		return this.find(null, clazz).size() == 1;
+	public <T extends E> int count(final String str, final Class<T> clazz) {
+		return this.find(str, clazz).size();
 	}
 
 	/**
@@ -188,8 +161,17 @@ public final class Naming<E> {
 	 *
 	 * @see #find(String, Class)
 	 */
+	public <T extends E> boolean selectable(final Class<T> clazz) {
+		return this.find(null, clazz).size() == 1;
+	}
+
+	/**
+	 * checks if a query returns exactly one match
+	 *
+	 * @see #find(String, Class)
+	 */
 	public <T extends E> boolean selectable(final String str, final Class<T> clazz) {
-		return this.find(str, null).size() == 1;
+		return this.find(str, clazz).size() == 1;
 	}
 
 	/**
@@ -233,15 +215,12 @@ public final class Naming<E> {
 	/**
 	 * returns all matching objects, cast to the given class
 	 *
-	 * @param str string-part of query, can be null, but not empty
+	 * @param str string-part of query, can be null
 	 * @param clazz class-part of query, can be null
 	 *
 	 */
 	@SuppressWarnings("unchecked")
 	public <T extends E> ImmutableSet<T> find(final String str, final Class<T> clazz) {
-		Preconditions.checkArgument(
-			(str == null) || ! str.isEmpty(),
-			"name-query should not be '', omit it entirely instead");
 
 		int hashCode = Objects.hashCode(str, clazz);
 
@@ -253,17 +232,7 @@ public final class Naming<E> {
 		/* find results */
 		ImmutableSet.Builder<T> builder = ImmutableSet.builder();
 		for (final E object : this.data) {
-
-			boolean match = true;
-			if ((clazz != null) && ! this.classMatcher.matches(object, clazz)) {
-				match = false;
-			}
-
-			if (match && (str != null) && ! this.stringMatcher.matches(object, str)) {
-				match = false;
-			}
-
-			if (match) {
+			if (this.queryMatcher.matches(object, str, clazz)) {
 				builder.add((T) object);
 			}
 		}
@@ -280,19 +249,9 @@ public final class Naming<E> {
 
 	//~ Inner Interfaces -----------------------------------------------------------------------------------------------
 
-	public interface StringQueryMatcher<E> {
+	public interface QueryMatcher<E> {
 		String toStringPrimaryKey(final E object);
 
-		boolean matches(final E object, final String str);
-
-		Set<String> precomputeMatches(final E object);
-	}
-
-	public interface ClassQueryMatcher<E> {
-		String toStringPrimaryKey(final E object);
-
-		boolean matches(final E object, final Class<?> clazz);
-
-		Set<Class<?>> precomputeMatches(final E object);
+		boolean matches(final E object, final String str, final Class<?extends E> clazz);
 	}
 }

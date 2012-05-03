@@ -10,11 +10,10 @@ import java.lang.reflect.InvocationTargetException;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.appkit.event.EventContext;
 import org.appkit.util.Naming;
-import org.appkit.util.Naming.StringQueryMatcher;
+import org.appkit.util.Naming.QueryMatcher;
 import org.appkit.widget.Options;
 
 import org.eclipse.swt.widgets.Composite;
@@ -59,7 +58,7 @@ public class Component {
 		Preconditions.checkArgument(definition.getFullName().equals(""), "don't give the top-composite a name");
 
 		this.defMap				  = Maps.newHashMap();
-		this.naming				  = Naming.create(new WidgetDefNameMatcher());
+		this.naming				  = Naming.create(new WidgetMatcher());
 
 		/* recursive initialization */
 		Control control = this.initRecursive(definition, parent, context, customCreators, types);
@@ -182,51 +181,56 @@ public class Component {
 
 	//~ Inner Classes --------------------------------------------------------------------------------------------------
 
-	private final class WidgetDefNameMatcher implements StringQueryMatcher<Control> {
+	private final class WidgetMatcher implements QueryMatcher<Control> {
 		@Override
 		public String toStringPrimaryKey(final Control c) {
 
 			WidgetDefinition def = defMap.get(c);
 
-			return def.getFullName() + "$" + def.getType();
+			return def.getFullName() + "$" + def.getType() + ": " + c;
 		}
 
 		@Override
-		public boolean matches(final Control c, final String str) {
+		public boolean matches(final Control c, final String str, final Class<?extends Control> clazz) {
 
-			String namePortion = null;
-			String typePortion = null;
-			if (str.contains("$")) {
+			boolean strMatch   = true;
+			boolean clazzMatch = true;
 
-				List<String> list = Lists.newArrayList(Splitter.on("$").split(str));
-				if (list.size() == 2) {
-					namePortion     = list.get(0).toLowerCase();
-					typePortion     = list.get(1).toLowerCase();
+			if (str != null) {
+
+				String namePortion = null;
+				String typePortion = null;
+				if (str.contains("$")) {
+
+					List<String> list = Lists.newArrayList(Splitter.on("$").split(str));
+					if (list.size() == 2) {
+						namePortion     = list.get(0).toLowerCase();
+						typePortion     = list.get(1).toLowerCase();
+					} else {
+						strMatch = false;
+					}
 				} else {
-					return false;
+					namePortion = str.toLowerCase();
 				}
-			} else {
-				namePortion = str.toLowerCase();
+
+				WidgetDefinition def = defMap.get(c);
+
+				/* compare type */
+				if ((typePortion != null) && ! typePortion.equals(def.getType())) {
+					strMatch = false;
+				}
+
+				/* compare name */
+				if (! def.getFullName().endsWith(namePortion) && ! def.getFullName().startsWith(namePortion)) {
+					strMatch = false;
+				}
 			}
 
-			WidgetDefinition def = defMap.get(c);
-
-			/* compare type */
-			if ((typePortion != null) && ! typePortion.equals(def.getType())) {
-				return false;
+			if (clazz != null) {
+				clazzMatch = clazz.isAssignableFrom(c.getClass());
 			}
 
-			/* compare name */
-			if (def.getFullName().endsWith(namePortion) || def.getFullName().startsWith(namePortion)) {
-				return true;
-			}
-
-			return false;
-		}
-
-		@Override
-		public Set<String> precomputeMatches(final Control c) {
-			return null;
+			return strMatch && clazzMatch;
 		}
 	}
 }
