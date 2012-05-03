@@ -83,7 +83,7 @@ public final class SashFormWeightMemory {
 			int weights[]			  = sashForm.getWeights();
 			final String weightString = Joiner.on(",").join(weights[0], weights[1]);
 
-			Runnable runnable		  =
+			Runnable runnable =
 				new LoggingRunnable() {
 					@Override
 					public void runChecked() {

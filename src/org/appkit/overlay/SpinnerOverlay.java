@@ -64,7 +64,7 @@ public final class SpinnerOverlay implements AnimatedOverlaySupplier {
 		if ((overlayWidth > SPINNER_SIDE) && (overlayWidth > SPINNER_SIDE)) {
 
 			/* draw the spinner and set it in the middle of the image */
-			GC gc			   = new GC(overlayImage);
+			GC gc = new GC(overlayImage);
 
 			Image spinnerImage = this.drawSpinner();
 			int x			   = rDiv(overlayWidth - spinnerImage.getBounds().width, 2);
@@ -141,9 +141,9 @@ public final class SpinnerOverlay implements AnimatedOverlaySupplier {
 
 		int adjustedStartAngle = startAngle - 90;
 
-		int diameter		   = Math.round(SPINNER_SIDE * (float) 0.6);
-		int x				   = rDiv(SPINNER_SIDE - diameter, 2);
-		int y				   = x;
+		int diameter = Math.round(SPINNER_SIDE * (float) 0.6);
+		int x		 = rDiv(SPINNER_SIDE - diameter, 2);
+		int y		 = x;
 		gc.fillArc(x, y, diameter, diameter, -adjustedStartAngle, -span);
 	}
 }

@@ -140,7 +140,7 @@ public final class Texts {
 
 		ResourceStreamSupplier supplier = new ResourceStreamSupplier();
 
-		List<String> files			    = Lists.newArrayList();
+		List<String> files = Lists.newArrayList();
 		if (customI18NFile != null) {
 			files.add("i18n/" + customI18NFile + "." + locale.getLanguage() + ".properties");
 		}

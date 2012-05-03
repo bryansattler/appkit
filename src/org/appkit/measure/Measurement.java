@@ -25,20 +25,20 @@ public final class Measurement {
 			}
 		};
 
-	private static Measurement.Listener listener							 = null;
+	private static Measurement.Listener listener = null;
 
 	//~ Instance fields ------------------------------------------------------------------------------------------------
 
 	private final String name;
-	private final Stopwatch watch = new Stopwatch();
+	private final Stopwatch watch				 = new Stopwatch();
 	private final long start;
 	private final Object data;
 
 	//~ Constructors ---------------------------------------------------------------------------------------------------
 
 	private Measurement(final String name, final Object data) {
-		this.start				  = System.currentTimeMillis();
-		this.name				  = name;
+		this.start								 = System.currentTimeMillis();
+		this.name								 = name;
 		this.watch.start();
 		this.data = data;
 	}

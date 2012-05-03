@@ -83,7 +83,7 @@ public class Component {
 
 		String type = definition.getType();
 
-		Control c   = null;
+		Control c = null;
 		if (customCreators.containsKey(type)) {
 			c = customCreators.get(type).initialize(context, parent, definition.getOptions());
 
