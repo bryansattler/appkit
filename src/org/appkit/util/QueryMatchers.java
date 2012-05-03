@@ -44,7 +44,7 @@ public final class QueryMatchers {
 		}
 	}
 
-	private static final class AssignableClassMatcher implements ClassQueryMatcher<Object> {
+	public static final class AssignableClassMatcher implements ClassQueryMatcher<Object> {
 		@Override
 		public final boolean matches(final Object object, final Class<?> queryClass) {
 			if (queryClass.isAssignableFrom(object.getClass())) {

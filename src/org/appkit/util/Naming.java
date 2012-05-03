@@ -50,6 +50,7 @@ public final class Naming<E> {
 	public String toString() {
 
 		StringBuilder sb = new StringBuilder();
+		sb.append("Naming (" + (this.isSealed() ? "" : "NOT") + " sealed)");
 		sb.append("string matcher: ");
 		sb.append(this.stringMatcher.toString());
 		sb.append("\nclass matcher: ");
@@ -77,7 +78,7 @@ public final class Naming<E> {
 		return sb.toString();
 	}
 
-	/** creates a new Naming */
+	/** creates a new Naming, using a {@link QueryMatchers.AssignableClassMatcher} */
 	public static <E> Naming<E> create(final StringQueryMatcher<?super E> stringMatcher) {
 		return new Naming<E>(stringMatcher, QueryMatchers.ASSIGNABLE_CLASS);
 	}
@@ -88,7 +89,8 @@ public final class Naming<E> {
 		return new Naming<E>(stringMatcher, classQueryMatcher);
 	}
 
-	/** seals the naming, so queries are allowed to be cached
+	/**
+	 * seals the naming, so queries are allowed to be cached
 	 *
 	 * @throws IllegalStateException if naming was already sealed
 	 */
@@ -102,10 +104,11 @@ public final class Naming<E> {
 		return (this.cache != null);
 	}
 
-	/** registers a new object with the given name
+	/**
+	 * registers a new object with the given name
 	 *
 	 * @throws IllegalStateException if naming was already sealed
-	 * @throws IllegalArgumentException if name or object is null
+	 * @throws IllegalArgumentException if object is null
 	 */
 	public void put(final E object) {
 		Preconditions.checkState(! this.isSealed(), "naming was already sealed");
@@ -118,6 +121,7 @@ public final class Naming<E> {
 	/**
 	 * returns the matching object
 	 *
+	 * @see #select(String, Class)
 	 * @throws IllegalStateException if not exactly 1 was found
 	 */
 	public <C extends E> C select(final String str) {
@@ -125,24 +129,94 @@ public final class Naming<E> {
 	}
 
 	/**
-	 * returns the matching object, cast to the given class
+	 * returns the matching object
 	 *
+	 * @see #select(String, Class)
 	 * @throws IllegalStateException if not exactly 1 was found
-	 *
 	 */
 	public <T extends E> T select(final Class<T> clazz) {
 		return this.select(null, clazz);
 	}
 
 	/**
-	 * returns the matching object, cast to the given class
+	 * returns the count of matching objects
 	 *
+	 * @see #find(String, Class)
+	 */
+	public <T extends E> int count(final Class<T> clazz) {
+		return this.find(null, clazz).size();
+	}
+
+	/**
+	 * returns the count of matching objects
+	 *
+	 * @see #find(String, Class)
+	 */
+	public <T extends E> int count(final String str) {
+		return this.find(str, null).size();
+	}
+
+	/**
+	 * returns the count of matching objects
+	 *
+	 * @see #find(String, Class)
+	 */
+	public <T extends E> int count(final String str, final Class<T> clazz) {
+		return this.find(str, null).size();
+	}
+
+	/**
+	 * checks if a query returns exactly one match
+	 *
+	 * @see #find(String, Class)
+	 */
+	public <T extends E> boolean selectable(final Class<T> clazz) {
+		return this.find(null, clazz).size() > 0;
+	}
+
+	/**
+	 * checks if a query returns exactly one match
+	 *
+	 * @see #find(String, Class)
+	 */
+	public boolean selectable(final String str) {
+		return this.find(str, null).size() > 0;
+	}
+
+	/**
+	 * checks if a query returns exactly one match
+	 *
+	 * @see #find(String, Class)
+	 */
+	public <T extends E> boolean selectable(final String str, final Class<T> clazz) {
+		return this.find(str, null).size() > 0;
+	}
+
+	/**
+	 * returns all matching objects
+	 *
+	 * @see #find(String, Class)
+	 */
+	public <T extends E> ImmutableSet<T> find(final String str) {
+		return this.find(str, null);
+	}
+
+	/**
+	 * returns all matching objects
+	 *
+	 * @see #find(String, Class)
+	 */
+	public <T extends E> ImmutableSet<T> find(final Class<T> clazz) {
+		return this.find(null, clazz);
+	}
+
+	/**
+	 * returns the matching object
+	 *
+	 * @see #find(String, Class)
 	 * @throws IllegalStateException if not exactly 1 was found
 	 */
 	public <T extends E> T select(final String str, final Class<T> clazz) {
-		Preconditions.checkArgument(
-			(str == null) || ! str.isEmpty(),
-			"name-query should not be '', omit it entirely instead");
 
 		ImmutableSet<T> results = this.find(str, clazz);
 
@@ -156,34 +230,18 @@ public final class Naming<E> {
 		return results.iterator().next();
 	}
 
-	/** returns the count of matching objects */
-	public <T extends E> int count(final Class<T> clazz) {
-		return this.find(null, clazz).size();
-	}
-
-	/** returns the count of matching objects */
-	public <T extends E> int count(final String str) {
-		return this.find(str, null).size();
-	}
-
-	/** returns the count of matching objects */
-	public <T extends E> int count(final String str, final Class<T> clazz) {
-		return this.find(str, null).size();
-	}
-
-	/** returns all matching objects */
-	public <T extends E> ImmutableSet<T> find(final String str) {
-		return this.find(str, null);
-	}
-
-	/** returns all matching objects, cast to the given class */
-	public <T extends E> ImmutableSet<T> find(final Class<T> clazz) {
-		return this.find(null, clazz);
-	}
-
-	/** returns all matching objects, cast to the given class */
+	/**
+	 * returns all matching objects, cast to the given class
+	 *
+	 * @param str string-part of query, can be null, but not empty
+	 * @param clazz class-part of query, can be null
+	 *
+	 */
 	@SuppressWarnings("unchecked")
 	public <T extends E> ImmutableSet<T> find(final String str, final Class<T> clazz) {
+		Preconditions.checkArgument(
+			(str == null) || ! str.isEmpty(),
+			"name-query should not be '', omit it entirely instead");
 
 		int hashCode = Objects.hashCode(str, clazz);
 
