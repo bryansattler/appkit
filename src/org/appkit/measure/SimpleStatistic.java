@@ -7,9 +7,9 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Ordering;
 
+import java.text.DecimalFormat;
 import java.util.Collection;
 import java.util.Collections;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,7 +23,8 @@ public class SimpleStatistic implements Measurement.Listener {
 
 	@SuppressWarnings("unused")
 	private static final Logger L							 = LoggerFactory.getLogger(SimpleStatistic.class);
-	private static final int COLSIZE						 = 10;
+	private static final int COLSIZE						 = 12;
+	private static final DecimalFormat decFormat			 = new DecimalFormat("0");
 
 	//~ Instance fields ------------------------------------------------------------------------------------------------
 
@@ -39,7 +40,6 @@ public class SimpleStatistic implements Measurement.Listener {
 	public String getResults() {
 
 		StringBuilder sb = new StringBuilder();
-
 		int maxNameLength =
 			Ordering.natural().max(
 				Collections2.transform(
@@ -51,13 +51,17 @@ public class SimpleStatistic implements Measurement.Listener {
 							}
 						}));
 
-		sb.append(Strings.padStart("count", maxNameLength + 5, ' '));
+		int col1size = maxNameLength + 3;
+
+		sb.append(Strings.padStart("", col1size, ' '));
+		sb.append(Strings.padStart("count", COLSIZE, ' '));
 		sb.append(Strings.padStart("min", COLSIZE, ' '));
 		sb.append(Strings.padStart("avg", COLSIZE, ' '));
 		sb.append(Strings.padStart("max", COLSIZE, ' '));
+		sb.append("\n");
 
-		for (final String name : Ordering.natural().sortedCopy(this.data.keys())) {
-			sb.append(Strings.padEnd(name + ":", maxNameLength + 5, ' '));
+		for (final String name : Ordering.natural().sortedCopy(this.data.keySet())) {
+			sb.append(Strings.padEnd(name + ":", col1size, ' '));
 
 			Collection<MeasureData> measurements = this.data.get(name);
 			Collection<Long> durations			 =
@@ -76,14 +80,15 @@ public class SimpleStatistic implements Measurement.Listener {
 				if (count == 0) {
 					avg = d;
 				} else {
-					avg = ((avg * count) + d) / (count - 1);
+					avg = ((avg * count) + d) / (count + 1);
 				}
-
 				count++;
+
 			}
-			sb.append(Strings.padStart(Long.toString(Collections.min(durations)), COLSIZE, ' '));
-			sb.append(Strings.padStart(Double.toString(avg), COLSIZE, ' '));
-			sb.append(Strings.padStart(Long.toString(Collections.max(durations)), COLSIZE, ' '));
+			sb.append(Strings.padStart(Integer.toString(count), COLSIZE, ' '));
+			sb.append(Strings.padStart(decFormat.format(Collections.min(durations)), COLSIZE, ' '));
+			sb.append(Strings.padStart(decFormat.format(avg), COLSIZE, ' '));
+			sb.append(Strings.padStart(decFormat.format(Collections.max(durations)), COLSIZE, ' '));
 			sb.append("\n");
 		}
 
