@@ -62,7 +62,7 @@ public final class Measurement {
 	 * @param name name of the measurement
 	 */
 	public static void start(final boolean doIt, final String name) {
-		start(doIt, null, name);
+		start(doIt, name, null);
 	}
 
 	/**
