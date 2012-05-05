@@ -77,6 +77,10 @@ public final class Measurement {
 			return;
 		}
 
+		if (listener != null) {
+			listener.notifyStart();
+		}
+
 		runningMeasurements.get().add(new Measurement(name, data));
 	}
 
@@ -92,7 +96,7 @@ public final class Measurement {
 
 		MeasureData md = rM.poll().stopMeasurement();
 		if (listener != null) {
-			listener.notify(md);
+			listener.notifyData(md);
 		}
 
 		return md;
@@ -109,9 +113,15 @@ public final class Measurement {
 	public static interface Listener {
 
 		/**
+		 * Notifies this Listener that a Measurement has been started. Use this to keep track
+		 * of hierarchical Measurements.
+		 */
+		void notifyStart();
+
+		/**
 		 * Notifies this Listener of new MeasureData. If Measurements occur over multiple threads, this
 		 * needs to be made thread-safe.
 		 */
-		void notify(final MeasureData data);
+		void notifyData(final MeasureData data);
 	}
 }
