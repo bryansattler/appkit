@@ -1,5 +1,6 @@
 package org.appkit.measure;
 
+import com.google.common.base.Preconditions;
 import com.google.common.base.Stopwatch;
 import com.google.common.collect.Lists;
 
@@ -62,7 +63,7 @@ public final class Measurement {
 	 * @param name name of the measurement
 	 */
 	public static void start(final boolean doIt, final String name) {
-		start(doIt, null, name);
+		start(doIt, name, null);
 	}
 
 	/**
@@ -87,9 +88,7 @@ public final class Measurement {
 	public static MeasureData stop() {
 
 		Queue<Measurement> rM = runningMeasurements.get();
-		if (rM.isEmpty()) {
-			return null;
-		}
+		Preconditions.checkState(!rM.isEmpty(), "no measurment running!");
 
 		MeasureData md = rM.poll().stopMeasurement();
 		if (listener != null) {
