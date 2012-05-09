@@ -58,7 +58,7 @@ public final class Measurement {
 	public void start() {
 		Preconditions.checkState(this.watch == null, "Measurement has been started already");
 		this.watch     = new Stopwatch();
-		this.start     = System.currentTimeMillis();
+		this.start     = System.nanoTime();
 		this.watch.start();
 	}
 
@@ -113,7 +113,9 @@ public final class Measurement {
 	 * @return the finished measurement
 	 */
 	public static synchronized Measurement stop() {
-		Preconditions.checkState(! runningMeasurements.isEmpty(), "no measurement running!");
+		if (runningMeasurements.isEmpty()) {
+			return null;
+		}
 
 		Measurement md = runningMeasurements.removeFirst();
 		md.end();
