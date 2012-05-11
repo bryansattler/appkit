@@ -53,13 +53,13 @@ public abstract class CallTimeLogger implements Measurement.Listener {
 							}
 						});
 
-			Iterable<String> namesByDuration			 =
+			Iterable<String> namesByDuration =
 				Ordering.natural().onResultOf(
 					new Function<String, Long>() {
 							@Override
 							public Long apply(final String name) {
 
-								long dur = 0;
+								long dur     = 0;
 								for (final Measurement md : combined.get(name)) {
 									dur = dur + md.getDuration();
 								}

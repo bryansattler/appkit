@@ -40,7 +40,7 @@ public final class SmartExecutor implements Executor {
 
 	private SmartExecutor(final ExecutorService executorService) {
 		if (executorService != null) {
-			this.executorService			   = null;
+			this.executorService			   = executorService;
 			this.executorCreatedInternally     = false;
 		} else {
 			this.executorService			   = Executors.newCachedThreadPool();
@@ -59,6 +59,11 @@ public final class SmartExecutor implements Executor {
 	/** Creates a new instance using the given executor-service */
 	public static SmartExecutor startUsing(final ExecutorService executorService) {
 		return new SmartExecutor(executorService);
+	}
+
+	/** returns the executorService */
+	public ExecutorService getExecutorService() {
+		return this.executorService;
 	}
 
 	/** Shut the executor down

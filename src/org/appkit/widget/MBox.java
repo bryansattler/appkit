@@ -77,7 +77,7 @@ public final class MBox {
 		this.answer		 = DISPOSEANSWER_INT;
 
 		/* create a shell */
-		this.shell		 = new Shell(parentShell, SWT.PRIMARY_MODAL  | SWT.DIALOG_TRIM | SWT.SHEET);
+		this.shell		 = new Shell(parentShell, SWT.PRIMARY_MODAL | SWT.DIALOG_TRIM | SWT.SHEET);
 		this.shell.setLayout(new GridLayout(2, false));
 
 		/* icon */
