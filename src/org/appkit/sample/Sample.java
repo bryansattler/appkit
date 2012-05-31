@@ -38,9 +38,9 @@ public final class Sample {
 
 	//~ Instance fields ------------------------------------------------------------------------------------------------
 
-	private Shell shell;
-	private Composite compOrders;
-	private SmartExecutor executor;
+	private final Shell shell;
+	private final Composite compOrders;
+	private final SmartExecutor executor;
 	private Overlay overlay;
 
 	//~ Constructors ---------------------------------------------------------------------------------------------------
@@ -93,12 +93,9 @@ public final class Sample {
 		/* divide table equally among columns */
 		TableUtils.fillTableWidth(t);
 
-		/* restore and save column-weights and order */
-		TableUtils.rememberColumnWeights(prefStore, executor, t, "sample");
+		/* restore and save column-sizes and order */
+		TableUtils.rememberColumnSizes(prefStore, executor, t, "sample");
 		TableUtils.rememberColumnOrder(prefStore, executor, t, "sample");
-
-		/* resize columns proportionally if table is resized */
-		TableUtils.autosizeColumns(t);
 
 		/* install a ScrollDetector */
 		TableUtils.installScrollListener(

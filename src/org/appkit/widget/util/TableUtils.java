@@ -26,15 +26,15 @@ public final class TableUtils {
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
 	/**
-	 * restores column-weights, tracks and saves changes.
+	 * restores column-sizes, tracks and saves changes.
 	 *
-	 * @param prefStore the prefStore used to load and save weights
+	 * @param prefStore the prefStore used to load and save sizes
 	 * @param executor used to create a {@link Throttle} to the save function
 	 * @param memoryKey prefStore key to use
 	 */
-	public static void rememberColumnWeights(final PrefStore prefStore, final SmartExecutor executor,
-											 final Table table, final String memoryKey) {
-		new ColumnWeightMemory(new ColumnController.TableColumnController(table), prefStore, executor, memoryKey);
+	public static void rememberColumnSizes(final PrefStore prefStore, final SmartExecutor executor, final Table table,
+										   final String memoryKey) {
+		new ColumnSizeMemory(new ColumnController.TableColumnController(table), prefStore, executor, memoryKey);
 	}
 
 	/**
@@ -47,14 +47,6 @@ public final class TableUtils {
 	public static void rememberColumnOrder(final PrefStore prefStore, final SmartExecutor executor, final Table table,
 										   final String memoryKey) {
 		new ColumnOrderMemory(new ColumnController.TableColumnController(table), prefStore, executor, memoryKey);
-	}
-
-	/**
-	 * installs a listener that proportionally resizes all columns when the table is resized.
-	 *
-	 */
-	public static void autosizeColumns(final Table table) {
-		new ColumnAutoSizer(new ColumnController.TableColumnController(table));
 	}
 
 	/**

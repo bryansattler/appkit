@@ -20,11 +20,11 @@ import org.eclipse.swt.widgets.Display;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public final class ColumnWeightMemory {
+public final class ColumnSizeMemory {
 
 	//~ Static fields/initializers -------------------------------------------------------------------------------------
 
-	private static final Logger L		   = LoggerFactory.getLogger(ColumnWeightMemory.class);
+	private static final Logger L		   = LoggerFactory.getLogger(ColumnSizeMemory.class);
 	private static final int THROTTLE_TIME = 100;
 
 	//~ Instance fields ------------------------------------------------------------------------------------------------
@@ -36,19 +36,19 @@ public final class ColumnWeightMemory {
 
 	//~ Constructors ---------------------------------------------------------------------------------------------------
 
-	protected ColumnWeightMemory(final ColumnController colController, final PrefStore prefStore,
-								 final SmartExecutor executor, final String key) {
+	protected ColumnSizeMemory(final ColumnController colController, final PrefStore prefStore,
+							   final SmartExecutor executor, final String key) {
 		this.prefStore		   = prefStore;
 		this.throttle		   = executor.createThrottle(THROTTLE_TIME, TimeUnit.MILLISECONDS);
 		this.colController     = colController;
-		this.memoryKey		   = key + ".columnweights";
+		this.memoryKey		   = key + ".columnsizes";
 
 		/* add initial listener for initial size-setting */
 		colController.getControl().addControlListener(
 			new ControlListener() {
 					@Override
 					public void controlResized(final ControlEvent event) {
-						loadWidths();
+						loadSizes();
 						colController.getControl().removeControlListener(this);
 					}
 
@@ -64,34 +64,42 @@ public final class ColumnWeightMemory {
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
-	private void loadWidths() {
+	private void loadSizes() {
 
 		/* load the stored info */
-		String weightString = this.prefStore.get(this.memoryKey, "");
-		L.debug("loading weights: '{}'", weightString);
+		String sizeString = this.prefStore.get(this.memoryKey, "");
+		L.debug("loading sizes: '{}'", sizeString);
 
-		List<String> weightStrings = Lists.newArrayList(Splitter.on(",").split(weightString));
-		if (weightStrings.size() == colController.getColumnCount()) {
+		List<String> sizeStrings = Lists.newArrayList(Splitter.on(",").split(sizeString));
+		if (sizeStrings.size() != colController.getColumnCount()) {
+			return;
+		}
 
-			List<Integer> weights = Lists.newArrayList();
-
-			for (int i = 0; i < weightStrings.size(); i++) {
-				try {
-					weights.add(Integer.valueOf(weightStrings.get(i)));
-				} catch (final NumberFormatException e) {
-					L.debug("no weight: '{}'", weightStrings.get(i));
-					return;
-				}
+		List<Integer> sizes = Lists.newArrayList();
+		for (int i = 0; i < sizeStrings.size(); i++) {
+			try {
+				sizes.add(Integer.valueOf(sizeStrings.get(i)));
+			} catch (final NumberFormatException e) {
+				L.debug("no size: '{}'", sizeStrings.get(i));
+				return;
 			}
+		}
 
-			this.colController.setWeights(weights);
+		for (int i = 0; i < sizes.size(); i++) {
+			L.debug("column {}: setting width to {}", i, sizes.get(i));
+			this.colController.setWidth(i, sizes.get(i));
 		}
 	}
 
 	private void saveWeights() {
 
+		List<Integer> sizes = Lists.newArrayList();
+		for (int i = 0; i < this.colController.getColumnCount(); i++) {
+			sizes.add(this.colController.getWidth(i));
+		}
+
 		/* store */
-		final String widthString = Joiner.on(",").join(this.colController.calculateWeights());
+		final String widthString = Joiner.on(",").join(sizes);
 
 		Runnable runnable =
 			new LoggingRunnable() {
