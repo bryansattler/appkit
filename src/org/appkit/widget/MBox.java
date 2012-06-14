@@ -9,6 +9,8 @@ import com.google.common.collect.Iterables;
 import java.util.Arrays;
 import java.util.List;
 
+import org.appkit.widget.util.SWTUtils;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
@@ -17,7 +19,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.TraverseEvent;
 import org.eclipse.swt.events.TraverseListener;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -168,11 +170,9 @@ public final class MBox {
 		}
 
 		/* Position in the middle of of parent shell */
-		Rectangle parentBounds = this.shell.getParent().getBounds();
-		Rectangle shellBounds  = shell.getBounds();
-		int x				   = parentBounds.x + ((parentBounds.width - shellBounds.width) / 2);
-		int y				   = parentBounds.y + ((parentBounds.height - shellBounds.height) / 2);
-		this.shell.setLocation(x, y);
+		Point centerPos = SWTUtils.getCenterPosition(this.shell, this.shell.getParent());
+		this.shell.setLocation(centerPos);
+		this.shell.setLocation(SWTUtils.moveOntoDisplay(this.shell));
 	}
 
 	//~ Methods --------------------------------------------------------------------------------------------------------

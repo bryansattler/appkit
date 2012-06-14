@@ -4,8 +4,6 @@ import org.appkit.preferences.PrefStore;
 import org.appkit.util.SmartExecutor;
 import org.appkit.util.Throttle;
 
-import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Shell;
 
 /**
@@ -15,18 +13,6 @@ import org.eclipse.swt.widgets.Shell;
 public final class ShellUtils {
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
-
-	/** returns the Point a shell need to be located at to be in the center of the screen */
-	public static Point getCenterPosition(final Shell shell) {
-
-		/* Position in the middle of screen (and a little up) */
-		Rectangle monitorBounds = shell.getDisplay().getPrimaryMonitor().getBounds();
-		Rectangle shellBounds   = shell.getBounds();
-		int x				    = monitorBounds.x + ((monitorBounds.width - shellBounds.width) / 2);
-		int y				    = (monitorBounds.y + ((monitorBounds.height - shellBounds.height) / 2)) - 150;
-
-		return new Point(x, y);
-	}
 
 	/**
 	 * restores the size and position of a shell, tracks and saves changes
