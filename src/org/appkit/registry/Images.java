@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.appkit.util.ParamSupplier;
 import org.appkit.util.ResourceStreamSupplier;
@@ -25,6 +26,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Widget;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,7 +35,7 @@ import org.slf4j.LoggerFactory;
  * <br />
  * Creates, assigns and caches {@link Image}s. Images can be set on a {@link Button}s, {@link Label}s, {@link Shell}s or
  * an {@link Control} for which an {@link ImageInterface} is added.
- * Use of an image is deregistered when the control is disposed, if a different Images is set via this registry
+ * Use of an image is deregistered when the widget is disposed, if a different Images is set via this registry
  * or manually via the {@link #putBack(Control)} method.
  * <br />
  * This uses a simple counter to keep of track of usage. If it drops to 0, the image
@@ -52,10 +54,10 @@ public final class Images {
 	private static final Multiset<Image> usage			  = HashMultiset.create();
 
 	/* currently installed disposeListeners */
-	private static final Map<Control, DisposeListener> disposeListeners = Maps.newHashMap();
+	private static final Map<Widget, DisposeListener> disposeListeners = Maps.newHashMap();
 
 	/* setters for images */
-	private static final Map<Class<?>, ImageInterface> setters = Maps.newHashMap();
+	private static final Map<Class<?extends Widget>, ImageInterface> setters = Maps.newHashMap();
 
 	static {
 		Preconditions.checkArgument(Display.getCurrent() != null, "can't instantiate Images on a non-display thread");
@@ -70,46 +72,56 @@ public final class Images {
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
+	private static ImageInterface getSetter(final Widget widget) {
+		for (final Entry<Class<?extends Widget>, ImageInterface> entry : setters.entrySet()) {
+			if (entry.getKey().isAssignableFrom(widget.getClass())) {
+				return entry.getValue();
+			}
+		}
+
+		return null;
+	}
+
 	/**
 	 * Tells Images how to set an Image on a certain type.
 	 */
-	public static <E extends Object> void addImageSetter(final Class<E> clazz, final ImageInterface setter) {
+	public static <E extends Widget> void addImageSetter(final Class<E> clazz, final ImageInterface setter) {
 		setters.put(clazz, setter);
 	}
 
 	/**
-	 * Sets an image on the control. The InputStream for loading the image
+	 * Sets an image on the widget. The InputStream for loading the image
 	 * is retrieved by passing the key received from the
 	 * <code>keySupplier</code> into a {@link ResourceStreamSupplier}.
 	 *
 	 * @throws IllegalStateException if called from a non-Display thread
 	 * @throws IllegalArgumentException if image couldn't be set
 	 */
-	public static void set(final Control control, final Supplier<String> keySupplier) {
-		set(control, keySupplier, ResourceStreamSupplier.create());
+	public static void set(final Widget widget, final Supplier<String> keySupplier) {
+		set(widget, keySupplier, ResourceStreamSupplier.create());
 	}
 
 	/**
-	 * Sets an image on the control. The InputStream for loading the image
+	 * Sets an image on the widget. The InputStream for loading the image
 	 * is retrieved by passing the key received from the
 	 * <code>keySupplier</code> into the <code>dataSupplier</code>.
 	 *
 	 * @throws IllegalStateException if called from a non-Display thread
 	 * @throws IllegalArgumentException if image couldn't be set
 	 */
-	public static <E> void set(final Control control, final Supplier<E> keySupplier,
+	public static <E> void set(final Widget widget, final Supplier<E> keySupplier,
 							   final ParamSupplier<E, InputStream> streamSupplier) {
 		Preconditions.checkState(
 			Display.getCurrent() != null,
 			"Images is to be used from the display-thread exclusively!");
 		Preconditions.checkArgument(
-			setters.containsKey(control.getClass()),
+			getSetter(widget) != null,
 			"don't know how to set image on {}, add an ImageInterface first",
-			control);
+			widget);
 
-		/* if we already set an image on this control, remove it */
-		if (disposeListeners.containsKey(control)) {
-			putBack(control);
+		/* if we already set an image on this widget, remove it */
+		if (disposeListeners.containsKey(widget)) {
+			putBack(widget);
 		}
 
 		/* get image out of cache or load it */
@@ -117,7 +129,7 @@ public final class Images {
 		int hash		  = Objects.hashCode(key);
 		final Image image;
 
-		L.debug("setting image {} on {}", key, control);
+		L.debug("setting image {} on {}", key, widget);
 		if (imageCache.containsKey(hash)) {
 			image		  = imageCache.get(hash);
 
@@ -145,41 +157,32 @@ public final class Images {
 		L.debug("usage of {} now {}", image, usage.count(image));
 
 		/* set image */
-		setters.get(control.getClass()).setImage(control, image);
+		setters.get(widget.getClass()).setImage(widget, image);
 
 		/* and add the disposer */
 		DisposeListener listener = new ImageDisposeListener();
-		disposeListeners.put(control, listener);
-		control.addDisposeListener(listener);
+		disposeListeners.put(widget, listener);
+		widget.addDisposeListener(listener);
 	}
 
 	/**
-	 * Manually deregisters use of an image of a control
+	 * Manually deregisters use of an image of a widget
 	 *
 	 * @throws IllegalStateException if called from a non-Display thread
-	 * @throws IllegalStateException if control isn't registered
+	 * @throws IllegalStateException if widget isn't registered
 	 */
-	public static void putBack(final Control control) {
+	public static void putBack(final Widget widget) {
 		/* check for UI-thread */
 		Preconditions.checkState(
 			Display.getCurrent() != null,
 			"Images is to be used from the display-thread exclusively!");
-		Preconditions.checkState(disposeListeners.containsKey(control), "control {} not registered", control);
+		Preconditions.checkState(disposeListeners.containsKey(widget), "widget {} not registered", widget);
 
-		/* remove control out of registry and remove listener */
-		control.removeDisposeListener(disposeListeners.remove(control));
+		/* remove widget out of registry and remove listener */
+		widget.removeDisposeListener(disposeListeners.remove(widget));
 
 		/* get the image */
-		Image image = null;
-		if (control instanceof Label) {
-			image = ((Label) control).getImage();
-		} else if (control instanceof Button) {
-			image = ((Button) control).getImage();
-		} else if (control instanceof Shell) {
-			image = ((Shell) control).getImage();
-		} else {
-			Preconditions.checkState(false);
-		}
+		Image image = getSetter(widget).getImage(widget);
 
 		/* decrease usage-counter */
 		usage.setCount(image, usage.count(image) - 1);
@@ -196,13 +199,13 @@ public final class Images {
 	//~ Inner Interfaces -----------------------------------------------------------------------------------------------
 
 	/**
-	 * Implement this to enable the use of Images for a custom-control.
+	 * Implement this to enable the use of Images for a custom-widget.
 	 *
 	 */
 	public static interface ImageInterface {
-		void setImage(final Control control, final Image image);
+		void setImage(final Widget widget, final Image image);
 
-		Image getImage(final Control control);
+		Image getImage(final Widget widget);
 	}
 
 	//~ Inner Classes --------------------------------------------------------------------------------------------------
@@ -210,42 +213,42 @@ public final class Images {
 	private static final class ImageDisposeListener implements DisposeListener {
 		@Override
 		public void widgetDisposed(final DisposeEvent event) {
-			putBack((Control) event.widget);
+			putBack(event.widget);
 		}
 	}
 
 	private static final class LabelImageInterface implements ImageInterface {
 		@Override
-		public void setImage(final Control o, final Image image) {
+		public void setImage(final Widget o, final Image image) {
 			((Label) o).setImage(image);
 		}
 
 		@Override
-		public Image getImage(final Control o) {
+		public Image getImage(final Widget o) {
 			return ((Label) o).getImage();
 		}
 	}
 
 	private static final class ButtonImageInterface implements ImageInterface {
 		@Override
-		public void setImage(final Control o, final Image image) {
+		public void setImage(final Widget o, final Image image) {
 			((Button) o).setImage(image);
 		}
 
 		@Override
-		public Image getImage(final Control o) {
+		public Image getImage(final Widget o) {
 			return ((Button) o).getImage();
 		}
 	}
 
 	private static final class ShellImageInterface implements ImageInterface {
 		@Override
-		public void setImage(final Control o, final Image image) {
+		public void setImage(final Widget o, final Image image) {
 			((Shell) o).setImage(image);
 		}
 
 		@Override
-		public Image getImage(final Control o) {
+		public Image getImage(final Widget o) {
 			return ((Shell) o).getImage();
 		}
 	}
