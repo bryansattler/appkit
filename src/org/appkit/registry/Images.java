@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
  * Creates, assigns and caches {@link Image}s. Images can be set on a {@link Button}s, {@link Label}s, {@link Shell}s or
  * an {@link Control} for which an {@link ImageInterface} is added.
  * Use of an image is deregistered when the widget is disposed, if a different Images is set via this registry
- * or manually via the {@link #putBack(Control)} method.
+ * or manually via the {@link #putBack(Widget)} method.
  * <br />
  * This uses a simple counter to keep of track of usage. If it drops to 0, the image
  * is disposed.

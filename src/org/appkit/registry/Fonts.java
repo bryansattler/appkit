@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
  * <br />
  * Creates, assigns and caches {@link Font}s. Fonts can be set on a {@link Control}.
  * Use of the font is deregistered when the widget is disposed, when a different Font is set via this registry
- * or manually via the {{@link #putBack(Control)}-method.
+ * or manually via the {{@link #putBack(Widget)}-method.
  * <br />
  * This uses a simple counter to keep of track of usage. If it drops to 0, the font
  * is disposed.
