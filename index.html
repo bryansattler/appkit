@@ -106,7 +106,7 @@ which you might find useful.</p>
 <br />
 
 
-<h3>Templating</h3>
+<h3>Templating (changes and more code-samples to be expected)</h3>
 
 <p>Use json-files to create interfaces: <a href="http://fab1an.github.com/appkit/orderview.json">orderview.json</a><br>
 <br />
@@ -147,7 +147,7 @@ which you might find useful.</p>
 <br />
 <h3>Event Handling</h3>
 
-<p>Write less cluttered event-handling code using Guava's EventBus.</p>
+<p>Write less cluttered event-handling code using Guava's EventBus. (changes and more code-samples to be expected)</p>
 
 <div class="highlight">
 <pre><span class="kd">public</span> <span class="nf">Sample</span><span class="o">()</span> <span class="o">{</span>
@@ -177,10 +177,10 @@ which you might find useful.</p>
 <p>Automatic assigning, caching, disposing of Colors, Fonts and Images. Most of the time you won't need more than a one-liner.</p>
 
 <div class="highlight">
-<pre><span class="n">Button</span> <span class="n">btn</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Button</span><span class="o">(</span><span class="n">parent</span><span class="o">,</span> <span class="n">SWT</span><span class="o">.</span><span class="na">PUSH</span><span class="o">);</span>
-<span class="n">Fonts</span><span class="o">.</span><span class="na">set</span><span class="o">(</span><span class="n">btn</span><span class="o">,</span> <span class="n">Fonts</span><span class="o">.</span><span class="na">BOLD</span><span class="o">);</span>
+<pre><span class="n">Button</span> <span class="n">button</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Button</span><span class="o">(</span><span class="n">parent</span><span class="o">,</span> <span class="n">SWT</span><span class="o">.</span><span class="na">PUSH</span><span class="o">);</span>
+<span class="n">Fonts</span><span class="o">.</span><span class="na">set</span><span class="o">(</span><span class="n">button</span><span class="o">,</span> <span class="n">Fonts</span><span class="o">.</span><span class="na">BOLD</span><span class="o">);</span>
 <span class="n">Colors</span><span class="o">.</span><span class="na">setForeground</span><span class="o">(</span><span class="n">btn</span><span class="o">,</span> <span class="mi">140</span><span class="o">,</span> <span class="mi">120</span><span class="o">,</span> <span class="mi">100</span><span class="o">);</span> <span class="c1">// RGB</span>
-<span class="n">Images</span><span class="o">.</span><span class="na">set</span><span class="o">(</span><span class="n">btn</span><span class="o">,</span> <span class="n">Imgs</span><span class="o">.</span><span class="na">LOGO</span><span class="o">);</span> <span class="c1">// Imgs is an enum providing filenames</span>
+<span class="n">Images</span><span class="o">.</span><span class="na">set</span><span class="o">(</span><span class="n">button</span><span class="o">,</span> <span class="n">Imgs</span><span class="o">.</span><span class="na">LOGO</span><span class="o">);</span> <span class="c1">// Imgs is an enum providing filenames</span>
 </pre>
 </div>
 
@@ -228,11 +228,8 @@ which you might find useful.</p>
 <span class="n">TableUtils</span><span class="o">.</span><span class="na">fillTableWidth</span><span class="o">(</span><span class="n">table</span><span class="o">);</span>
 
 <span class="cm">/* restore and save column-weights and order */</span>
-<span class="n">TableUtils</span><span class="o">.</span><span class="na">rememberColumnWeights</span><span class="o">(</span><span class="n">prefStore</span><span class="o">,</span> <span class="n">executor</span><span class="o">,</span> <span class="n">table</span><span class="o">,</span> <span class="s">"MyTable"</span><span class="o">);</span>
+<span class="n">TableUtils</span><span class="o">.</span><span class="na">rememberColumnSizes</span><span class="o">(</span><span class="n">prefStore</span><span class="o">,</span> <span class="n">executor</span><span class="o">,</span> <span class="n">table</span><span class="o">,</span> <span class="s">"MyTable"</span><span class="o">);</span>
 <span class="n">TableUtils</span><span class="o">.</span><span class="na">rememberColumnOrder</span><span class="o">(</span><span class="n">prefStore</span><span class="o">,</span> <span class="n">executor</span><span class="o">,</span> <span class="n">table</span><span class="o">,</span> <span class="s">"MyTable"</span><span class="o">);</span>
-
-<span class="cm">/* resize columns proportionally if table was resized */</span>
-<span class="n">TableUtils</span><span class="o">.</span><span class="na">autosizeColumns</span><span class="o">(</span><span class="n">table</span><span class="o">);</span>
 
 <span class="cm">/* save and restore shell size, position and maximised state */</span>
 <span class="n">ShellUtils</span><span class="o">.</span><span class="na">rememberSizeAndPosition</span><span class="o">(</span><span class="n">prefStore</span><span class="o">,</span> <span class="n">executor</span><span class="o">,</span> <span class="n">shell</span><span class="o">,</span> <span class="s">"My Shell"</span><span class="o">,<br /></span> <span class="n">defWidth</span><span class="o">,</span> <span class="n">defHeight</span><span class="o">,</span> <span class="n">defX</span><span class="o">,</span> <span class="n">defY</span><span class="o">);</span>
