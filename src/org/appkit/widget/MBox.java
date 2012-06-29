@@ -156,6 +156,8 @@ public final class MBox {
 
 			i++;
 		}
+		this.shell.setDefaultButton(this.defBtn);
+		this.shell.addKeyListener(new KeyPressed());
 
 		/* Center Button if there is just one */
 		if (options.size() == 1) {
@@ -219,27 +221,44 @@ public final class MBox {
 	public class KeyPressed extends KeyAdapter {
 		@Override
 		public void keyPressed(final KeyEvent event) {
-			if (hotKeys.containsKey(event.character)) {
+			Button selected = null;
+			if (event.widget instanceof Button) {
+				selected = (Button) event.widget;
+			}
 
-				List<Button> buttons = hotKeys.get(event.character);
-				if (buttons.size() != 1) {
+			if (event.character == SWT.CR) {
 
-					/* look which button was selected */
+				if (selected != null) {
+					selected.notifyListeners(SWT.Selection, null);
+				} else {
+					shell.getDefaultButton().notifyListeners(SWT.Selection, null);
+				}
+
+			} else if (hotKeys.containsKey(event.character)) {
+
+				List<Button> matchingButtons = hotKeys.get(event.character);
+				if (matchingButtons.size() == 1) {
+
+					matchingButtons.get(0).notifyListeners(SWT.Selection, null);
+
+				} else if (matchingButtons.size() > 1) {
+
+					/* look which of the matching buttons was selected */
 					int i = 0;
-					for (i = 0; i < buttons.size(); i++) {
-						if (buttons.get(i) == event.widget) {
+					for (i = 0; i < matchingButtons.size(); i++) {
+						if (matchingButtons.get(i) == selected) {
 							break;
 						}
 					}
 
 					/* select the next */
-					if ((i + 1) < buttons.size()) {
+					if ((i + 1) < matchingButtons.size()) {
 						i = i + 1;
 					} else {
 						i = 0;
 					}
 
-					buttons.get(i).setFocus();
+					matchingButtons.get(i).setFocus();
 				}
 			}
 		}
@@ -248,11 +267,12 @@ public final class MBox {
 	public class Traversed implements TraverseListener {
 		@Override
 		public void keyTraversed(final TraverseEvent event) {
+			/*L.debug("tr {}", event);
 			if (hotKeys.containsKey(event.character)) {
 				if (hotKeys.get(event.character).size() != 1) {
 					event.doit = false;
 				}
-			}
+			}*/
 		}
 	}
 
