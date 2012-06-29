@@ -71,11 +71,23 @@ public final class SmartExecutor implements Executor {
 	 * @throws IllegalStateException if this executor was created based on another ExecutorService
 	 *
 	 */
-	public void shutdown() {
+	public void shutdownNow() {
 		Preconditions.checkState(
 			this.executorCreatedInternally,
 			"executor-service wasn't created within this instance");
 		this.executorService.shutdownNow();
+	}
+
+	/** Shut the executor down
+	 *
+	 * @throws IllegalStateException if this executor was created based on another ExecutorService
+	 *
+	 */
+	public void shutdown() {
+		Preconditions.checkState(
+			this.executorCreatedInternally,
+			"executor-service wasn't created within this instance");
+		this.executorService.shutdown();
 	}
 
 	/** Schedules a Runnable to run once */

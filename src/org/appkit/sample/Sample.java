@@ -115,7 +115,7 @@ public final class Sample {
 			}
 		}
 
-		executor.shutdown();
+		executor.shutdownNow();
 	}
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
