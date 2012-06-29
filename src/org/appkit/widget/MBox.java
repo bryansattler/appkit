@@ -221,24 +221,25 @@ public final class MBox {
 	public class KeyPressed extends KeyAdapter {
 		@Override
 		public void keyPressed(final KeyEvent event) {
+
 			Button selected = null;
 			if (event.widget instanceof Button) {
 				selected = (Button) event.widget;
 			}
 
-			if (event.character == SWT.CR) {
+			Character c = Character.toLowerCase(event.character);
 
+			if (event.character == SWT.CR) {
 				if (selected != null) {
 					selected.notifyListeners(SWT.Selection, null);
 				} else {
 					shell.getDefaultButton().notifyListeners(SWT.Selection, null);
 				}
+			} else if (hotKeys.containsKey(c)) {
 
-			} else if (hotKeys.containsKey(event.character)) {
-
-				List<Button> matchingButtons = hotKeys.get(event.character);
+				List<Button> matchingButtons = hotKeys.get(c);
+				L.debug("{}", matchingButtons.size());
 				if (matchingButtons.size() == 1) {
-
 					matchingButtons.get(0).notifyListeners(SWT.Selection, null);
 
 				} else if (matchingButtons.size() > 1) {
@@ -267,12 +268,11 @@ public final class MBox {
 	public class Traversed implements TraverseListener {
 		@Override
 		public void keyTraversed(final TraverseEvent event) {
-			/*L.debug("tr {}", event);
-			if (hotKeys.containsKey(event.character)) {
-				if (hotKeys.get(event.character).size() != 1) {
-					event.doit = false;
-				}
-			}*/
+
+			Character c = Character.toLowerCase(event.character);
+			if (hotKeys.containsKey(c)) {
+				event.doit = false;
+			}
 		}
 	}
 
