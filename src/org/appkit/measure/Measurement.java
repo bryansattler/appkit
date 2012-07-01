@@ -52,7 +52,11 @@ public final class Measurement {
 
 	public long getDuration() {
 		Preconditions.checkState(this.watch != null, "Measurement has not been stopped yet");
-		return this.watch.elapsedMillis();
+		if (this.watch.elapsedMillis() != 0) {
+			return this.watch.elapsedMillis();
+		} else {
+			return 1;
+		}
 	}
 
 	public void start() {
