@@ -33,15 +33,17 @@ public final class SWTSyncedTickReceiver implements TickReceiver {
 		if (this.display.getThread() == Thread.currentThread()) {
 			this.receiver.tick();
 		} else {
-			this.display.syncExec(
-				new Runnable() {
-						@Override
-						public void run() {
-							if (! display.isDisposed()) {
-								receiver.tick();
+			if (! display.isDisposed()) {
+				this.display.syncExec(
+					new Runnable() {
+							@Override
+							public void run() {
+								if (! display.isDisposed()) {
+									receiver.tick();
+								}
 							}
-						}
-					});
+						});
+			}
 		}
 	}
 }

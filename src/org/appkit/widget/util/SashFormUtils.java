@@ -1,7 +1,6 @@
 package org.appkit.widget.util;
 
 import org.appkit.preferences.PrefStore;
-import org.appkit.util.SmartExecutor;
 import org.appkit.util.Throttle;
 
 import org.eclipse.swt.custom.SashForm;
@@ -22,15 +21,15 @@ public final class SashFormUtils {
 	 *
 	 * @param prefStore
 	 *            the prefStore used to load and save the weights
-	 * @param executor
-	 *            executor used to create a {@link Throttle} to the save function
+	 * @param throttleSupplier
+	 *            supplier used to create a {@link Throttle} for the save function
 	 * @param memoryKey
 	 *            the key to save to
 	 * @param defaultWeights
 	 *            default-weights if no saved are found
 	 */
-	public static void rememberWeights(final PrefStore prefStore, final SmartExecutor executor,
+	public static void rememberWeights(final PrefStore prefStore, final Throttle.Supplier throttleSupplier,
 									   final SashForm sashForm, final String memoryKey, final int defaultWeights[]) {
-		new SashFormWeightMemory(prefStore, executor, sashForm, memoryKey, defaultWeights);
+		new SashFormWeightMemory(prefStore, throttleSupplier, sashForm, memoryKey, defaultWeights);
 	}
 }

@@ -21,7 +21,7 @@ import org.slf4j.LoggerFactory;
  * It uses a Scheduler-Thread to schedule and run tasks.
  *
  */
-public final class SmartExecutor implements Executor {
+public final class SmartExecutor implements Executor, Throttle.Supplier, Ticker.Supplier {
 
 	//~ Static fields/initializers -------------------------------------------------------------------------------------
 
@@ -29,19 +29,19 @@ public final class SmartExecutor implements Executor {
 
 	//~ Instance fields ------------------------------------------------------------------------------------------------
 
-	/* can be null if executorService wasn't created here */
 	private final boolean executorCreatedInternally;
 	private final ExecutorService executorService;
 	private final DelayQueue<DelayedRunnable> taskQueue = new DelayQueue<DelayedRunnable>();
 	private final Map<String, ThrottledRunnable> throttledTasks = Maps.newHashMap();
 	private final Set<Runnable> cancelledTasks = Sets.newHashSet();
+	private Thread schedulingThread;
 
 	//~ Constructors ---------------------------------------------------------------------------------------------------
 
 	private SmartExecutor(final ExecutorService executorService) {
 		if (executorService != null) {
-			this.executorService			   = executorService;
-			this.executorCreatedInternally     = false;
+			this.executorService  = executorService;
+			this.executorCreatedInternally = false;
 		} else {
 			this.executorService			   = Executors.newCachedThreadPool();
 			this.executorCreatedInternally     = true;
@@ -61,12 +61,7 @@ public final class SmartExecutor implements Executor {
 		return new SmartExecutor(executorService);
 	}
 
-	/** returns the executorService */
-	public ExecutorService getExecutorService() {
-		return this.executorService;
-	}
-
-	/** Shut the executor down
+	/** Shuts the executor down ({@see ExecutorService#shutdownNow()})
 	 *
 	 * @throws IllegalStateException if this executor was created based on another ExecutorService
 	 *
@@ -78,7 +73,7 @@ public final class SmartExecutor implements Executor {
 		this.executorService.shutdownNow();
 	}
 
-	/** Shut the executor down
+	/** Shuts the executor down ({@see ExecutorService#shutdown()})
 	 *
 	 * @throws IllegalStateException if this executor was created based on another ExecutorService
 	 *
@@ -87,6 +82,7 @@ public final class SmartExecutor implements Executor {
 		Preconditions.checkState(
 			this.executorCreatedInternally,
 			"executor-service wasn't created within this instance");
+		this.schedulingThread.interrupt();
 		this.executorService.shutdown();
 	}
 
@@ -102,8 +98,8 @@ public final class SmartExecutor implements Executor {
 	}
 
 	/** Schedules a Runnable to be executed using a fixed delay between the end of a run and the start of the next */
-	public void scheduleAtFixedRate(final long period, final TimeUnit timeUnit, final Runnable runnable) {
-		this.taskQueue.put(new RepeatingRunnable(runnable, period, timeUnit));
+	public void scheduleAtFixedRate(final long interval, final TimeUnit timeUnit, final Runnable runnable) {
+		this.taskQueue.put(new RepeatingRunnable(runnable, interval, timeUnit));
 	}
 
 	/** Cancels a scheduled repeating runnable */
@@ -112,30 +108,32 @@ public final class SmartExecutor implements Executor {
 	}
 
 	/** Creates a new {@link Throttle} with the given delay */
+	@Override
 	public Throttle createThrottle(final long delay, final TimeUnit timeUnit) {
-		return new UUIDThrottle(delay, timeUnit);
+		return new SimpleThrottle(delay, timeUnit);
 	}
 
 	/** Creates a new {@link Ticker} with the given delay */
+	@Override
 	public Ticker createTicker(final long delay, final TimeUnit timeUnit) {
-		return new MyTicker(delay, timeUnit);
+		return new SimpleTicker(delay, timeUnit);
 	}
 
 	//~ Inner Classes --------------------------------------------------------------------------------------------------
 
-	private final class UUIDThrottle implements Throttle {
+	private final class SimpleThrottle implements Throttle {
 
 		private final String uuid	    = UUID.randomUUID().toString();
 		private final long delay;
 		private final TimeUnit timeUnit;
 
-		public UUIDThrottle(final long delay, final TimeUnit timeUnit) {
+		public SimpleThrottle(final long delay, final TimeUnit timeUnit) {
 			this.delay				    = delay;
 			this.timeUnit			    = timeUnit;
 		}
 
 		@Override
-		public void schedule(final Runnable runnable) {
+		public void throttledExecution(final Runnable runnable) {
 
 			ThrottledRunnable thrTask = new ThrottledRunnable(runnable, this.uuid, this.delay, this.timeUnit);
 			throttledTasks.put(thrTask.getThrottleName(), thrTask);
@@ -143,19 +141,19 @@ public final class SmartExecutor implements Executor {
 		}
 	}
 
-	private final class MyTicker implements Ticker {
+	private final class SimpleTicker implements Ticker {
 
 		private final long delay;
 		private final TimeUnit timeUnit;
 		private Runnable runnable;
 
-		public MyTicker(final long delay, final TimeUnit timeUnit) {
+		public SimpleTicker(final long delay, final TimeUnit timeUnit) {
 			this.delay		  = delay;
 			this.timeUnit     = timeUnit;
 		}
 
 		@Override
-		public void notify(final TickReceiver receiver) {
+		public void startNotifiying(final TickReceiver receiver) {
 			this.runnable =
 				new Runnable() {
 						@Override
@@ -176,6 +174,7 @@ public final class SmartExecutor implements Executor {
 	private final class Scheduler implements Runnable {
 		@Override
 		public void run() {
+			schedulingThread = Thread.currentThread();
 			try {
 				while (true) {
 
@@ -185,7 +184,9 @@ public final class SmartExecutor implements Executor {
 					if (task instanceof RepeatingRunnable) {
 
 						/* if runnable wasn't cancelled tell executor to run the action and reschedule it afterwards */
-						if (! cancelledTasks.contains(task.getRunnable())) {
+						if (cancelledTasks.contains(task.getRunnable())) {
+							cancelledTasks.remove(task.getRunnable());
+						} else {
 							SmartExecutor.this.executorService.execute(
 								new Runnable() {
 										@Override
@@ -210,7 +211,6 @@ public final class SmartExecutor implements Executor {
 				}
 			} catch (final InterruptedException e) {
 				SmartExecutor.L.debug("scheduler interrupted (shutting down)");
-				return;
 			}
 		}
 	}

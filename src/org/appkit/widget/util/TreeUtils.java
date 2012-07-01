@@ -1,7 +1,6 @@
 package org.appkit.widget.util;
 
 import org.appkit.preferences.PrefStore;
-import org.appkit.util.SmartExecutor;
 import org.appkit.util.Throttle;
 
 import org.eclipse.swt.events.ControlEvent;
@@ -27,24 +26,24 @@ public final class TreeUtils {
 	 * restores column-sizes, tracks and saves changes.
 	 *
 	 * @param prefStore the prefStore used to load and save sizes
-	 * @param executor used to create a {@link Throttle} to the save function
+	 * @param throttleSupplier used to create a {@link Throttle} for the save function
 	 * @param memoryKey prefStore key to use
 	 */
-	public static void rememberColumnSizes(final PrefStore prefStore, final SmartExecutor executor, final Tree tree,
-										   final String memoryKey) {
-		new ColumnSizeMemory(new ColumnController.TreeColumnController(tree), prefStore, executor, memoryKey);
+	public static void rememberColumnSizes(final PrefStore prefStore, final Throttle.Supplier throttleSupplier,
+										   final Tree tree, final String memoryKey) {
+		new ColumnSizeMemory(new ColumnController.TreeColumnController(tree), prefStore, throttleSupplier, memoryKey);
 	}
 
 	/**
 	 * restores column-order, tracks and saves changes.
 	 *
 	 * @param prefStore the prefStore used to load and save order
-	 * @param executor used to create a {@link Throttle} to the save function
+	 * @param throttleSupplier used to create a {@link Throttle} for the save function
 	 * @param memoryKey prefStore key to use
 	 */
-	public static void rememberColumnOrder(final PrefStore prefStore, final SmartExecutor executor, final Tree tree,
-										   final String memoryKey) {
-		new ColumnOrderMemory(new ColumnController.TreeColumnController(tree), prefStore, executor, memoryKey);
+	public static void rememberColumnOrder(final PrefStore prefStore, final Throttle.Supplier throttleSupplier,
+										   final Tree tree, final String memoryKey) {
+		new ColumnOrderMemory(new ColumnController.TreeColumnController(tree), prefStore, throttleSupplier, memoryKey);
 	}
 
 	/**

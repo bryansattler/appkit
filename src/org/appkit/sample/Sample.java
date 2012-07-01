@@ -3,6 +3,7 @@ package org.appkit.sample;
 import com.google.common.eventbus.Subscribe;
 
 import java.util.Properties;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.PropertyConfigurator;
 
@@ -12,6 +13,7 @@ import org.appkit.overlay.SpinnerOverlay;
 import org.appkit.preferences.PrefStore;
 import org.appkit.templating.Component;
 import org.appkit.templating.Templating;
+import org.appkit.util.SWTSyncedRunnable;
 import org.appkit.util.SmartExecutor;
 import org.appkit.util.Texts;
 import org.appkit.widget.Datepicker.DateRange;
@@ -22,6 +24,7 @@ import org.appkit.widget.util.TableUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
@@ -40,6 +43,7 @@ public final class Sample {
 
 	private final Shell shell;
 	private final Composite compOrders;
+	private final Component orderview;
 	private final SmartExecutor executor;
 	private Overlay overlay;
 
@@ -66,14 +70,14 @@ public final class Sample {
 		Templating templating = Templating.fromResources();
 
 		/* create the orderview component with the given eventContext */
-		Component orderview = templating.create("orderview", eventContext, shell);
-		this.compOrders = orderview.getComposite();
+		this.orderview	    = templating.create("orderview", eventContext, shell);
+		this.compOrders     = orderview.getComposite();
 
 		/* translate component */
 		Texts.translateComponent(orderview);
 
 		/* selects the table */
-		Table t = orderview.select("orders", Table.class);
+		final Table t = orderview.select("orders", Table.class);
 		t.setHeaderVisible(true);
 
 		/* create columns */
@@ -108,6 +112,18 @@ public final class Sample {
 					}
 				});
 
+		this.executor.scheduleAtFixedRate(
+		   2,
+		   TimeUnit.SECONDS,
+		   new SWTSyncedRunnable(
+		       Display.getCurrent(),
+		       new Runnable() {
+		               @Override
+		               public void run() {
+		                   TableItem i1 = new TableItem(t, SWT.NONE);
+		                   i1.setText("item X");
+		               }
+		           }));
 		shell.open();
 		while (! shell.isDisposed()) {
 			if (! shell.getDisplay().readAndDispatch()) {
@@ -116,6 +132,7 @@ public final class Sample {
 		}
 
 		executor.shutdownNow();
+		System.exit(0);
 	}
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
@@ -128,14 +145,20 @@ public final class Sample {
 	public void localEvent(final Object object) {
 		L.debug("event: " + object);
 
-		/* display a spinner: unfinished */
-		//final Table t = orders.selectUI("orders$table", TableUI.class).getTable();
-		if (this.overlay != null) {
-			this.overlay.dispose();
-		}
+		//MBox mbox = new MBox(shell, Type.INFO, "asdf", "xxxxx", 1, "ab", "b", "c", "d", "ac", "e");
+		//L.debug("mbox {}", mbox.showReturningString());
 
-		this.overlay = new Overlay(this.executor, this.compOrders, new SpinnerOverlay());
-		this.overlay.show();
+		//final Table t = orderview.select("orders$table", Table.class);
+
+		/* display a spinner: unfinished */
+		this.overlay = Overlay.createAnimatedOverlay(this.compOrders, new SpinnerOverlay(), this.executor);
+		Display.getCurrent().asyncExec(
+			new Runnable() {
+					@Override
+					public void run() {
+						overlay.show();
+					}
+				});
 	}
 
 	@Subscribe

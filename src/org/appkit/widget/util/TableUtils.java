@@ -1,7 +1,6 @@
 package org.appkit.widget.util;
 
 import org.appkit.preferences.PrefStore;
-import org.appkit.util.SmartExecutor;
 import org.appkit.util.Throttle;
 import org.appkit.widget.util.TableScrollDetector.ScrollListener;
 
@@ -29,24 +28,28 @@ public final class TableUtils {
 	 * restores column-sizes, tracks and saves changes.
 	 *
 	 * @param prefStore the prefStore used to load and save sizes
-	 * @param executor used to create a {@link Throttle} to the save function
+	 * @param throttleSupplier used to create a {@link Throttle} for the save function
 	 * @param memoryKey prefStore key to use
 	 */
-	public static void rememberColumnSizes(final PrefStore prefStore, final SmartExecutor executor, final Table table,
-										   final String memoryKey) {
-		new ColumnSizeMemory(new ColumnController.TableColumnController(table), prefStore, executor, memoryKey);
+	public static void rememberColumnSizes(final PrefStore prefStore, final Throttle.Supplier throttleSupplier,
+										   final Table table, final String memoryKey) {
+		new ColumnSizeMemory(new ColumnController.TableColumnController(table), prefStore, throttleSupplier, memoryKey);
 	}
 
 	/**
 	 * restores column-order, tracks and saves changes.
 	 *
 	 * @param prefStore the prefStore used to load and save order
-	 * @param executor used to create a {@link Throttle} to the save function
+	 * @param throttleSupplier used to create a {@link Throttle} for the save function
 	 * @param memoryKey prefStore key to use
 	 */
-	public static void rememberColumnOrder(final PrefStore prefStore, final SmartExecutor executor, final Table table,
-										   final String memoryKey) {
-		new ColumnOrderMemory(new ColumnController.TableColumnController(table), prefStore, executor, memoryKey);
+	public static void rememberColumnOrder(final PrefStore prefStore, final Throttle.Supplier throttleSupplier,
+										   final Table table, final String memoryKey) {
+		new ColumnOrderMemory(
+			new ColumnController.TableColumnController(table),
+			prefStore,
+			throttleSupplier,
+			memoryKey);
 	}
 
 	/**
@@ -106,7 +109,7 @@ public final class TableUtils {
 		int itemHeight   = table.getItemHeight();
 		int headerHeight = table.getHeaderHeight();
 
-		int visibleCount = ((rect.height - headerHeight + itemHeight) - 1) / itemHeight;
+		int visibleCount = (((rect.height - headerHeight) + itemHeight) - 1) / itemHeight;
 
 		return (table.getTopIndex() + visibleCount) - 1;
 	}

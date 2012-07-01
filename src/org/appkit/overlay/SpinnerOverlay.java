@@ -69,7 +69,7 @@ public final class SpinnerOverlay implements AnimatedOverlaySupplier {
 		if ((overlayWidth > SPINNER_SIDE) && (overlayWidth > SPINNER_SIDE)) {
 
 			/* draw the spinner and set it in the middle of the image */
-			GC gc			   = new GC(overlayImage);
+			GC gc = new GC(overlayImage);
 
 			Image spinnerImage = this.cache[step];
 			if (spinnerImage == null) {
@@ -80,13 +80,14 @@ public final class SpinnerOverlay implements AnimatedOverlaySupplier {
 			int x = rDiv(overlayWidth - spinnerImage.getBounds().width, 2);
 			int y = rDiv(overlayHeight - spinnerImage.getBounds().height, 2);
 			gc.drawImage(spinnerImage, x, y);
-			gc.dispose();
+
+			//	gc.dispose();
 		}
 
 		/* save image data and dispose image */
 		ImageData imageData = overlayImage.getImageData();
-		overlayImage.dispose();
 
+		//overlayImage.dispose();
 		return imageData;
 	}
 
@@ -96,6 +97,7 @@ public final class SpinnerOverlay implements AnimatedOverlaySupplier {
 		/* draw spinner */
 		Image image = new Image(Display.getCurrent(), SPINNER_SIDE, SPINNER_SIDE);
 		GC gc	    = new GC(image);
+		gc.setAntialias(SWT.ON);
 
 		/* fill rectangle with white */
 		gc.fillRectangle(0, 0, image.getBounds().width, image.getBounds().height);
@@ -148,9 +150,9 @@ public final class SpinnerOverlay implements AnimatedOverlaySupplier {
 
 		int adjustedStartAngle = startAngle - 90;
 
-		int diameter		   = Math.round(SPINNER_SIDE * (float) 0.6);
-		int x				   = rDiv(SPINNER_SIDE - diameter, 2);
-		int y				   = x;
+		int diameter = Math.round(SPINNER_SIDE * (float) 0.6);
+		int x		 = rDiv(SPINNER_SIDE - diameter, 2);
+		int y		 = x;
 		gc.fillArc(x, y, diameter, diameter, -adjustedStartAngle, -span);
 	}
 }

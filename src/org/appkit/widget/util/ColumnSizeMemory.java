@@ -10,7 +10,6 @@ import java.util.concurrent.TimeUnit;
 import org.appkit.preferences.PrefStore;
 import org.appkit.util.LoggingRunnable;
 import org.appkit.util.SWTSyncedRunnable;
-import org.appkit.util.SmartExecutor;
 import org.appkit.util.Throttle;
 
 import org.eclipse.swt.events.ControlEvent;
@@ -37,9 +36,9 @@ public final class ColumnSizeMemory {
 	//~ Constructors ---------------------------------------------------------------------------------------------------
 
 	protected ColumnSizeMemory(final ColumnController colController, final PrefStore prefStore,
-							   final SmartExecutor executor, final String key) {
+							   final Throttle.Supplier throttleSupplier, final String key) {
 		this.prefStore		   = prefStore;
-		this.throttle		   = executor.createThrottle(THROTTLE_TIME, TimeUnit.MILLISECONDS);
+		this.throttle		   = throttleSupplier.createThrottle(THROTTLE_TIME, TimeUnit.MILLISECONDS);
 		this.colController     = colController;
 		this.memoryKey		   = key + ".columnsizes";
 
@@ -110,7 +109,7 @@ public final class ColumnSizeMemory {
 				}
 			};
 
-		this.throttle.schedule(new SWTSyncedRunnable(Display.getCurrent(), runnable));
+		this.throttle.throttledExecution(new SWTSyncedRunnable(Display.getCurrent(), runnable));
 	}
 
 	//~ Inner Classes --------------------------------------------------------------------------------------------------

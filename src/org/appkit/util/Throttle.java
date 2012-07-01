@@ -1,5 +1,6 @@
 package org.appkit.util;
 
+import java.util.concurrent.TimeUnit;
 
 /**
  * A throttle to limit expensive calls triggered by often-recurring events.
@@ -16,5 +17,11 @@ public interface Throttle {
 	 * scheduled before but not yet run. This way only the last Runnable in a series will be executed.
 	 *
 	 */
-	void schedule(final Runnable runnable);
+	void throttledExecution(final Runnable runnable);
+
+	//~ Inner Interfaces -----------------------------------------------------------------------------------------------
+
+	interface Supplier {
+		Throttle createThrottle(final long delay, final TimeUnit timeUnit);
+	}
 }

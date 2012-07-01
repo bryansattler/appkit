@@ -10,7 +10,6 @@ import java.util.concurrent.TimeUnit;
 import org.appkit.preferences.PrefStore;
 import org.appkit.util.LoggingRunnable;
 import org.appkit.util.SWTSyncedRunnable;
-import org.appkit.util.SmartExecutor;
 import org.appkit.util.Throttle;
 
 import org.eclipse.swt.events.ControlEvent;
@@ -44,17 +43,27 @@ public final class ShellMemory {
 
 	//~ Constructors ---------------------------------------------------------------------------------------------------
 
-	protected ShellMemory(final PrefStore prefStore, final SmartExecutor executor, final Shell shell,
+	protected ShellMemory(final PrefStore prefStore, final Throttle.Supplier throttleSupplier, final Shell shell,
 						  final String memoryKey, final int defaultWidth, final int defaultHeight, final int defaultX,
 						  final int defaultY) {
-		this(prefStore, executor, shell, memoryKey, defaultWidth, defaultHeight, defaultX, defaultY, false, false);
+		this(
+			prefStore,
+			throttleSupplier,
+			shell,
+			memoryKey,
+			defaultWidth,
+			defaultHeight,
+			defaultX,
+			defaultY,
+			false,
+			false);
 	}
 
-	protected ShellMemory(final PrefStore prefStore, final SmartExecutor executor, final Shell shell,
+	protected ShellMemory(final PrefStore prefStore, final Throttle.Supplier throttleSupplier, final Shell shell,
 						  final String memoryKey, final int defaultWidth, final int defaultHeight, final int defaultX,
 						  final int defaultY, final boolean defaultMaximized, final boolean sizeOnly) {
 		this.prefStore			  = prefStore;
-		this.throttle			  = executor.createThrottle(THROTTLE_TIME, TimeUnit.MILLISECONDS);
+		this.throttle			  = throttleSupplier.createThrottle(THROTTLE_TIME, TimeUnit.MILLISECONDS);
 		this.shell				  = shell;
 		this.memoryKey			  = memoryKey;
 		this.defaultX			  = defaultX;
@@ -162,7 +171,7 @@ public final class ShellMemory {
 					}
 				};
 
-			throttle.schedule(new SWTSyncedRunnable(Display.getCurrent(), runnable));
+			throttle.throttledExecution(new SWTSyncedRunnable(Display.getCurrent(), runnable));
 
 		}
 	}

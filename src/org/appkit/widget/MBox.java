@@ -238,7 +238,6 @@ public final class MBox {
 			} else if (hotKeys.containsKey(c)) {
 
 				List<Button> matchingButtons = hotKeys.get(c);
-				L.debug("{}", matchingButtons.size());
 				if (matchingButtons.size() == 1) {
 					matchingButtons.get(0).notifyListeners(SWT.Selection, null);
 

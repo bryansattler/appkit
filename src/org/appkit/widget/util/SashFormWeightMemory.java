@@ -10,7 +10,6 @@ import java.util.concurrent.TimeUnit;
 import org.appkit.preferences.PrefStore;
 import org.appkit.util.LoggingRunnable;
 import org.appkit.util.SWTSyncedRunnable;
-import org.appkit.util.SmartExecutor;
 import org.appkit.util.Throttle;
 
 import org.eclipse.swt.custom.SashForm;
@@ -38,10 +37,10 @@ public final class SashFormWeightMemory {
 
 	//~ Constructors ---------------------------------------------------------------------------------------------------
 
-	protected SashFormWeightMemory(final PrefStore prefStore, final SmartExecutor executor, final SashForm sashForm,
-								   final String key, final int defaultWeights[]) {
+	protected SashFormWeightMemory(final PrefStore prefStore, final Throttle.Supplier throttleSupplier,
+								   final SashForm sashForm, final String key, final int defaultWeights[]) {
 		this.prefStore		    = prefStore;
-		this.throttle		    = executor.createThrottle(THROTTLE_TIME, TimeUnit.MILLISECONDS);
+		this.throttle		    = throttleSupplier.createThrottle(THROTTLE_TIME, TimeUnit.MILLISECONDS);
 		this.sashForm		    = sashForm;
 		this.memoryKey		    = key + ".sashsizes";
 		this.defaultWeights     = defaultWeights;
@@ -92,7 +91,7 @@ public final class SashFormWeightMemory {
 					}
 				};
 
-			throttle.schedule(new SWTSyncedRunnable(Display.getCurrent(), runnable));
+			throttle.throttledExecution(new SWTSyncedRunnable(Display.getCurrent(), runnable));
 		}
 	}
 }

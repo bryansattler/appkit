@@ -1,5 +1,6 @@
 package org.appkit.util;
 
+import java.util.concurrent.TimeUnit;
 
 /**
  * A ticker that notifies stuff.
@@ -11,7 +12,7 @@ public interface Ticker {
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
 	/** Tells this Ticker to notify the {@link TickReceiver} */
-	void notify(final TickReceiver receiver);
+	void startNotifiying(final TickReceiver receiver);
 
 	/** Stops this Ticker */
 	void stop();
@@ -20,5 +21,9 @@ public interface Ticker {
 
 	public interface TickReceiver {
 		void tick();
+	}
+
+	public interface Supplier {
+		Ticker createTicker(final long interval, final TimeUnit timeUnit);
 	}
 }
