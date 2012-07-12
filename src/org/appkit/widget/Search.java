@@ -19,7 +19,6 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
 import org.slf4j.Logger;
@@ -37,7 +36,6 @@ public final class Search extends Composite implements CustomTranlation {
 
 	private final Text text;
 	private final Button bDelete;
-	private final Label label;
 
 	//~ Constructors ---------------------------------------------------------------------------------------------------
 
@@ -49,11 +47,8 @@ public final class Search extends Composite implements CustomTranlation {
 			delButtonNeeded = false;
 		}
 
-		this.setLayout(new GridLayout((delButtonNeeded ? 3 : 2), false));
-		((GridLayout) this.getLayout()).horizontalSpacing     = -1;
-
-		this.label = new Label(this, SWT.NONE);
-		this.label.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
+		this.setLayout(new GridLayout((delButtonNeeded ? 2 : 1), false));
+		((GridLayout) this.getLayout()).horizontalSpacing = -1;
 
 		if (delButtonNeeded) {
 			this.bDelete = new Button(this, SWT.PUSH);
@@ -63,7 +58,7 @@ public final class Search extends Composite implements CustomTranlation {
 			this.bDelete = null;
 		}
 
-		this.text = new Text(this, SWT.SEARCH | SWT.CANCEL);
+		this.text = new Text(this, SWT.SEARCH | SWT.ICON_CANCEL | SWT.ICON_SEARCH);
 		this.text.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		this.text.addFocusListener(new FocusChanged());
 	}
@@ -76,7 +71,7 @@ public final class Search extends Composite implements CustomTranlation {
 		List<String> texts = Lists.newArrayList(Splitter.on("/").split(i18nInfo));
 		Preconditions.checkArgument(texts.size() == 2, "need two strings, separated by /");
 
-		label.setText(texts.get(0));
+		text.setMessage(texts.get(0));
 		if (bDelete != null) {
 			bDelete.setText(texts.get(1));
 		}

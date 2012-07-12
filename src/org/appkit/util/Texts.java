@@ -182,6 +182,8 @@ public final class Texts {
 				}
 			}
 		}
+
+		type.getComposite().layout();
 	}
 
 	/**

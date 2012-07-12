@@ -29,8 +29,8 @@ public final class TreeUtils {
 	 * @param throttleSupplier used to create a {@link Throttle} for the save function
 	 * @param memoryKey prefStore key to use
 	 */
-	public static void rememberColumnSizes(final PrefStore prefStore, final Throttle.Supplier throttleSupplier,
-										   final Tree tree, final String memoryKey) {
+	public static void rememberColumnSizes(final Tree tree, final String memoryKey, final PrefStore prefStore,
+										   final Throttle.Supplier throttleSupplier) {
 		new ColumnSizeMemory(new ColumnController.TreeColumnController(tree), prefStore, throttleSupplier, memoryKey);
 	}
 
@@ -41,8 +41,8 @@ public final class TreeUtils {
 	 * @param throttleSupplier used to create a {@link Throttle} for the save function
 	 * @param memoryKey prefStore key to use
 	 */
-	public static void rememberColumnOrder(final PrefStore prefStore, final Throttle.Supplier throttleSupplier,
-										   final Tree tree, final String memoryKey) {
+	public static void rememberColumnOrder(final Tree tree, final String memoryKey, final PrefStore prefStore,
+										   final Throttle.Supplier throttleSupplier) {
 		new ColumnOrderMemory(new ColumnController.TreeColumnController(tree), prefStore, throttleSupplier, memoryKey);
 	}
 

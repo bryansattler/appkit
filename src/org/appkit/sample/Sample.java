@@ -22,7 +22,10 @@ import org.appkit.widget.util.TableScrollDetector.ScrollListener;
 import org.appkit.widget.util.TableUtils;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
@@ -76,6 +79,25 @@ public final class Sample {
 		/* translate component */
 		Texts.translateComponent(orderview);
 
+		final Button b = orderview.select("mark-ordered", Button.class);
+		b.addSelectionListener(
+			new SelectionListener() {
+					@Override
+					public void widgetSelected(final SelectionEvent arg0) {
+
+						/*Shell subShell = new Shell(shell, SWT.NONE);
+						   subShell.setSize(100,50);
+						   subShell.open();
+						   ShellUtils.smartAttachment(subShell, b);*/
+					}
+
+					@Override
+					public void widgetDefaultSelected(final SelectionEvent arg0) {
+
+						// TODO Auto-generated method stub
+					}
+				});
+
 		/* selects the table */
 		final Table t = orderview.select("orders", Table.class);
 		t.setHeaderVisible(true);
@@ -98,8 +120,8 @@ public final class Sample {
 		TableUtils.fillTableWidth(t);
 
 		/* restore and save column-sizes and order */
-		TableUtils.rememberColumnSizes(prefStore, executor, t, "sample");
-		TableUtils.rememberColumnOrder(prefStore, executor, t, "sample");
+		TableUtils.rememberColumnSizes(t, "sample", prefStore, executor);
+		TableUtils.rememberColumnOrder(t, "sample", prefStore, executor);
 
 		/* install a ScrollDetector */
 		TableUtils.installScrollListener(
@@ -113,17 +135,18 @@ public final class Sample {
 				});
 
 		this.executor.scheduleAtFixedRate(
-		   2,
-		   TimeUnit.SECONDS,
-		   new SWTSyncedRunnable(
-		       Display.getCurrent(),
-		       new Runnable() {
-		               @Override
-		               public void run() {
-		                   TableItem i1 = new TableItem(t, SWT.NONE);
-		                   i1.setText("item X");
-		               }
-		           }));
+			2,
+			TimeUnit.SECONDS,
+			new SWTSyncedRunnable(
+				Display.getCurrent(),
+				new Runnable() {
+						@Override
+						public void run() {
+
+							TableItem i1 = new TableItem(t, SWT.NONE);
+							i1.setText("item X");
+						}
+					}));
 		shell.open();
 		while (! shell.isDisposed()) {
 			if (! shell.getDisplay().readAndDispatch()) {

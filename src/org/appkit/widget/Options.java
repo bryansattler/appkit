@@ -32,7 +32,8 @@ public class Options {
 	private static final Logger L								  = LoggerFactory.getLogger(Options.class);
 	private static final ImmutableMap<String, Boolean> boolTransl =
 		ImmutableMap.of("true", Boolean.TRUE, "yes", Boolean.TRUE, "false", Boolean.FALSE, "no", Boolean.FALSE);
-	private static final CharMatcher nameFilter = CharMatcher.inRange('a', 'z').or(CharMatcher.anyOf("?_-"));
+	private static final CharMatcher nameFilter					  =
+		CharMatcher.inRange('a', 'z').or(CharMatcher.anyOf("?_-"));
 
 	//~ Instance fields ------------------------------------------------------------------------------------------------
 
@@ -44,7 +45,7 @@ public class Options {
 		for (final String key : options.keySet()) {
 			Preconditions.checkArgument(nameFilter.matchesAllOf(key), "only a-z, '-' and '?' allowed in name");
 		}
-		this.options						    = ImmutableMap.copyOf(options);
+		this.options = ImmutableMap.copyOf(options);
 		L.debug("created options: {}", this.options);
 	}
 

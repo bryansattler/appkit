@@ -28,8 +28,8 @@ public final class SashFormUtils {
 	 * @param defaultWeights
 	 *            default-weights if no saved are found
 	 */
-	public static void rememberWeights(final PrefStore prefStore, final Throttle.Supplier throttleSupplier,
-									   final SashForm sashForm, final String memoryKey, final int defaultWeights[]) {
+	public static void rememberWeights(final SashForm sashForm, final String memoryKey, final PrefStore prefStore,
+									   final Throttle.Supplier throttleSupplier, final int defaultWeights[]) {
 		new SashFormWeightMemory(prefStore, throttleSupplier, sashForm, memoryKey, defaultWeights);
 	}
 }

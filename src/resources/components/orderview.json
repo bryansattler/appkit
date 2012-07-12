@@ -75,6 +75,8 @@
 				    [
 				        {
 				            name : "mark-ordered",
+				            grow : "-",
+				            h-align : "fill",
 				            type : "button"
 				        },
 				        {

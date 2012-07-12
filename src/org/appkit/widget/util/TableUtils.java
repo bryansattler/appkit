@@ -31,8 +31,8 @@ public final class TableUtils {
 	 * @param throttleSupplier used to create a {@link Throttle} for the save function
 	 * @param memoryKey prefStore key to use
 	 */
-	public static void rememberColumnSizes(final PrefStore prefStore, final Throttle.Supplier throttleSupplier,
-										   final Table table, final String memoryKey) {
+	public static void rememberColumnSizes(final Table table, final String memoryKey, final PrefStore prefStore,
+										   final Throttle.Supplier throttleSupplier) {
 		new ColumnSizeMemory(new ColumnController.TableColumnController(table), prefStore, throttleSupplier, memoryKey);
 	}
 
@@ -43,8 +43,8 @@ public final class TableUtils {
 	 * @param throttleSupplier used to create a {@link Throttle} for the save function
 	 * @param memoryKey prefStore key to use
 	 */
-	public static void rememberColumnOrder(final PrefStore prefStore, final Throttle.Supplier throttleSupplier,
-										   final Table table, final String memoryKey) {
+	public static void rememberColumnOrder(final Table table, final String memoryKey, final PrefStore prefStore,
+										   final Throttle.Supplier throttleSupplier) {
 		new ColumnOrderMemory(
 			new ColumnController.TableColumnController(table),
 			prefStore,

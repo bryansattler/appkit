@@ -21,8 +21,16 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.DateTime;
 import org.eclipse.swt.widgets.Label;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /** for creating a component that is a {@link DateTime} */
 public final class Datepicker extends Composite implements CustomTranlation {
+
+	//~ Static fields/initializers -------------------------------------------------------------------------------------
+
+	@SuppressWarnings("unused")
+	private static final Logger L							 = LoggerFactory.getLogger(Datepicker.class);
 
 	//~ Instance fields ------------------------------------------------------------------------------------------------
 
@@ -58,7 +66,7 @@ public final class Datepicker extends Composite implements CustomTranlation {
 		} else {
 			this.dt			   = null;
 			this.labelFrom     = new Label(this, SWT.NONE);
-			this.labelFrom.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
+			this.labelFrom.setLayoutData(new GridData(SWT.NONE, SWT.CENTER, false, false));
 			this.dtFrom = new DateTime(this, SWT.DATE | SWT.BORDER | SWT.DROP_DOWN);
 			this.dtFrom.setLayoutData(new GridData(SWT.NONE, SWT.CENTER, false, false));
 			this.dtFrom.addSelectionListener(
@@ -84,7 +92,7 @@ public final class Datepicker extends Composite implements CustomTranlation {
 					});
 
 			this.labelTo = new Label(this, SWT.NONE);
-			this.labelTo.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
+			this.labelTo.setLayoutData(new GridData(SWT.NONE, SWT.CENTER, false, false));
 			this.dtTo = new DateTime(this, SWT.DATE | SWT.BORDER | SWT.DROP_DOWN);
 			this.dtTo.setLayoutData(new GridData(SWT.NONE, SWT.CENTER, false, false));
 			this.dtTo.addSelectionListener(
@@ -125,8 +133,8 @@ public final class Datepicker extends Composite implements CustomTranlation {
 		Preconditions.checkArgument(texts.size() == 2, "need two strings, separated by /");
 
 		if (this.labelFrom != null) {
-			this.labelTo.setText(texts.get(0));
-			this.labelFrom.setText(texts.get(1));
+			this.labelFrom.setText(texts.get(0));
+			this.labelTo.setText(texts.get(1));
 		}
 	}
 
