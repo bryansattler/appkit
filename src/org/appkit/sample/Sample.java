@@ -16,7 +16,7 @@ import org.appkit.templating.Templating;
 import org.appkit.util.SWTSyncedRunnable;
 import org.appkit.util.SmartExecutor;
 import org.appkit.util.Texts;
-import org.appkit.widget.Datepicker.DateRange;
+import org.appkit.widget.Datepicker;
 import org.appkit.widget.util.TableScrollDetector.ScrollEvent;
 import org.appkit.widget.util.TableScrollDetector.ScrollListener;
 import org.appkit.widget.util.TableUtils;
@@ -26,7 +26,6 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
@@ -45,7 +44,6 @@ public final class Sample {
 	//~ Instance fields ------------------------------------------------------------------------------------------------
 
 	private final Shell shell;
-	private final Composite compOrders;
 	private final Component orderview;
 	private final SmartExecutor executor;
 	private Overlay overlay;
@@ -73,8 +71,7 @@ public final class Sample {
 		Templating templating = Templating.fromResources();
 
 		/* create the orderview component with the given eventContext */
-		this.orderview	    = templating.create("orderview", eventContext, shell);
-		this.compOrders     = orderview.getComposite();
+		this.orderview = templating.create("orderview", eventContext, shell);
 
 		/* translate component */
 		Texts.translateComponent(orderview);
@@ -170,11 +167,10 @@ public final class Sample {
 
 		//MBox mbox = new MBox(shell, Type.INFO, "asdf", "xxxxx", 1, "ab", "b", "c", "d", "ac", "e");
 		//L.debug("mbox {}", mbox.showReturningString());
-
-		//final Table t = orderview.select("orders$table", Table.class);
+		Table table = orderview.select("orders$table", Table.class);
 
 		/* display a spinner: unfinished */
-		this.overlay = Overlay.createAnimatedOverlay(this.compOrders, new SpinnerOverlay(), this.executor);
+		this.overlay = Overlay.createAnimatedOverlay(table, new SpinnerOverlay(), this.executor);
 		Display.getCurrent().asyncExec(
 			new Runnable() {
 					@Override
@@ -185,8 +181,8 @@ public final class Sample {
 	}
 
 	@Subscribe
-	public void daterangeChange(final DateRange daterange) {
-		L.debug("we got a date-range: " + daterange);
+	public void daterangeChange(final Datepicker.Event event) {
+		L.debug("we got a date-range: {}", event.getDateRange());
 	}
 
 	public static Properties log4jProperties() {

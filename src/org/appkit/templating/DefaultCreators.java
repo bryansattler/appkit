@@ -72,6 +72,7 @@ public class DefaultCreators {
 			style |= (options.get("virtual", true) ? SWT.VIRTUAL : SWT.NONE);
 			style |= (options.get("fullselect", true) ? SWT.FULL_SELECTION : SWT.NONE);
 			style |= (options.get("check", false) ? SWT.CHECK : SWT.NONE);
+			style |= (options.get("multi", false) ? SWT.MULTI : SWT.NONE);
 
 			Table table = new Table(parent, style);
 			table.setLinesVisible((options.get("lines", true)));

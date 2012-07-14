@@ -53,7 +53,8 @@ public class RadioSet extends Composite implements CustomTranlation {
 						@Override
 						public void widgetSelected(final SelectionEvent event) {
 							if (btn.getSelection()) {
-								context.postEvent(choice);
+								selection = choice;
+								context.postEvent(new Event(RadioSet.this, choice));
 							}
 						}
 					});
@@ -69,7 +70,7 @@ public class RadioSet extends Composite implements CustomTranlation {
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
-	public String getSelection() {
+	public String getSelectedChoice() {
 		return this.selection;
 	}
 
@@ -85,5 +86,26 @@ public class RadioSet extends Composite implements CustomTranlation {
 		}
 
 		this.layout();
+	}
+
+	//~ Inner Classes --------------------------------------------------------------------------------------------------
+
+	public static final class Event {
+
+		private final RadioSet radioSet;
+		private final String selectedChoice;
+
+		public Event(final RadioSet radioSet, final String selectedChoice) {
+			this.radioSet		    = radioSet;
+			this.selectedChoice     = selectedChoice;
+		}
+
+		public final RadioSet getOrigin() {
+			return this.radioSet;
+		}
+
+		public final String getSelectedChoice() {
+			return this.selectedChoice;
+		}
 	}
 }

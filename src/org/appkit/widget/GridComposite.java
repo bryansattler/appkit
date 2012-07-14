@@ -74,7 +74,6 @@ public class GridComposite extends Composite implements LayoutUI {
 		gd.horizontalIndent				 = options.get("h-indent", 0);
 		gd.horizontalSpan				 = options.get("h-span", 1);
 		gd.widthHint					 = options.get("width", SWT.DEFAULT);
-		gd.heightHint					 = options.get("height", SWT.DEFAULT);
 
 		String hAlign					 = options.get("h-align", "");
 		if (hAlign.contains("center")) {
@@ -92,6 +91,7 @@ public class GridComposite extends Composite implements LayoutUI {
 		gd.grabExcessVerticalSpace     = options.get("grow", "").contains("|");
 		gd.verticalIndent			   = options.get("v-indent", 0);
 		gd.verticalSpan				   = options.get("v-span", 1);
+		gd.heightHint				   = options.get("height", SWT.DEFAULT);
 
 		String vAlign				   = options.get("v-align", "");
 		if (vAlign.contains("center")) {
