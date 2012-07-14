@@ -1,16 +1,35 @@
 package org.appkit.widget.util;
 
+import com.google.common.collect.Lists;
+
+import java.util.Arrays;
+import java.util.List;
+
 import org.appkit.preferences.PrefStore;
 import org.appkit.util.Throttle;
 
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.KeyListener;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Various functions for working with {@link Shell}s
  *
  */
 public final class ShellUtils {
+
+	//~ Static fields/initializers -------------------------------------------------------------------------------------
+
+	@SuppressWarnings("unused")
+	private static final Logger L = LoggerFactory.getLogger(ShellUtils.class);
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
@@ -61,5 +80,34 @@ public final class ShellUtils {
 	/** alpha / testing */
 	public static void smartAttachment(final Shell shell, final Control control) {
 		new ShellAttacher(shell, control);
+	}
+
+	/** install ctrl+a on every text */
+	public static void installSelectAllShortcut(final Shell shell) {
+
+		KeyListener selectAllListener =
+			new KeyAdapter() {
+				@Override
+				public void keyPressed(final KeyEvent event) {
+					if ((event.stateMask == SWT.CTRL) && (event.keyCode == 'a')) {
+						if (event.widget instanceof Text) {
+							((Text) event.widget).selectAll();
+						}
+					}
+				}
+			};
+
+		List<Control> workList = Lists.newArrayList();
+		workList.add(shell);
+		while (! workList.isEmpty()) {
+
+			Control c = workList.remove(0);
+			if (c instanceof Text) {
+				c.addKeyListener(selectAllListener);
+
+			} else if (c instanceof Composite) {
+				workList.addAll(Arrays.asList(((Composite) c).getChildren()));
+			}
+		}
 	}
 }

@@ -1,5 +1,7 @@
 package org.appkit.widget.util;
 
+import com.google.common.base.Preconditions;
+
 import org.appkit.preferences.PrefStore;
 import org.appkit.util.Throttle;
 
@@ -56,6 +58,7 @@ public final class TreeUtils {
 			new ControlListener() {
 				@Override
 				public void controlResized(final ControlEvent event) {
+					Preconditions.checkState(tree.getColumnCount() != 0, "no columns in tree!");
 
 					int width = tree.getClientArea().width;
 					width = width - (tree.getBorderWidth() * 2);
@@ -63,7 +66,6 @@ public final class TreeUtils {
 					int colWidth = width / tree.getColumnCount();
 
 					L.debug("fillTreeWidth: set column width to {}", colWidth);
-
 					for (int i = 0; i < tree.getColumnCount(); i++) {
 						tree.getColumn(i).setWidth(colWidth);
 					}

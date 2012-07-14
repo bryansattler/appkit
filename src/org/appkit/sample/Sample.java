@@ -17,6 +17,7 @@ import org.appkit.util.SWTSyncedRunnable;
 import org.appkit.util.SmartExecutor;
 import org.appkit.util.Texts;
 import org.appkit.widget.Datepicker;
+import org.appkit.widget.util.ShellUtils;
 import org.appkit.widget.util.TableScrollDetector.ScrollEvent;
 import org.appkit.widget.util.TableScrollDetector.ScrollListener;
 import org.appkit.widget.util.TableUtils;
@@ -72,6 +73,8 @@ public final class Sample {
 
 		/* create the orderview component with the given eventContext */
 		this.orderview = templating.create("orderview", eventContext, shell);
+
+		ShellUtils.installSelectAllShortcut(shell);
 
 		/* translate component */
 		Texts.translateComponent(orderview);

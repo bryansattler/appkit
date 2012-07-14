@@ -22,7 +22,7 @@ public final class SWTUtils {
 
 		Rectangle monitorBounds = monitor.getBounds();
 
-		int x				    = Math.max(0, controlBounds.x);
+		int x = Math.max(0, controlBounds.x);
 		if (controlBounds.width > monitorBounds.width) {
 			x = 0;
 		} else {
@@ -58,7 +58,7 @@ public final class SWTUtils {
 		int x				    = monitorBounds.x + ((monitorBounds.width - controlBounds.width) / 2);
 		int y				    = (monitorBounds.y + ((monitorBounds.height - controlBounds.height) / 2)) - 150;
 
-		Rectangle bounds	    = new Rectangle(x, y, controlBounds.width, controlBounds.height);
+		Rectangle bounds = new Rectangle(x, y, controlBounds.width, controlBounds.height);
 
 		return moveOntoDisplay(bounds, control.getDisplay().getPrimaryMonitor());
 	}
@@ -72,10 +72,9 @@ public final class SWTUtils {
 		Rectangle controlBounds			 = control.getBounds();
 		int x							 =
 			referenceControlBounds.x + ((referenceControlBounds.width - controlBounds.width) / 2);
-		int y							 =
-			referenceControlBounds.y + ((referenceControlBounds.height - controlBounds.height) / 2);
+		int y = referenceControlBounds.y + ((referenceControlBounds.height - controlBounds.height) / 2);
 
-		Rectangle bounds				 = new Rectangle(x, y, controlBounds.width, controlBounds.height);
+		Rectangle bounds = new Rectangle(x, y, controlBounds.width, controlBounds.height);
 
 		return moveOntoDisplay(bounds, referenceControl.getMonitor());
 	}

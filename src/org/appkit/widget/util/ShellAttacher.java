@@ -6,6 +6,8 @@ import com.google.common.collect.Ranges;
 
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.ControlListener;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
 
@@ -23,6 +25,7 @@ public final class ShellAttacher {
 
 	private final Shell shell;
 	private final Control referenceControl;
+	private final ControlListener moveListener;
 
 	//~ Constructors ---------------------------------------------------------------------------------------------------
 
@@ -36,29 +39,28 @@ public final class ShellAttacher {
 		this.referenceControl								 = referenceControl;
 
 		this.adjustShellPosition();
-
-		this.referenceControl.addControlListener(
+		this.moveListener =
 			new ControlListener() {
 					@Override
-					public void controlResized(final ControlEvent arg0) {
+					public void controlResized(final ControlEvent event) {
 						adjustShellPosition();
 					}
 
 					@Override
-					public void controlMoved(final ControlEvent arg0) {
+					public void controlMoved(final ControlEvent event) {
 						adjustShellPosition();
 					}
-				});
-		this.referenceControl.getShell().addControlListener(
-			new ControlListener() {
-					@Override
-					public void controlResized(final ControlEvent arg0) {
-						adjustShellPosition();
-					}
+				};
 
+		this.referenceControl.addControlListener(this.moveListener);
+		this.referenceControl.getShell().addControlListener(this.moveListener);
+
+		shell.addDisposeListener(
+			new DisposeListener() {
 					@Override
-					public void controlMoved(final ControlEvent arg0) {
-						adjustShellPosition();
+					public void widgetDisposed(final DisposeEvent event) {
+						referenceControl.removeControlListener(moveListener);
+						referenceControl.getShell().removeControlListener(moveListener);
 					}
 				});
 	}

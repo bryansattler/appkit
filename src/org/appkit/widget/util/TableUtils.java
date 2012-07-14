@@ -1,5 +1,7 @@
 package org.appkit.widget.util;
 
+import com.google.common.base.Preconditions;
+
 import org.appkit.preferences.PrefStore;
 import org.appkit.util.Throttle;
 import org.appkit.widget.util.TableScrollDetector.ScrollListener;
@@ -53,7 +55,7 @@ public final class TableUtils {
 	}
 
 	/**
-	 * resizes all columns equally to fill the entire width of the table
+	 * adds a controlListener that resizes all columns equally to fill the entire width of the table
 	 *
 	 */
 	public static void fillTableWidth(final Table table) {
@@ -62,19 +64,16 @@ public final class TableUtils {
 			new ControlListener() {
 				@Override
 				public void controlResized(final ControlEvent event) {
-					if (table.getColumnCount() != 0) {
+					Preconditions.checkState(table.getColumnCount() != 0, "no columns in table!");
 
-						int width = table.getClientArea().width;
-						width = width - (table.getBorderWidth() * 2);
+					int width = table.getClientArea().width;
+					width = width - (table.getBorderWidth() * 2);
 
-						int colWidth = width / table.getColumnCount();
+					int colWidth = width / table.getColumnCount();
 
-						L.debug("fillTableWidth: set column width to {}", colWidth);
-						for (int i = 0; i < table.getColumnCount(); i++) {
-							table.getColumn(i).setWidth(colWidth);
-						}
-					} else {
-						L.debug("fillTableWidth: no columns in table");
+					L.debug("fillTableWidth: set column width to {}", colWidth);
+					for (int i = 0; i < table.getColumnCount(); i++) {
+						table.getColumn(i).setWidth(colWidth);
 					}
 
 					table.removeControlListener(this);
