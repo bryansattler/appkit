@@ -103,7 +103,7 @@ interface ColumnController {
 
 		@Override
 		public int getColumnCount() {
-			return this.tree.getColumnCount() - (this.tree.getBorderWidth() * 2);
+			return this.tree.getColumnCount();
 		}
 
 		@Override
@@ -118,7 +118,7 @@ interface ColumnController {
 
 		@Override
 		public int getAvailWidth() {
-			return this.tree.getClientArea().width;
+			return this.tree.getClientArea().width - (this.tree.getBorderWidth() * 2);
 		}
 
 		@Override
