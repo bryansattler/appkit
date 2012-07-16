@@ -1,7 +1,8 @@
-package org.appkit.widget.util;
+package org.appkit.widget.util.impl;
 
 import com.google.common.base.Objects;
 
+import org.appkit.widget.util.TableUtils;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.widgets.Table;
@@ -25,7 +26,7 @@ public final class TableScrollDetector implements PaintListener {
 
 	//~ Constructors ---------------------------------------------------------------------------------------------------
 
-	protected TableScrollDetector(final Table table, final ScrollListener listener) {
+	public TableScrollDetector(final Table table, final ScrollListener listener) {
 		this.table		  = table;
 		this.listener     = listener;
 		this.table.addPaintListener(this);

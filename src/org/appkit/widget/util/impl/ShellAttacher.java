@@ -1,4 +1,4 @@
-package org.appkit.widget.util;
+package org.appkit.widget.util.impl;
 
 import com.google.common.collect.DiscreteDomains;
 import com.google.common.collect.Range;
@@ -34,7 +34,7 @@ public final class ShellAttacher {
 	 *        Until that happens, the shell is tried to displayed completely on the monitor.
 	 *
 	 */
-	protected ShellAttacher(final Shell shell, final Control referenceControl) {
+	public ShellAttacher(final Shell shell, final Control referenceControl) {
 		this.shell											 = shell;
 		this.referenceControl								 = referenceControl;
 

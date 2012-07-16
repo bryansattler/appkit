@@ -1,4 +1,4 @@
-package org.appkit.widget.util;
+package org.appkit.widget.util.impl;
 
 import org.eclipse.swt.events.ControlListener;
 import org.eclipse.swt.widgets.Scrollable;
@@ -7,7 +7,7 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 
-interface ColumnController {
+public interface ColumnController {
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
 

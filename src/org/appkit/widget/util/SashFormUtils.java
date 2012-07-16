@@ -2,19 +2,15 @@ package org.appkit.widget.util;
 
 import org.appkit.preferences.PrefStore;
 import org.appkit.util.Throttle;
+import org.appkit.widget.util.impl.SashFormWeightMemory;
 
 import org.eclipse.swt.custom.SashForm;
 
 /**
- * Various functions for working with {@link SashForm}s
+ * Various utilities for working with {@link SashForm}s
  *
  */
 public final class SashFormUtils {
-
-	//~ Methods --------------------------------------------------------------------------------------------------------
-
-	// ~ Methods
-	// --------------------------------------------------------------------------------------------------------
 
 	/**
 	 * restores SashForm weights and tracks and saves changes

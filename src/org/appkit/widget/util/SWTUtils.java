@@ -1,12 +1,18 @@
 package org.appkit.widget.util;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Monitor;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 
 /**
- * Various utility-functions.
+ * Various utilities for working with SWT.
  *
  */
 public final class SWTUtils {
@@ -77,5 +83,23 @@ public final class SWTUtils {
 		Rectangle bounds = new Rectangle(x, y, controlBounds.width, controlBounds.height);
 
 		return moveOntoDisplay(bounds, referenceControl.getMonitor());
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <E extends Control> ImmutableList<E> findAllChildren(Composite parent, Class<E> clazz) {
+		List<E> results = Lists.newArrayList();
+		List<Control> workList = Lists.newArrayList();
+		workList.add(parent);
+		while (! workList.isEmpty()) {
+
+			Control c = workList.remove(0);
+			if (c.getClass().isAssignableFrom(clazz)) {
+				results.add((E) c);
+			} else if (c instanceof Composite) {
+				workList.addAll(Arrays.asList(((Composite) c).getChildren()));
+			}
+		}
+
+		return ImmutableList.copyOf(results);
 	}
 }

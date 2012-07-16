@@ -5,7 +5,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Control;
 
 /**
- * Various functions for working with {@link GridLayout}s
+ * Various utilities for working with {@link GridLayout}s
  *
  */
 public final class GridLayoutUtils {
@@ -17,7 +17,7 @@ public final class GridLayoutUtils {
 	 * <b>Caution:</b> this is meant to be used in single-row layouts only
 	 *
 	 */
-	public static void show(final Control control) {
+	public static void singleRowShow(final Control control) {
 
 		GridData data     = (GridData) control.getLayoutData();
 		GridLayout layout = (GridLayout) control.getParent().getLayout();
@@ -33,7 +33,7 @@ public final class GridLayoutUtils {
 	 * <b>Caution:</b> this is meant to be used in single-row layouts only
 	 *
 	 */
-	public static void hide(final Control control) {
+	public static void singleRowHide(final Control control) {
 
 		GridData data     = (GridData) control.getLayoutData();
 		GridLayout layout = (GridLayout) control.getParent().getLayout();

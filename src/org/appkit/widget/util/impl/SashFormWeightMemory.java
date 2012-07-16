@@ -1,4 +1,4 @@
-package org.appkit.widget.util;
+package org.appkit.widget.util.impl;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
@@ -37,7 +37,7 @@ public final class SashFormWeightMemory {
 
 	//~ Constructors ---------------------------------------------------------------------------------------------------
 
-	protected SashFormWeightMemory(final PrefStore prefStore, final Throttle.Supplier throttleSupplier,
+	public SashFormWeightMemory(final PrefStore prefStore, final Throttle.Supplier throttleSupplier,
 								   final SashForm sashForm, final String key, final int defaultWeights[]) {
 		this.prefStore		    = prefStore;
 		this.throttle		    = throttleSupplier.createThrottle(THROTTLE_TIME, TimeUnit.MILLISECONDS);

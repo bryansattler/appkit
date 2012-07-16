@@ -4,6 +4,9 @@ import com.google.common.base.Preconditions;
 
 import org.appkit.preferences.PrefStore;
 import org.appkit.util.Throttle;
+import org.appkit.widget.util.impl.ColumnController;
+import org.appkit.widget.util.impl.ColumnOrderMemory;
+import org.appkit.widget.util.impl.ColumnSizeMemory;
 
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.ControlListener;
@@ -13,7 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Various functions for working with {@link Tree}s
+ * Various utilities for working with {@link Tree}s
  *
  */
 public final class TreeUtils {

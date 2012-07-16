@@ -1,4 +1,4 @@
-package org.appkit.widget.util;
+package org.appkit.widget.util.impl;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
@@ -39,7 +39,7 @@ public final class ColumnOrderMemory {
 
 	//~ Constructors ---------------------------------------------------------------------------------------------------
 
-	protected ColumnOrderMemory(final ColumnController colController, final PrefStore prefStore,
+	public ColumnOrderMemory(final ColumnController colController, final PrefStore prefStore,
 								final Throttle.Supplier throttleSupplier, final String key) {
 		this.prefStore		   = prefStore;
 		this.throttle		   = throttleSupplier.createThrottle(THROTTLE_TIME, TimeUnit.MILLISECONDS);

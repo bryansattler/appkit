@@ -17,9 +17,10 @@ import org.appkit.util.SWTSyncedRunnable;
 import org.appkit.util.SmartExecutor;
 import org.appkit.util.Texts;
 import org.appkit.widget.Datepicker;
-import org.appkit.widget.util.ShellUtils;
-import org.appkit.widget.util.TableScrollDetector.ScrollEvent;
-import org.appkit.widget.util.TableScrollDetector.ScrollListener;
+import org.appkit.widget.util.SWTUtils;
+import org.appkit.widget.util.TextUtils;
+import org.appkit.widget.util.impl.TableScrollDetector.ScrollEvent;
+import org.appkit.widget.util.impl.TableScrollDetector.ScrollListener;
 import org.appkit.widget.util.TableUtils;
 
 import org.eclipse.swt.SWT;
@@ -32,6 +33,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.swt.widgets.Text;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,7 +76,10 @@ public final class Sample {
 		/* create the orderview component with the given eventContext */
 		this.orderview = templating.create("orderview", eventContext, shell);
 
-		ShellUtils.installSelectAllShortcut(shell);
+		for (Text text : SWTUtils.findAllChildren(shell, Text.class)) {
+			TextUtils.enableCopyShortcut(text);
+			TextUtils.configureForNumber(text, 4, 5);
+		}
 
 		/* translate component */
 		Texts.translateComponent(orderview);

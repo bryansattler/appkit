@@ -1,4 +1,4 @@
-package org.appkit.widget.util;
+package org.appkit.widget.util.impl;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
@@ -43,7 +43,7 @@ public final class ShellMemory {
 
 	//~ Constructors ---------------------------------------------------------------------------------------------------
 
-	protected ShellMemory(final PrefStore prefStore, final Throttle.Supplier throttleSupplier, final Shell shell,
+	public ShellMemory(final PrefStore prefStore, final Throttle.Supplier throttleSupplier, final Shell shell,
 						  final String memoryKey, final int defaultWidth, final int defaultHeight, final int defaultX,
 						  final int defaultY) {
 		this(
@@ -59,7 +59,7 @@ public final class ShellMemory {
 			false);
 	}
 
-	protected ShellMemory(final PrefStore prefStore, final Throttle.Supplier throttleSupplier, final Shell shell,
+	public ShellMemory(final PrefStore prefStore, final Throttle.Supplier throttleSupplier, final Shell shell,
 						  final String memoryKey, final int defaultWidth, final int defaultHeight, final int defaultX,
 						  final int defaultY, final boolean defaultMaximized, final boolean sizeOnly) {
 		this.prefStore			  = prefStore;
