@@ -1,8 +1,8 @@
 package org.appkit.widget.util.impl;
 
-import com.google.common.base.Objects;
-
 import org.appkit.widget.util.TableUtils;
+import org.appkit.widget.util.TableUtils.ScrollEvent;
+import org.appkit.widget.util.TableUtils.ScrollListener;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.widgets.Table;
@@ -53,59 +53,5 @@ public final class TableScrollDetector implements PaintListener {
 
 		this.firstVisible     = newFirstVis;
 		this.lastVisible	  = newLastVis;
-	}
-
-	//~ Inner Interfaces -----------------------------------------------------------------------------------------------
-
-	public interface ScrollListener {
-		public void scrolled(final ScrollEvent event);
-	}
-
-	//~ Inner Classes --------------------------------------------------------------------------------------------------
-
-	public static final class ScrollEvent {
-
-		private final int totalRows;
-		private final int firstVisibleRow;
-		private final int lastVisibleRow;
-
-		public ScrollEvent(final int totalRows, final int firstVisibleRow, final int lastVisibleRow) {
-			this.totalRows			 = totalRows;
-			this.firstVisibleRow     = firstVisibleRow;
-
-			/* we want visible data-rows, not the blank one at the end */
-			if (lastVisibleRow >= totalRows) {
-				this.lastVisibleRow = totalRows - 1;
-			} else {
-				this.lastVisibleRow = lastVisibleRow;
-			}
-		}
-
-		public int getFirstVisibleRow() {
-			return firstVisibleRow;
-		}
-
-		public int getLastVisibleRow() {
-			return lastVisibleRow;
-		}
-
-		public boolean isFirstRowVisible() {
-			return (firstVisibleRow <= 0);
-		}
-
-		public boolean isLastRowVisible() {
-			return ((lastVisibleRow + 1) == totalRows);
-		}
-
-		@Override
-		public String toString() {
-
-			Objects.ToStringHelper helper = Objects.toStringHelper(this);
-			helper.add("total", this.totalRows);
-			helper.add("first-vis", this.firstVisibleRow);
-			helper.add("last-vis", this.lastVisibleRow);
-
-			return helper.toString();
-		}
 	}
 }

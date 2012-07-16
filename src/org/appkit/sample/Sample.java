@@ -18,9 +18,9 @@ import org.appkit.util.SmartExecutor;
 import org.appkit.util.Texts;
 import org.appkit.widget.Datepicker;
 import org.appkit.widget.util.SWTUtils;
+import org.appkit.widget.util.TableUtils.ScrollEvent;
+import org.appkit.widget.util.TableUtils.ScrollListener;
 import org.appkit.widget.util.TextUtils;
-import org.appkit.widget.util.impl.TableScrollDetector.ScrollEvent;
-import org.appkit.widget.util.impl.TableScrollDetector.ScrollListener;
 import org.appkit.widget.util.TableUtils;
 
 import org.eclipse.swt.SWT;
