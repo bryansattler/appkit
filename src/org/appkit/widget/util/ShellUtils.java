@@ -31,18 +31,12 @@ public final class ShellUtils {
 	 * @param memoryKey prefStore key to save to
 	 */
 	public static void rememberSizeAndPosition(final Shell shell, final String memoryKey, final PrefStore prefStore,
-											   final Throttle.Supplier throttleSupplier, final int defaultWidth,
-											   final int defaultHeight, final int defaultX, final int defaultY) {
+											   final Throttle.Supplier throttleSupplier) {
 		new ShellMemory(
 			prefStore,
 			throttleSupplier,
 			shell,
 			memoryKey,
-			defaultWidth,
-			defaultHeight,
-			defaultX,
-			defaultY,
-			false,
 			false);
 	}
 
@@ -54,17 +48,8 @@ public final class ShellUtils {
 	 * @param memoryKey prefStore key to save to
 	 */
 	public static void rememberSize(final Shell shell, final String memoryKey, final PrefStore prefStore,
-									final Throttle.Supplier throttleSupplier, final int defaultWidth,
-									final int defaultHeight) {
-		new ShellMemory(prefStore, throttleSupplier, shell, memoryKey, defaultWidth, defaultHeight, 0, 0, false, true);
-	}
-
-	public static void moveToMonitorCenter(final Shell shell) {
-		shell.setLocation(SWTUtils.getCenterPosition(shell));
-	}
-
-	public static void moveToCenterOf(final Shell shell, final Control control) {
-		shell.setLocation(SWTUtils.getRelativeCenterPosition(shell, control));
+									final Throttle.Supplier throttleSupplier) {
+		new ShellMemory(prefStore, throttleSupplier, shell, memoryKey, true);
 	}
 
 	/** alpha / testing */

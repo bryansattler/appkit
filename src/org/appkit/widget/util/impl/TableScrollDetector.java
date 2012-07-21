@@ -54,4 +54,7 @@ public final class TableScrollDetector implements PaintListener {
 		this.firstVisible     = newFirstVis;
 		this.lastVisible	  = newLastVis;
 	}
+
+	//~ Inner Interfaces -----------------------------------------------------------------------------------------------
+
 }

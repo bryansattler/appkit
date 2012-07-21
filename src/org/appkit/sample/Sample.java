@@ -74,7 +74,7 @@ public final class Sample {
 		Templating templating = Templating.fromResources();
 
 		/* create the orderview component with the given eventContext */
-		this.orderview = templating.create("orderview", eventContext, shell);
+		this.orderview = templating.create("sample", eventContext, shell);
 
 		for (Text text : SWTUtils.findAllChildren(shell, Text.class)) {
 			TextUtils.enableCopyShortcut(text);

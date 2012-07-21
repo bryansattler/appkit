@@ -17,9 +17,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This serves as a generic dictionary which allows objects to be retrieved using any
- * a combination of fully-customizable query syntax using a string and a specified class.
- * The object return by the retrieval-methods can be optionally cast to given class.
+ * This serves as a generic dictionary which allows objects to be retrieved by combination of a string and a class (or just one of those).
+ * If a class was specified, the results contain all objects that can be casted to that class. Test is done by
+ * {@link Class#isAssignableFrom(Class)}.
+ * If a String was specified the matcher needed for construction will be queried as well.
  *
  */
 public final class Naming<E> {
@@ -121,6 +122,26 @@ public final class Naming<E> {
 	}
 
 	/**
+	 * returns the matching object
+	 *
+	 * @see #find(String, Class)
+	 * @throws IllegalStateException if not exactly 1 was found
+	 */
+	public <T extends E> T select(final String str, final Class<T> clazz) {
+
+		ImmutableSet<T> results = this.find(str, clazz);
+
+		Preconditions.checkState(
+			results.size() == 1,
+			"query %s / %s returned %s results instead of exactly 1",
+			((str == null) ? "*" : ("'" + str + "'")),
+			((clazz == null) ? "*" : clazz.getSimpleName()),
+			results.size());
+
+		return results.iterator().next();
+	}
+
+	/**
 	 * returns the count of matching objects
 	 *
 	 * @see #find(String, Class)
@@ -153,7 +174,7 @@ public final class Naming<E> {
 	 * @see #find(String, Class)
 	 */
 	public boolean selectable(final String str) {
-		return this.find(str, null).size() == 1;
+		return this.count(str) == 1;
 	}
 
 	/**
@@ -162,7 +183,7 @@ public final class Naming<E> {
 	 * @see #find(String, Class)
 	 */
 	public <T extends E> boolean selectable(final Class<T> clazz) {
-		return this.find(null, clazz).size() == 1;
+		return this.count(clazz) == 1;
 	}
 
 	/**
@@ -171,7 +192,7 @@ public final class Naming<E> {
 	 * @see #find(String, Class)
 	 */
 	public <T extends E> boolean selectable(final String str, final Class<T> clazz) {
-		return this.find(str, clazz).size() == 1;
+		return this.count(str, clazz) == 1;
 	}
 
 	/**
@@ -190,26 +211,6 @@ public final class Naming<E> {
 	 */
 	public <T extends E> ImmutableSet<T> find(final Class<T> clazz) {
 		return this.find(null, clazz);
-	}
-
-	/**
-	 * returns the matching object
-	 *
-	 * @see #find(String, Class)
-	 * @throws IllegalStateException if not exactly 1 was found
-	 */
-	public <T extends E> T select(final String str, final Class<T> clazz) {
-
-		ImmutableSet<T> results = this.find(str, clazz);
-
-		Preconditions.checkState(
-			results.size() == 1,
-			"query %s / %s returned %s results instead of exactly 1",
-			((str == null) ? "*" : ("'" + str + "'")),
-			((clazz == null) ? "*" : clazz.getSimpleName()),
-			results.size());
-
-		return results.iterator().next();
 	}
 
 	/**
@@ -232,11 +233,13 @@ public final class Naming<E> {
 		/* find results */
 		ImmutableSet.Builder<T> builder = ImmutableSet.builder();
 		for (final E object : this.data) {
-			if (this.queryMatcher.matches(object, str, clazz)) {
+			boolean clazzMatch = clazz == null || clazz.isAssignableFrom(object.getClass());
+			boolean stringMatch = str == null || this.queryMatcher.matches(object, str);
+
+			if (clazzMatch && stringMatch) {
 				builder.add((T) object);
 			}
 		}
-
 		ImmutableSet<T> results = builder.build();
 
 		/* cache save */
@@ -250,8 +253,10 @@ public final class Naming<E> {
 	//~ Inner Interfaces -----------------------------------------------------------------------------------------------
 
 	public interface QueryMatcher<E> {
+		/* used for the toString method of Naming */
 		String toStringPrimaryKey(final E object);
 
-		boolean matches(final E object, final String str, final Class<?extends E> clazz);
+		/* checks if the string matches a certain object */
+		boolean matches(final E object, final String query);
 	}
 }

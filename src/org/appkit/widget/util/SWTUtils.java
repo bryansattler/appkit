@@ -8,6 +8,8 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Monitor;
+import org.eclipse.swt.widgets.Shell;
+
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
@@ -19,14 +21,18 @@ public final class SWTUtils {
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
-	/** adjusts the position of composite so it's visible on the display */
-	public static Point moveOntoDisplay(final Control control, final Monitor monitor) {
-		return moveOntoDisplay(control.getBounds(), monitor);
+	public static void moveToMonitorCenter(final Shell shell) {
+		shell.setLocation(SWTUtils.getCenterPosition(shell));
 	}
 
-	public static Point moveOntoDisplay(final Rectangle controlBounds, final Monitor monitor) {
+	public static void moveToCenterOf(final Control control, final Control referenceControl) {
+		control.setLocation(SWTUtils.getRelativeCenterPosition(control, referenceControl));
+	}
 
-		Rectangle monitorBounds = monitor.getBounds();
+	/** adjusts a rectangle, so that it stays on the client-ares of a given monitor */
+	public static Point moveOntoMonitor(final Rectangle controlBounds, final Monitor monitor) {
+
+		Rectangle monitorBounds = monitor.getClientArea();
 
 		int x = Math.max(0, controlBounds.x);
 		if (controlBounds.width > monitorBounds.width) {
@@ -59,14 +65,14 @@ public final class SWTUtils {
 	public static Point getCenterPosition(final Control control) {
 
 		/* Position in the middle of screen (and a little up) */
-		Rectangle monitorBounds = control.getDisplay().getPrimaryMonitor().getBounds();
+		Rectangle monitorBounds = control.getDisplay().getPrimaryMonitor().getClientArea();
 		Rectangle controlBounds = control.getBounds();
 		int x				    = monitorBounds.x + ((monitorBounds.width - controlBounds.width) / 2);
-		int y				    = (monitorBounds.y + ((monitorBounds.height - controlBounds.height) / 2)) - 150;
+		int y				    = monitorBounds.y + ((monitorBounds.height - controlBounds.height) / 2) - 150;
 
 		Rectangle bounds = new Rectangle(x, y, controlBounds.width, controlBounds.height);
 
-		return moveOntoDisplay(bounds, control.getDisplay().getPrimaryMonitor());
+		return moveOntoMonitor(bounds, control.getDisplay().getPrimaryMonitor());
 	}
 
 	/** Returns the Point a control need to be located at to be in the center of the reference control (and 150px up).
@@ -78,11 +84,11 @@ public final class SWTUtils {
 		Rectangle controlBounds			 = control.getBounds();
 		int x							 =
 			referenceControlBounds.x + ((referenceControlBounds.width - controlBounds.width) / 2);
-		int y = referenceControlBounds.y + ((referenceControlBounds.height - controlBounds.height) / 2);
+		int y = referenceControlBounds.y + ((referenceControlBounds.height - controlBounds.height) / 2) - 150;
 
 		Rectangle bounds = new Rectangle(x, y, controlBounds.width, controlBounds.height);
 
-		return moveOntoDisplay(bounds, referenceControl.getMonitor());
+		return moveOntoMonitor(bounds, referenceControl.getMonitor());
 	}
 
 	@SuppressWarnings("unchecked")

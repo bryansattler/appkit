@@ -88,6 +88,13 @@ public final class PrefStore {
 	}
 
 	/**
+	 * check if a key-value mapping exists
+	 */
+	public boolean exists(final String key) {
+		return (this.backend.get(key) != null);
+	}
+
+	/**
 	 * retrieve a boolean
 	 *
 	 * @param def default to be returned if key wasn't found or stored property is no boolean ("true" or "false")

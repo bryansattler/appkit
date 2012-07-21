@@ -29,11 +29,6 @@ public final class ShellAttacher {
 
 	//~ Constructors ---------------------------------------------------------------------------------------------------
 
-	/**
-	 * Ideas: If control isn't fully visible, shell slide out of the monitor too.
-	 *        Until that happens, the shell is tried to displayed completely on the monitor.
-	 *
-	 */
 	public ShellAttacher(final Shell shell, final Control referenceControl) {
 		this.shell											 = shell;
 		this.referenceControl								 = referenceControl;
@@ -93,7 +88,7 @@ public final class ShellAttacher {
 
 	private int heightVisibleIfBelow() {
 
-		Range<Integer> yMonitorRange = Ranges.closed(0, referenceControl.getMonitor().getBounds().height);
+		Range<Integer> yMonitorRange = Ranges.closed(0, referenceControl.getMonitor().getClientArea().height);
 		int refY					 = referenceControl.getParent().toDisplay(referenceControl.getLocation()).y;
 		int shellHeight				 = shell.getBounds().height;
 		int refHeight				 = referenceControl.getBounds().height;
@@ -108,46 +103,13 @@ public final class ShellAttacher {
 
 	private int heightVisibleIfAbove() {
 
-		Range<Integer> yMonitorRange = Ranges.closed(0, referenceControl.getMonitor().getBounds().height);
+		Range<Integer> yMonitorRange = Ranges.closed(0, referenceControl.getMonitor().getClientArea().height);
 		int refY					 = referenceControl.getParent().toDisplay(referenceControl.getLocation()).y;
 		int shellHeight				 = shell.getBounds().height;
 		Range<Integer> shellStretchY = Ranges.closed(refY - shellHeight, refY);
 
 		if (shellStretchY.isConnected(yMonitorRange)) {
 			return shellStretchY.intersection(yMonitorRange).asSet(DiscreteDomains.integers()).size();
-		} else {
-			return 0;
-		}
-	}
-
-	@SuppressWarnings("unused")
-	private int widthVisibleIfBefore() {
-
-		Range<Integer> xMonitorRange = Ranges.closed(0, referenceControl.getMonitor().getBounds().width);
-
-		int refX					 = referenceControl.toDisplay(referenceControl.getLocation()).x;
-		int shellWidth				 = shell.getBounds().width;
-		Range<Integer> shellStretchX = Ranges.closed(refX - shellWidth, refX);
-
-		if (shellStretchX.isConnected(xMonitorRange)) {
-			return shellStretchX.intersection(xMonitorRange).asSet(DiscreteDomains.integers()).size();
-		} else {
-			return 0;
-		}
-	}
-
-	@SuppressWarnings("unused")
-	private int widthVisibleIfAfter() {
-
-		Range<Integer> xMonitorRange = Ranges.closed(0, referenceControl.getMonitor().getBounds().width);
-
-		int refX					 = referenceControl.toDisplay(referenceControl.getLocation()).x;
-		int shellWidth				 = shell.getBounds().width;
-		int refWidth				 = referenceControl.getBounds().width;
-		Range<Integer> shellStretchX = Ranges.closed(refX + refWidth, refX + refWidth + shellWidth);
-
-		if (shellStretchX.isConnected(xMonitorRange)) {
-			return shellStretchX.intersection(xMonitorRange).asSet(DiscreteDomains.integers()).size();
 		} else {
 			return 0;
 		}

@@ -1,15 +1,16 @@
 TODOs / Ideas
 ------------------------
 
+* Bug: scrollbalken vertical (mac) (bei FillTableWidth)
 * (Win)Sparkle
-* Guava Caches for registries and Naming
+* System Check for 32/64bit dlls / ClassLoader
+* Widget: Browser Widget
 * Widget: async Table that shows results fast
 * Widget: typical "+","-" buttons for the mac
 * Widget: DebugViewer, LicenseViewer
 * Widget: ProgressBar with soft animation
 * Templating: YAML?
-* Templating: MigLayout
-* Templating: GridLayout Config
+* Templating: Missing SWT-style bits
 * Templating: fast reloading of templates
 * Templating: activate all composite borders
 * Templating: format JSON

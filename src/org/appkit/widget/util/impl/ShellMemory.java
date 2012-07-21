@@ -34,43 +34,16 @@ public final class ShellMemory {
 	private final Throttle throttle;
 	private final Shell shell;
 	private final String memoryKey;
-	private final int defaultX;
-	private final int defaultY;
-	private final int defaultWidth;
-	private final int defaultHeight;
-	private final boolean defaultMaximized;
 	private final boolean sizeOnly;
 
 	//~ Constructors ---------------------------------------------------------------------------------------------------
 
 	public ShellMemory(final PrefStore prefStore, final Throttle.Supplier throttleSupplier, final Shell shell,
-						  final String memoryKey, final int defaultWidth, final int defaultHeight, final int defaultX,
-						  final int defaultY) {
-		this(
-			prefStore,
-			throttleSupplier,
-			shell,
-			memoryKey,
-			defaultWidth,
-			defaultHeight,
-			defaultX,
-			defaultY,
-			false,
-			false);
-	}
-
-	public ShellMemory(final PrefStore prefStore, final Throttle.Supplier throttleSupplier, final Shell shell,
-						  final String memoryKey, final int defaultWidth, final int defaultHeight, final int defaultX,
-						  final int defaultY, final boolean defaultMaximized, final boolean sizeOnly) {
+						  final String memoryKey, final boolean sizeOnly) {
 		this.prefStore			  = prefStore;
 		this.throttle			  = throttleSupplier.createThrottle(THROTTLE_TIME, TimeUnit.MILLISECONDS);
 		this.shell				  = shell;
 		this.memoryKey			  = memoryKey;
-		this.defaultX			  = defaultX;
-		this.defaultY			  = defaultY;
-		this.defaultWidth		  = defaultWidth;
-		this.defaultHeight		  = defaultHeight;
-		this.defaultMaximized     = defaultMaximized;
 		this.sizeOnly			  = sizeOnly;
 
 		if (! sizeOnly) {
@@ -85,12 +58,10 @@ public final class ShellMemory {
 					int y = Integer.valueOf(position.get(1));
 					this.shell.setLocation(x, y);
 
-				} catch (final NumberFormatException e) {
-					this.shell.setLocation(this.defaultX, this.defaultY);
-				}
-			} else {
-				this.shell.setLocation(this.defaultX, this.defaultY);
+				} catch (final NumberFormatException e) {}
+
 			}
+
 		}
 
 		/* size shell */
@@ -103,16 +74,14 @@ public final class ShellMemory {
 				int height = Integer.valueOf(sizes.get(1));
 				this.shell.setSize(width, height);
 
-			} catch (final NumberFormatException e) {
-				this.shell.setSize(this.defaultWidth, this.defaultHeight);
-			}
-		} else {
-			this.shell.setSize(this.defaultWidth, this.defaultHeight);
+			} catch (final NumberFormatException e) {}
 		}
 
 		/* set maximize shell */
-		boolean maximized = this.prefStore.get(memoryKey + ".maximized", this.defaultMaximized);
-		this.shell.setMaximized(maximized);
+		if (this.prefStore.exists(memoryKey + ".maximized")) {
+			boolean maximized = this.prefStore.get(memoryKey + ".maximized", false);
+			this.shell.setMaximized(maximized);
+		}
 
 		/* add listener */
 		this.shell.addControlListener(new ShellChanged());

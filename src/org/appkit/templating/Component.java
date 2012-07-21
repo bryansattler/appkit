@@ -191,46 +191,33 @@ public class Component {
 		}
 
 		@Override
-		public boolean matches(final Control c, final String str, final Class<?extends Control> clazz) {
+		public boolean matches(final Control c, final String str) {
 
-			boolean strMatch   = true;
-			boolean clazzMatch = true;
+			String namePortion = null;
+			String typePortion = null;
+			if (str.contains("$")) {
 
-			if (str != null) {
+				List<String> list = Lists.newArrayList(Splitter.on("$").split(str));
+				namePortion     = list.get(0).toLowerCase();
+				typePortion     = list.get(1).toLowerCase();
 
-				String namePortion = null;
-				String typePortion = null;
-				if (str.contains("$")) {
-
-					List<String> list = Lists.newArrayList(Splitter.on("$").split(str));
-					if (list.size() == 2) {
-						namePortion     = list.get(0).toLowerCase();
-						typePortion     = list.get(1).toLowerCase();
-					} else {
-						strMatch = false;
-					}
-				} else {
-					namePortion = str.toLowerCase();
-				}
-
-				WidgetDefinition def = defMap.get(c);
-
-				/* compare type */
-				if ((typePortion != null) && ! typePortion.equals(def.getType())) {
-					strMatch = false;
-				}
-
-				/* compare name */
-				if (! def.getFullName().endsWith(namePortion) && ! def.getFullName().startsWith(namePortion)) {
-					strMatch = false;
-				}
+			} else {
+				namePortion = str.toLowerCase();
 			}
 
-			if (clazz != null) {
-				clazzMatch = clazz.isAssignableFrom(c.getClass());
+			WidgetDefinition def = defMap.get(c);
+
+			/* compare type */
+			if ((typePortion != null) && ! typePortion.equals(def.getType())) {
+				return false;
 			}
 
-			return strMatch && clazzMatch;
+			/* compare name */
+			if (! def.getFullName().endsWith(namePortion) && ! def.getFullName().startsWith(namePortion)) {
+				return false;
+			}
+
+			return true;
 		}
 	}
 }
