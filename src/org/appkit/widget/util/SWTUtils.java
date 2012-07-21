@@ -1,5 +1,8 @@
 package org.appkit.widget.util;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -9,9 +12,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Monitor;
 import org.eclipse.swt.widgets.Shell;
-
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 
 /**
  * Various utilities for working with SWT.
@@ -68,7 +68,7 @@ public final class SWTUtils {
 		Rectangle monitorBounds = control.getDisplay().getPrimaryMonitor().getClientArea();
 		Rectangle controlBounds = control.getBounds();
 		int x				    = monitorBounds.x + ((monitorBounds.width - controlBounds.width) / 2);
-		int y				    = monitorBounds.y + ((monitorBounds.height - controlBounds.height) / 2) - 150;
+		int y				    = (monitorBounds.y + ((monitorBounds.height - controlBounds.height) / 2)) - 150;
 
 		Rectangle bounds = new Rectangle(x, y, controlBounds.width, controlBounds.height);
 
@@ -84,7 +84,7 @@ public final class SWTUtils {
 		Rectangle controlBounds			 = control.getBounds();
 		int x							 =
 			referenceControlBounds.x + ((referenceControlBounds.width - controlBounds.width) / 2);
-		int y = referenceControlBounds.y + ((referenceControlBounds.height - controlBounds.height) / 2) - 150;
+		int y = (referenceControlBounds.y + ((referenceControlBounds.height - controlBounds.height) / 2)) - 150;
 
 		Rectangle bounds = new Rectangle(x, y, controlBounds.width, controlBounds.height);
 
@@ -92,8 +92,9 @@ public final class SWTUtils {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static <E extends Control> ImmutableList<E> findAllChildren(Composite parent, Class<E> clazz) {
-		List<E> results = Lists.newArrayList();
+	public static <E extends Control> ImmutableList<E> findAllChildren(final Composite parent, final Class<E> clazz) {
+
+		List<E> results		   = Lists.newArrayList();
 		List<Control> workList = Lists.newArrayList();
 		workList.add(parent);
 		while (! workList.isEmpty()) {

@@ -233,13 +233,15 @@ public final class Naming<E> {
 		/* find results */
 		ImmutableSet.Builder<T> builder = ImmutableSet.builder();
 		for (final E object : this.data) {
-			boolean clazzMatch = clazz == null || clazz.isAssignableFrom(object.getClass());
-			boolean stringMatch = str == null || this.queryMatcher.matches(object, str);
+
+			boolean clazzMatch  = (clazz == null) || clazz.isAssignableFrom(object.getClass());
+			boolean stringMatch = (str == null) || this.queryMatcher.matches(object, str);
 
 			if (clazzMatch && stringMatch) {
 				builder.add((T) object);
 			}
 		}
+
 		ImmutableSet<T> results = builder.build();
 
 		/* cache save */
@@ -253,6 +255,7 @@ public final class Naming<E> {
 	//~ Inner Interfaces -----------------------------------------------------------------------------------------------
 
 	public interface QueryMatcher<E> {
+
 		/* used for the toString method of Naming */
 		String toStringPrimaryKey(final E object);
 

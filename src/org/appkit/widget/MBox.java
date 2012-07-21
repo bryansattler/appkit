@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.appkit.widget.util.SWTUtils;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;

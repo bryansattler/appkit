@@ -9,6 +9,7 @@ import org.appkit.widget.util.impl.ColumnController;
 import org.appkit.widget.util.impl.ColumnOrderMemory;
 import org.appkit.widget.util.impl.ColumnSizeMemory;
 import org.appkit.widget.util.impl.TableScrollDetector;
+
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.ControlListener;
 import org.eclipse.swt.graphics.Rectangle;
@@ -116,6 +117,7 @@ public final class TableUtils {
 		return (table.getTopIndex() + visibleCount) - 1;
 	}
 
+	//~ Inner Interfaces -----------------------------------------------------------------------------------------------
 
 	public interface ScrollListener {
 		public void scrolled(final ScrollEvent event);

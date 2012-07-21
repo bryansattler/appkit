@@ -39,12 +39,12 @@ public final class ShellMemory {
 	//~ Constructors ---------------------------------------------------------------------------------------------------
 
 	public ShellMemory(final PrefStore prefStore, final Throttle.Supplier throttleSupplier, final Shell shell,
-						  final String memoryKey, final boolean sizeOnly) {
-		this.prefStore			  = prefStore;
-		this.throttle			  = throttleSupplier.createThrottle(THROTTLE_TIME, TimeUnit.MILLISECONDS);
-		this.shell				  = shell;
-		this.memoryKey			  = memoryKey;
-		this.sizeOnly			  = sizeOnly;
+					   final String memoryKey, final boolean sizeOnly) {
+		this.prefStore     = prefStore;
+		this.throttle	   = throttleSupplier.createThrottle(THROTTLE_TIME, TimeUnit.MILLISECONDS);
+		this.shell		   = shell;
+		this.memoryKey     = memoryKey;
+		this.sizeOnly	   = sizeOnly;
 
 		if (! sizeOnly) {
 
@@ -59,9 +59,7 @@ public final class ShellMemory {
 					this.shell.setLocation(x, y);
 
 				} catch (final NumberFormatException e) {}
-
 			}
-
 		}
 
 		/* size shell */
@@ -79,6 +77,7 @@ public final class ShellMemory {
 
 		/* set maximize shell */
 		if (this.prefStore.exists(memoryKey + ".maximized")) {
+
 			boolean maximized = this.prefStore.get(memoryKey + ".maximized", false);
 			this.shell.setMaximized(maximized);
 		}

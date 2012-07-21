@@ -3,6 +3,7 @@ package org.appkit.widget.util.impl;
 import org.appkit.widget.util.TableUtils;
 import org.appkit.widget.util.TableUtils.ScrollEvent;
 import org.appkit.widget.util.TableUtils.ScrollListener;
+
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.widgets.Table;
@@ -54,7 +55,4 @@ public final class TableScrollDetector implements PaintListener {
 		this.firstVisible     = newFirstVis;
 		this.lastVisible	  = newLastVis;
 	}
-
-	//~ Inner Interfaces -----------------------------------------------------------------------------------------------
-
 }

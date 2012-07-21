@@ -47,9 +47,11 @@ public class ResourceStringSupplier implements ParamSupplier<String, String> {
 		}
 
 		/* read string from stream */
-		InputStream in = ResourceStreamSupplier.create().get(resource);
-		String s	   = new Scanner(in, "UTF8").useDelimiter("\\A").next();
+		InputStream in  = ResourceStreamSupplier.create().get(resource);
+		Scanner scanner = new Scanner(in, "UTF8");
+		String s	    = scanner.useDelimiter("\\A").next();
 		try {
+			scanner.close();
 			in.close();
 		} catch (final IOException e) {
 			throw new RuntimeException(e.getMessage(), e);

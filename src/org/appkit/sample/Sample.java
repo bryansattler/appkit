@@ -18,10 +18,10 @@ import org.appkit.util.SmartExecutor;
 import org.appkit.util.Texts;
 import org.appkit.widget.Datepicker;
 import org.appkit.widget.util.SWTUtils;
+import org.appkit.widget.util.TableUtils;
 import org.appkit.widget.util.TableUtils.ScrollEvent;
 import org.appkit.widget.util.TableUtils.ScrollListener;
 import org.appkit.widget.util.TextUtils;
-import org.appkit.widget.util.TableUtils;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
@@ -76,7 +76,7 @@ public final class Sample {
 		/* create the orderview component with the given eventContext */
 		this.orderview = templating.create("sample", eventContext, shell);
 
-		for (Text text : SWTUtils.findAllChildren(shell, Text.class)) {
+		for (final Text text : SWTUtils.findAllChildren(shell, Text.class)) {
 			TextUtils.enableCopyShortcut(text);
 			TextUtils.configureForNumber(text, 4, 5);
 		}

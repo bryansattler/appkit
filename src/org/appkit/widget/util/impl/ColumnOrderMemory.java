@@ -40,7 +40,7 @@ public final class ColumnOrderMemory {
 	//~ Constructors ---------------------------------------------------------------------------------------------------
 
 	public ColumnOrderMemory(final ColumnController colController, final PrefStore prefStore,
-								final Throttle.Supplier throttleSupplier, final String key) {
+							 final Throttle.Supplier throttleSupplier, final String key) {
 		this.prefStore		   = prefStore;
 		this.throttle		   = throttleSupplier.createThrottle(THROTTLE_TIME, TimeUnit.MILLISECONDS);
 		this.colController     = colController;

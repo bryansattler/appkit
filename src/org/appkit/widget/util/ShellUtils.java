@@ -7,6 +7,7 @@ import org.appkit.widget.util.impl.ShellMemory;
 
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,12 +33,7 @@ public final class ShellUtils {
 	 */
 	public static void rememberSizeAndPosition(final Shell shell, final String memoryKey, final PrefStore prefStore,
 											   final Throttle.Supplier throttleSupplier) {
-		new ShellMemory(
-			prefStore,
-			throttleSupplier,
-			shell,
-			memoryKey,
-			false);
+		new ShellMemory(prefStore, throttleSupplier, shell, memoryKey, false);
 	}
 
 	/**

@@ -38,7 +38,7 @@ public final class SashFormWeightMemory {
 	//~ Constructors ---------------------------------------------------------------------------------------------------
 
 	public SashFormWeightMemory(final PrefStore prefStore, final Throttle.Supplier throttleSupplier,
-								   final SashForm sashForm, final String key, final int defaultWeights[]) {
+								final SashForm sashForm, final String key, final int defaultWeights[]) {
 		this.prefStore		    = prefStore;
 		this.throttle		    = throttleSupplier.createThrottle(THROTTLE_TIME, TimeUnit.MILLISECONDS);
 		this.sashForm		    = sashForm;

@@ -12,6 +12,8 @@ import org.eclipse.swt.custom.SashForm;
  */
 public final class SashFormUtils {
 
+	//~ Methods --------------------------------------------------------------------------------------------------------
+
 	/**
 	 * restores SashForm weights and tracks and saves changes
 	 *
