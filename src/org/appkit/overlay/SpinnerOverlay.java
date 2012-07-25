@@ -6,6 +6,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.swt.graphics.Region;
 import org.eclipse.swt.widgets.Display;
 
 import org.slf4j.Logger;
@@ -154,5 +155,10 @@ public final class SpinnerOverlay implements AnimatedOverlaySupplier {
 		int x		 = rDiv(SPINNER_SIDE - diameter, 2);
 		int y		 = x;
 		gc.fillArc(x, y, diameter, diameter, -adjustedStartAngle, -span);
+	}
+
+	@Override
+	public Region getRegion() {
+		return null;
 	}
 }

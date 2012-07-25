@@ -1,4 +1,4 @@
-package org.appkit.widget;
+package org.appkit.templating.widget;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
@@ -8,7 +8,9 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import org.appkit.event.EventContext;
+import org.appkit.templating.Options;
+import org.appkit.templating.event.DatePickerEvent;
+import org.appkit.templating.event.EventContext;
 import org.appkit.util.Texts.CustomTranlation;
 
 import org.eclipse.swt.SWT;
@@ -25,12 +27,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /** for creating a component that is a {@link DateTime} */
-public final class Datepicker extends Composite implements CustomTranlation {
+public final class DatePicker extends Composite implements CustomTranlation {
 
 	//~ Static fields/initializers -------------------------------------------------------------------------------------
 
 	@SuppressWarnings("unused")
-	private static final Logger L							 = LoggerFactory.getLogger(Datepicker.class);
+	private static final Logger L							 = LoggerFactory.getLogger(DatePicker.class);
 
 	//~ Instance fields ------------------------------------------------------------------------------------------------
 
@@ -47,7 +49,7 @@ public final class Datepicker extends Composite implements CustomTranlation {
 
 	//~ Constructors ---------------------------------------------------------------------------------------------------
 
-	public Datepicker(final EventContext context, final Composite parent, final Options options) {
+	public DatePicker(final EventContext context, final Composite parent, final String name, final Options options) {
 		super(parent, (options.get("border", false) ? SWT.BORDER : SWT.NONE));
 
 		GridLayout gl										 = new GridLayout(3, false);
@@ -64,7 +66,7 @@ public final class Datepicker extends Composite implements CustomTranlation {
 						@Override
 						public void widgetSelected(final SelectionEvent event) {
 							setInternalDateRange();
-							context.postEvent(new Event(Datepicker.this, daterange));
+							context.postEvent(new DatePickerEvent(DatePicker.this, daterange));
 						}
 					});
 			this.labelFrom		 = null;
@@ -84,7 +86,7 @@ public final class Datepicker extends Composite implements CustomTranlation {
 						@Override
 						public void widgetSelected(final SelectionEvent event) {
 							setInternalDateRange();
-							context.postEvent(new Event(Datepicker.this, daterange));
+							context.postEvent(new DatePickerEvent(DatePicker.this, daterange));
 						}
 					});
 
@@ -97,7 +99,7 @@ public final class Datepicker extends Composite implements CustomTranlation {
 						public void widgetSelected(final SelectionEvent event) {
 							dtFrom.setEnabled(bEnableFrom.getSelection());
 							setInternalDateRange();
-							context.postEvent(new Event(Datepicker.this, daterange));
+							context.postEvent(new DatePickerEvent(DatePicker.this, daterange));
 						}
 					});
 
@@ -110,7 +112,7 @@ public final class Datepicker extends Composite implements CustomTranlation {
 						@Override
 						public void widgetSelected(final SelectionEvent event) {
 							setInternalDateRange();
-							context.postEvent(new Event(Datepicker.this, daterange));
+							context.postEvent(new DatePickerEvent(DatePicker.this, daterange));
 						}
 					});
 			this.bEnableTo = new Button(this, SWT.CHECK);
@@ -122,7 +124,7 @@ public final class Datepicker extends Composite implements CustomTranlation {
 						public void widgetSelected(final SelectionEvent event) {
 							dtTo.setEnabled(bEnableTo.getSelection());
 							setInternalDateRange();
-							context.postEvent(new Event(Datepicker.this, daterange));
+							context.postEvent(new DatePickerEvent(DatePicker.this, daterange));
 						}
 					});
 		}
@@ -239,25 +241,6 @@ public final class Datepicker extends Composite implements CustomTranlation {
 		public String toString() {
 			return "[" + ((this.fromDate != null) ? this.fromDate : "") + ".."
 				   + ((this.toDate != null) ? this.toDate : "") + "]";
-		}
-	}
-
-	public static final class Event {
-
-		private final Datepicker datePicker;
-		private final DateRange range;
-
-		public Event(final Datepicker datePicker, final DateRange range) {
-			this.datePicker     = datePicker;
-			this.range		    = range;
-		}
-
-		public final Datepicker getOrigin() {
-			return this.datePicker;
-		}
-
-		public final DateRange getDateRange() {
-			return this.range;
 		}
 	}
 }

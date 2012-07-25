@@ -11,10 +11,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Map;
 
-import org.appkit.event.EventContext;
+import org.appkit.templating.event.EventContext;
 import org.appkit.util.Naming;
 import org.appkit.util.Naming.QueryMatcher;
-import org.appkit.widget.Options;
 
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -84,14 +83,14 @@ public class Component {
 
 		Control c = null;
 		if (customCreators.containsKey(type)) {
-			c = customCreators.get(type).initialize(context, parent, definition.getOptions());
+			c = customCreators.get(type).initialize(context, parent, definition.getName(), definition.getOptions());
 
 		} else {
 			Preconditions.checkArgument(types.containsKey(type), "no type '%s' registered", type);
 			try {
 
-				Constructor<?> con = types.get(type).getConstructor(EventContext.class, Composite.class, Options.class);
-				c = (Control) con.newInstance(context, parent, definition.getOptions());
+				Constructor<?> con = types.get(type).getConstructor(EventContext.class, Composite.class, String.class, Options.class);
+				c = (Control) con.newInstance(context, parent, definition.getName(), definition.getOptions());
 
 			} catch (final InvocationTargetException e) {
 				L.error(e.getMessage(), e);

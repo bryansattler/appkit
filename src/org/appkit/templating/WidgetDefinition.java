@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.appkit.widget.Options;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,6 +64,10 @@ public final class WidgetDefinition {
 	public void setParent(final WidgetDefinition parentDef) {
 		Preconditions.checkState(this.parentDef == null, "parent is not null");
 		this.parentDef = parentDef;
+	}
+
+	public String getName() {
+		return this.name;
 	}
 
 	public String getFullName() {

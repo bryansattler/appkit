@@ -1,4 +1,4 @@
-package org.appkit.event;
+package org.appkit.templating.event;
 
 
 /**

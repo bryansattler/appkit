@@ -2,11 +2,13 @@ package org.appkit.templating;
 
 import java.util.List;
 
-import org.appkit.event.EventContext;
 import org.appkit.registry.Fonts;
-import org.appkit.widget.Options;
+import org.appkit.templating.event.ButtonEvent;
+import org.appkit.templating.event.EventContext;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
@@ -19,30 +21,39 @@ public class DefaultCreators {
 
 	static class SpacerCreator implements ControlCreator<Label> {
 		@Override
-		public Label initialize(final EventContext context, final Composite parent, final Options options) {
+		public Label initialize(final EventContext context, final Composite parent, String name, final Options options) {
 			return new Label(parent, SWT.NONE);
 		}
 	}
 
 	static class ButtonCreator implements ControlCreator<Button> {
 		@Override
-		public Button initialize(final EventContext context, final Composite parent, final Options options) {
-			return new Button(parent, SWT.PUSH);
+		public Button initialize(final EventContext context, final Composite parent, final String name, final Options options) {
+			final Button b = new Button(parent, SWT.PUSH);
+			if (name != null) {
+				b.addSelectionListener(new SelectionAdapter() {
+
+					@Override
+					public void widgetSelected(SelectionEvent event) {
+						context.postEvent(new ButtonEvent(b, name));
+					}
+				});
+			}
+
+			return b;
 		}
 	}
 
 	static class LabelCreator implements ControlCreator<Label> {
 		@Override
-		public Label initialize(final EventContext context, final Composite parent, final Options options) {
+		public Label initialize(final EventContext context, final Composite parent, String name, final Options options) {
 
 			Label label = new Label(parent, SWT.NONE);
 			label.setText("< empty >");
 
 			List<String> fontInfo = options.getList("font");
-			if (! fontInfo.isEmpty()) {
-				if (fontInfo.contains("bold")) {
-					Fonts.set(label, Fonts.BOLD);
-				}
+			if (! fontInfo.isEmpty() && fontInfo.contains("bold")) {
+				Fonts.set(label, Fonts.BOLD);
 			}
 
 			return label;
@@ -51,7 +62,7 @@ public class DefaultCreators {
 
 	static class TextCreator implements ControlCreator<Text> {
 		@Override
-		public Text initialize(final EventContext context, final Composite parent, final Options options) {
+		public Text initialize(final EventContext context, final Composite parent, String name, final Options options) {
 
 			int style = SWT.NONE;
 			style |= (options.get("border", true) ? SWT.BORDER : SWT.NONE);
@@ -65,7 +76,7 @@ public class DefaultCreators {
 
 	static class TableCreator implements ControlCreator<Table> {
 		@Override
-		public Table initialize(final EventContext context, final Composite parent, final Options options) {
+		public Table initialize(final EventContext context, final Composite parent, String name, final Options options) {
 
 			int style = SWT.NONE;
 			style |= (options.get("border", true) ? SWT.BORDER : SWT.NONE);

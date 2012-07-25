@@ -3,8 +3,8 @@ package org.appkit.widget.util;
 import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
 
+import org.appkit.concurrent.Throttle;
 import org.appkit.preferences.PrefStore;
-import org.appkit.util.Throttle;
 import org.appkit.widget.util.impl.ColumnController;
 import org.appkit.widget.util.impl.ColumnOrderMemory;
 import org.appkit.widget.util.impl.ColumnSizeMemory;
@@ -71,8 +71,6 @@ public final class TableUtils {
 					Preconditions.checkState(table.getColumnCount() != 0, "no columns in table!");
 
 					int width = table.getClientArea().width;
-					width = width - (table.getBorderWidth() * 2);
-
 					int colWidth = width / table.getColumnCount();
 
 					L.debug("fillTableWidth: set column width to {}", colWidth);

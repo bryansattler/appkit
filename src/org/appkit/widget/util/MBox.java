@@ -1,4 +1,4 @@
-package org.appkit.widget;
+package org.appkit.widget.util;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Predicates;
@@ -9,7 +9,6 @@ import com.google.common.collect.Iterables;
 import java.util.Arrays;
 import java.util.List;
 
-import org.appkit.widget.util.SWTUtils;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyAdapter;

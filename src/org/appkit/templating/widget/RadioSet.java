@@ -1,12 +1,15 @@
-package org.appkit.widget;
+package org.appkit.templating.widget;
 
+import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Maps;
 
 import java.util.Iterator;
 import java.util.Map;
 
-import org.appkit.event.EventContext;
+import org.appkit.templating.Options;
+import org.appkit.templating.event.EventContext;
+import org.appkit.templating.event.RadioSetEvent;
 import org.appkit.util.Texts.CustomTranlation;
 
 import org.eclipse.swt.SWT;
@@ -33,7 +36,7 @@ public class RadioSet extends Composite implements CustomTranlation {
 
 	//~ Constructors ---------------------------------------------------------------------------------------------------
 
-	public RadioSet(final EventContext context, final Composite parent, final Options options) {
+	public RadioSet(final EventContext context, final Composite parent, final String name, final Options options) {
 		super(parent, options.get("border", false) ? SWT.BORDER : SWT.NONE);
 
 		GridLayout gl = new GridLayout(1, false);
@@ -54,7 +57,7 @@ public class RadioSet extends Composite implements CustomTranlation {
 						public void widgetSelected(final SelectionEvent event) {
 							if (btn.getSelection()) {
 								selection = choice;
-								context.postEvent(new Event(RadioSet.this, choice));
+								context.postEvent(new RadioSetEvent(RadioSet.this, choice));
 							}
 						}
 					});
@@ -70,6 +73,19 @@ public class RadioSet extends Composite implements CustomTranlation {
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
+	public void selectChoice(String choice) {
+		Preconditions.checkArgument(this.choices.containsKey(choice), "choices of this radioset %s don't contain '%s'", this.choices.keySet(), choice);
+
+		for (Map.Entry<String,Button> btn : this.choices.entrySet()) {
+			if (btn.getKey().equals(choice)) {
+				btn.getValue().setSelection(true);
+			} else {
+				btn.getValue().setSelection(false);
+			}
+		}
+		this.selection = choice;
+	}
+
 	public String getSelectedChoice() {
 		return this.selection;
 	}
@@ -81,7 +97,10 @@ public class RadioSet extends Composite implements CustomTranlation {
 			Iterator<String> i = Splitter.on(":").trimResults().split(choice).iterator();
 			String code		   = i.next();
 			String text		   = i.next();
-			L.debug("i18n text for option '" + code + "' is '" + text + "'");
+
+			Preconditions.checkArgument(this.choices.containsKey(code), "choices of this radioset %s don't contain '%s'", this.choices.keySet(), code);
+
+			L.debug("i18n text for option '{}' is '{}'", code, text);
 			this.choices.get(code).setText(text);
 		}
 
@@ -90,22 +109,4 @@ public class RadioSet extends Composite implements CustomTranlation {
 
 	//~ Inner Classes --------------------------------------------------------------------------------------------------
 
-	public static final class Event {
-
-		private final RadioSet radioSet;
-		private final String selectedChoice;
-
-		public Event(final RadioSet radioSet, final String selectedChoice) {
-			this.radioSet		    = radioSet;
-			this.selectedChoice     = selectedChoice;
-		}
-
-		public final RadioSet getOrigin() {
-			return this.radioSet;
-		}
-
-		public final String getSelectedChoice() {
-			return this.selectedChoice;
-		}
-	}
 }

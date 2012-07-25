@@ -1,4 +1,4 @@
-package org.appkit.widget;
+package org.appkit.templating.widget;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
@@ -6,8 +6,9 @@ import com.google.common.collect.Lists;
 
 import java.util.List;
 
-import org.appkit.event.EventContext;
 import org.appkit.osdependant.OSUtils;
+import org.appkit.templating.Options;
+import org.appkit.templating.event.EventContext;
 import org.appkit.util.Texts.CustomTranlation;
 
 import org.eclipse.swt.SWT;
@@ -39,7 +40,7 @@ public final class Search extends Composite implements CustomTranlation {
 
 	//~ Constructors ---------------------------------------------------------------------------------------------------
 
-	public Search(final EventContext context, final Composite parent, final Options options) {
+	public Search(final EventContext context, final Composite parent, final String name, final Options options) {
 		super(parent, SWT.NONE);
 
 		boolean delButtonNeeded								 = true;

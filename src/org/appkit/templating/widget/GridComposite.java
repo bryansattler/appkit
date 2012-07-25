@@ -1,7 +1,8 @@
-package org.appkit.widget;
+package org.appkit.templating.widget;
 
-import org.appkit.event.EventContext;
 import org.appkit.templating.LayoutUI;
+import org.appkit.templating.Options;
+import org.appkit.templating.event.EventContext;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -25,7 +26,7 @@ public class GridComposite extends Composite implements LayoutUI {
 
 	//~ Constructors ---------------------------------------------------------------------------------------------------
 
-	public GridComposite(final EventContext context, final Composite parent, final Options options) {
+	public GridComposite(final EventContext context, final Composite parent, final String name, final Options options) {
 		super(parent, (options.get("border", false) ? SWT.BORDER : SWT.NONE));
 
 		/* create composite */

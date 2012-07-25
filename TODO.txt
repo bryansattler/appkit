@@ -1,7 +1,6 @@
 TODOs / Ideas
 ------------------------
 
-* Bug: scrollbalken vertical (mac) (bei FillTableWidth)
 * (Win)Sparkle
 * System Check for 32/64bit dlls / ClassLoader
 * Widget: Browser Widget

@@ -66,7 +66,7 @@ public interface ColumnController {
 
 		@Override
 		public int getAvailWidth() {
-			return this.table.getClientArea().width - (this.table.getBorderWidth() * 2);
+			return this.table.getClientArea().width;
 		}
 
 		@Override
@@ -118,7 +118,7 @@ public interface ColumnController {
 
 		@Override
 		public int getAvailWidth() {
-			return this.tree.getClientArea().width - (this.tree.getBorderWidth() * 2);
+			return this.tree.getClientArea().width;
 		}
 
 		@Override

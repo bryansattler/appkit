@@ -1,4 +1,4 @@
-package org.appkit.widget;
+package org.appkit.templating;
 
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Preconditions;

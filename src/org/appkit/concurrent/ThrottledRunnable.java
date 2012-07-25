@@ -1,4 +1,4 @@
-package org.appkit.util;
+package org.appkit.concurrent;
 
 import java.util.concurrent.TimeUnit;
 

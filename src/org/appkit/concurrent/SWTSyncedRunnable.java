@@ -1,4 +1,4 @@
-package org.appkit.util;
+package org.appkit.concurrent;
 
 import org.eclipse.swt.widgets.Display;
 

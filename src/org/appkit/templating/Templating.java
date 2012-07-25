@@ -16,14 +16,13 @@ import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
 
-import org.appkit.event.EventContext;
+import org.appkit.templating.event.EventContext;
+import org.appkit.templating.widget.DatePicker;
+import org.appkit.templating.widget.GridComposite;
+import org.appkit.templating.widget.RadioSet;
+import org.appkit.templating.widget.Search;
 import org.appkit.util.ParamSupplier;
 import org.appkit.util.ResourceStringSupplier;
-import org.appkit.widget.Datepicker;
-import org.appkit.widget.GridComposite;
-import org.appkit.widget.Options;
-import org.appkit.widget.RadioSet;
-import org.appkit.widget.Search;
 
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -65,7 +64,7 @@ public final class Templating {
 		this.addCustomCreator(new DefaultCreators.SpacerCreator(), "spacer");
 		this.addCustomCreator(new DefaultCreators.TextCreator(), "text");
 		this.addType(Search.class, "search");
-		this.addType(Datepicker.class, "datepicker");
+		this.addType(DatePicker.class, "datepicker");
 		this.addType(RadioSet.class, "radioset");
 		this.addType(GridComposite.class, "grid");
 

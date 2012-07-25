@@ -7,28 +7,35 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.PropertyConfigurator;
 
-import org.appkit.event.LocalEventContext;
+import org.appkit.concurrent.SWTSyncedRunnable;
+import org.appkit.concurrent.SmartExecutor;
 import org.appkit.overlay.Overlay;
 import org.appkit.overlay.SpinnerOverlay;
 import org.appkit.preferences.PrefStore;
 import org.appkit.templating.Component;
 import org.appkit.templating.Templating;
-import org.appkit.util.SWTSyncedRunnable;
-import org.appkit.util.SmartExecutor;
+import org.appkit.templating.event.ButtonEvent;
+import org.appkit.templating.event.DatePickerEvent;
+import org.appkit.templating.event.LocalEventContext;
+import org.appkit.templating.event.RadioSetEvent;
+import org.appkit.templating.widget.RadioSet;
 import org.appkit.util.Texts;
-import org.appkit.widget.Datepicker;
+import org.appkit.widget.util.ButtonUtils;
+import org.appkit.widget.util.MBox;
 import org.appkit.widget.util.SWTUtils;
+import org.appkit.widget.util.ShellUtils;
 import org.appkit.widget.util.TableUtils;
+import org.appkit.widget.util.MBox.Type;
 import org.appkit.widget.util.TableUtils.ScrollEvent;
 import org.appkit.widget.util.TableUtils.ScrollListener;
 import org.appkit.widget.util.TextUtils;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
@@ -47,7 +54,7 @@ public final class Sample {
 	//~ Instance fields ------------------------------------------------------------------------------------------------
 
 	private final Shell shell;
-	private final Component orderview;
+	private final Component sample;
 	private final SmartExecutor executor;
 	private Overlay overlay;
 
@@ -74,58 +81,45 @@ public final class Sample {
 		Templating templating = Templating.fromResources();
 
 		/* create the orderview component with the given eventContext */
-		this.orderview = templating.create("sample", eventContext, shell);
-
-		for (final Text text : SWTUtils.findAllChildren(shell, Text.class)) {
-			TextUtils.enableCopyShortcut(text);
-			TextUtils.configureForNumber(text, 4, 5);
-		}
+		this.sample = templating.create("sample", eventContext, shell);
 
 		/* translate component */
-		Texts.translateComponent(orderview);
+		Texts.translateComponent(sample);
 
-		final Button b = orderview.select("mark-ordered", Button.class);
-		b.addSelectionListener(
-			new SelectionListener() {
-					@Override
-					public void widgetSelected(final SelectionEvent arg0) {
+		/* gets all texts with the SWT method */
+		for (final Text text : SWTUtils.findAllChildren(shell, Text.class)) {
+			TextUtils.enableCopyShortcut(text);
 
-						/*Shell subShell = new Shell(shell, SWT.NONE);
-						   subShell.setSize(100,50);
-						   subShell.open();
-						   ShellUtils.smartAttachment(subShell, b);*/
-					}
+			/* default: 0, maxDigits: 5 */
+			TextUtils.configureForNumber(text, 0, 5);
+		}
 
-					@Override
-					public void widgetDefaultSelected(final SelectionEvent arg0) {
+		Menu menu = new Menu(this.shell);
+		MenuItem item = new MenuItem(menu, SWT.NONE);
+		item.setText("An Option");
+		item = new MenuItem(menu, SWT.NONE);
+		item.setText("Another Option");
 
-						// TODO Auto-generated method stub
-					}
-				});
+		ButtonUtils.setDropDownMenu(sample.select("dropdown", Button.class), menu);
+
+		/* select the second item in the RadioSet */
+		sample.select(RadioSet.class).selectChoice("hideoverlay");
 
 		/* selects the table */
-		final Table t = orderview.select("orders", Table.class);
+		final Table t = sample.select("data", Table.class);
 		t.setHeaderVisible(true);
 
 		/* create columns */
 		for (int i = 0; i <= 6; i++) {
-
 			TableColumn c1 = new TableColumn(t, SWT.NONE);
 			c1.setText("col " + i);
-		}
-
-		/* add items */
-		for (int i = 0; i <= 15; i++) {
-
-			TableItem i1 = new TableItem(t, SWT.NONE);
-			i1.setText("item " + i);
 		}
 
 		/* divide table equally among columns */
 		TableUtils.fillTableWidth(t);
 
 		/* restore and save column-sizes and order */
-		TableUtils.rememberColumnSizes(t, "sample", prefStore, executor);
+		//TableUtils.rememberColumnSizes(t, "sample", prefStore, executor);
 		TableUtils.rememberColumnOrder(t, "sample", prefStore, executor);
 
 		/* install a ScrollDetector */
@@ -134,8 +128,8 @@ public final class Sample {
 			new ScrollListener() {
 					@Override
 					public void scrolled(final ScrollEvent event) {
-						L.debug("first vis: {}", event.getFirstVisibleRow());
-						L.debug("last vis: {}", event.getLastVisibleRow());
+						//L.debug("first vis: {}", event.getFirstVisibleRow());
+						//L.debug("last vis: {}", event.getLastVisibleRow());
 					}
 				});
 
@@ -147,11 +141,13 @@ public final class Sample {
 				new Runnable() {
 						@Override
 						public void run() {
-
 							TableItem i1 = new TableItem(t, SWT.NONE);
 							i1.setText("item X");
 						}
 					}));
+
+
+
 		shell.open();
 		while (! shell.isDisposed()) {
 			if (! shell.getDisplay().readAndDispatch()) {
@@ -172,25 +168,59 @@ public final class Sample {
 	@Subscribe
 	public void localEvent(final Object object) {
 		L.debug("event: " + object);
-
-		//MBox mbox = new MBox(shell, Type.INFO, "asdf", "xxxxx", 1, "ab", "b", "c", "d", "ac", "e");
-		//L.debug("mbox {}", mbox.showReturningString());
-		Table table = orderview.select("orders$table", Table.class);
-
-		/* display a spinner: unfinished */
-		this.overlay = Overlay.createAnimatedOverlay(table, new SpinnerOverlay(), this.executor);
-		Display.getCurrent().asyncExec(
-			new Runnable() {
-					@Override
-					public void run() {
-						overlay.show();
-					}
-				});
 	}
 
 	@Subscribe
-	public void daterangeChange(final Datepicker.Event event) {
+	public void daterangeChange(final DatePickerEvent event) {
 		L.debug("we got a date-range: {}", event.getDateRange());
+	}
+
+	@Subscribe
+	public void buttonClick(final ButtonEvent event) {
+		L.debug("buttonclick: {}", event.getOrigin());
+		if (event.getOrigin().equals("shellattach")) {
+
+			/* opens an attached subshell */
+			Shell subShell = new Shell(shell, SWT.NONE);
+			subShell.setSize(400,150);
+			subShell.open();
+
+			ShellUtils.smartAttachment(subShell, event.getButton());
+		} else if (event.getOrigin().equals("dummy")) {
+
+			MBox mbox = new MBox(shell, Type.QUESTION, "A question", "What is it going to be?", 1, "ab", "b", "c", "d", "ac", "e");
+			MBox.show(shell, Type.INFO, "Answer: " + mbox.showReturningString());
+
+		}
+	}
+
+	@Subscribe
+	public void radioBtnSelected(final RadioSetEvent event) {
+		L.debug("we got a radio-choice: {}", event.getSelectedChoice());
+		if (event.getSelectedChoice().equals("showoverlay")) {
+			if (this.overlay == null) {
+				Table table = sample.select("data$table", Table.class);
+
+				/* display a spinner */
+				this.overlay = Overlay.createAnimatedOverlay(table, new SpinnerOverlay(), this.executor);
+				Display.getCurrent().asyncExec(
+					new Runnable() {
+							@Override
+							public void run() {
+								overlay.show();
+							}
+						});
+			}
+
+
+		} else if (event.getSelectedChoice().equals("hideoverlay")) {
+
+			if (this.overlay != null) {
+				this.overlay.dispose();
+				this.overlay = null;
+			}
+
+		}
 	}
 
 	public static Properties log4jProperties() {

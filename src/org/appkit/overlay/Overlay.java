@@ -4,13 +4,15 @@ import com.google.common.base.Preconditions;
 
 import java.util.concurrent.TimeUnit;
 
-import org.appkit.util.SWTSyncedTickReceiver;
-import org.appkit.util.Ticker;
-import org.appkit.util.Ticker.TickReceiver;
+import org.appkit.concurrent.SWTSyncedTickReceiver;
+import org.appkit.concurrent.Ticker;
+import org.appkit.concurrent.Ticker.TickReceiver;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.ControlListener;
+import org.eclipse.swt.events.FocusAdapter;
+import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.events.TraverseEvent;
@@ -89,6 +91,7 @@ public final class Overlay {
 		Preconditions.checkNotNull(control);
 		Preconditions.checkNotNull(animatedSupplier);
 		Preconditions.checkNotNull(tickerSupplier);
+
 		return new Overlay(control, animatedSupplier, tickerSupplier);
 	}
 
@@ -97,6 +100,9 @@ public final class Overlay {
 	 */
 	public void show() {
 		this.overlayShell = new Shell(this.control.getShell(), SWT.NO_TRIM | SWT.NO_REDRAW_RESIZE | SWT.NO_BACKGROUND);
+		if (this.overlaySupplier.getRegion() != null) {
+			this.overlayShell.setRegion(this.overlaySupplier.getRegion());
+		}
 		this.overlayShell.setAlpha(this.overlaySupplier.getAlpha());
 		this.overlayShell.addPaintListener(new OverlayPaintListener());
 		this.overlayShell.addTraverseListener(
@@ -106,8 +112,19 @@ public final class Overlay {
 						event.doit = false;
 					}
 				});
+		this.overlayShell.addFocusListener(new FocusAdapter() {
+			@Override
+			public void focusGained(FocusEvent event) {
+				control.getShell().getDisplay().asyncExec(new Runnable() {
+					@Override
+					public void run() {
+						control.getShell().setFocus();
+					}
+				});
+			}
+		});
+
 		this.cover();
-		this.overlayShell.open();
 
 		/* adjust size of overlay-shell when control changes size or position */
 		this.control.getShell().addControlListener(this.controlChangeListener);
@@ -122,6 +139,8 @@ public final class Overlay {
 				this.tickerSupplier.createTicker(aSupplier.getTickerTime(TimeUnit.MILLISECONDS), TimeUnit.MILLISECONDS);
 			this.ticker.startNotifiying(new SWTSyncedTickReceiver(control.getDisplay(), new AnimationUpdateListener()));
 		}
+
+		this.overlayShell.setVisible(true);
 	}
 
 	/**

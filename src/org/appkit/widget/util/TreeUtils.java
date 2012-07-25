@@ -2,8 +2,8 @@ package org.appkit.widget.util;
 
 import com.google.common.base.Preconditions;
 
+import org.appkit.concurrent.Throttle;
 import org.appkit.preferences.PrefStore;
-import org.appkit.util.Throttle;
 import org.appkit.widget.util.impl.ColumnController;
 import org.appkit.widget.util.impl.ColumnOrderMemory;
 import org.appkit.widget.util.impl.ColumnSizeMemory;
@@ -64,8 +64,6 @@ public final class TreeUtils {
 					Preconditions.checkState(tree.getColumnCount() != 0, "no columns in tree!");
 
 					int width = tree.getClientArea().width;
-					width = width - (tree.getBorderWidth() * 2);
-
 					int colWidth = width / tree.getColumnCount();
 
 					L.debug("fillTreeWidth: set column width to {}", colWidth);

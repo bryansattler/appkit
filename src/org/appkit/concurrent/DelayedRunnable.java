@@ -1,24 +1,41 @@
-package org.appkit.util;
+package org.appkit.concurrent;
 
 import java.util.concurrent.Delayed;
 import java.util.concurrent.TimeUnit;
+
+import com.google.common.base.Preconditions;
 
 /** delayed runnable */
 class DelayedRunnable implements Delayed, Runnable {
 
 	//~ Instance fields ------------------------------------------------------------------------------------------------
 
-	protected final Runnable runnable;
-	private final long endOfDelay;
+	private final Runnable runnable;
+	private final long delay;
+	private final TimeUnit delayUnit;
+	private final boolean repeat;
+	private long endOfDelay;
 
 	//~ Constructors ---------------------------------------------------------------------------------------------------
 
-	public DelayedRunnable(final Runnable runnable, final long delay, final TimeUnit delayUnit) {
+	public DelayedRunnable(final Runnable runnable, final long delay, final TimeUnit delayUnit, boolean repeat) {
 		this.runnable	    = runnable;
-		this.endOfDelay     = delayUnit.toMillis(delay) + System.currentTimeMillis();
+		this.delay = delay;
+		this.delayUnit = delayUnit;
+		this.repeat = repeat;
+		this.reset();
 	}
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
+
+	public boolean isRepeating() {
+		return this.repeat;
+	}
+
+	public void reset() {
+		Preconditions.checkState(this.repeat);
+		this.endOfDelay     = delayUnit.toMillis(delay) + System.currentTimeMillis();
+	}
 
 	@Override
 	public int compareTo(final Delayed other) {

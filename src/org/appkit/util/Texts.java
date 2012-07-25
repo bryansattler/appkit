@@ -17,7 +17,7 @@ import java.util.Set;
 
 import org.appkit.templating.Component;
 import org.appkit.templating.Templating;
-import org.appkit.widget.RadioSet;
+import org.appkit.templating.widget.RadioSet;
 
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Control;

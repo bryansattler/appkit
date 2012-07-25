@@ -1,7 +1,7 @@
 package org.appkit.widget.util;
 
+import org.appkit.concurrent.Throttle;
 import org.appkit.preferences.PrefStore;
-import org.appkit.util.Throttle;
 import org.appkit.widget.util.impl.SashFormWeightMemory;
 
 import org.eclipse.swt.custom.SashForm;

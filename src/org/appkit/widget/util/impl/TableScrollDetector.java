@@ -49,10 +49,10 @@ public final class TableScrollDetector implements PaintListener {
 		}
 
 		if ((newFirstVis != firstVisible) || (newLastVis != lastVisible)) {
+			this.firstVisible     = newFirstVis;
+			this.lastVisible	  = newLastVis;
+
 			this.listener.scrolled(new ScrollEvent(totalRows, newFirstVis, newLastVis));
 		}
-
-		this.firstVisible     = newFirstVis;
-		this.lastVisible	  = newLastVis;
 	}
 }

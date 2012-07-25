@@ -1,4 +1,4 @@
-package org.appkit.util;
+package org.appkit.concurrent;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
@@ -94,12 +94,12 @@ public final class SmartExecutor implements Executor, Throttle.Supplier, Ticker.
 
 	/** Schedules a Runnable to be executed after a fixed period of time */
 	public void schedule(final long delay, final TimeUnit timeUnit, final Runnable runnable) {
-		this.taskQueue.put(new DelayedRunnable(runnable, delay, timeUnit));
+		this.taskQueue.put(new DelayedRunnable(runnable, delay, timeUnit, false));
 	}
 
 	/** Schedules a Runnable to be executed using a fixed delay between the end of a run and the start of the next */
 	public void scheduleAtFixedRate(final long interval, final TimeUnit timeUnit, final Runnable runnable) {
-		this.taskQueue.put(new RepeatingRunnable(runnable, interval, timeUnit));
+		this.taskQueue.put(new DelayedRunnable(runnable, interval, timeUnit, true));
 	}
 
 	/** Cancels a scheduled repeating runnable */
@@ -181,7 +181,7 @@ public final class SmartExecutor implements Executor, Throttle.Supplier, Ticker.
 					/* wait for the next runnable to become available */
 					final DelayedRunnable task = SmartExecutor.this.taskQueue.take();
 
-					if (task instanceof RepeatingRunnable) {
+					if (task.isRepeating()) {
 
 						/* if runnable wasn't cancelled tell executor to run the action and reschedule it afterwards */
 						if (cancelledTasks.contains(task.getRunnable())) {
@@ -192,10 +192,12 @@ public final class SmartExecutor implements Executor, Throttle.Supplier, Ticker.
 										@Override
 										public void run() {
 											task.run();
-											SmartExecutor.this.taskQueue.put(((RepeatingRunnable) task).reschedule());
+											task.reset();
+											SmartExecutor.this.taskQueue.put(task);
 										}
 									});
 						}
+
 					} else if (task instanceof ThrottledRunnable) {
 
 						final ThrottledRunnable thrTask = (ThrottledRunnable) task;
@@ -204,6 +206,7 @@ public final class SmartExecutor implements Executor, Throttle.Supplier, Ticker.
 						if (SmartExecutor.this.throttledTasks.get(thrTask.getThrottleName()) == thrTask) {
 							SmartExecutor.this.executorService.execute(task);
 						}
+
 					} else {
 						/* tell the executor to just run the action */
 						SmartExecutor.this.executorService.execute(task);

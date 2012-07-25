@@ -1,4 +1,4 @@
-package org.appkit.widget;
+package org.appkit.widget.util;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;

@@ -6,12 +6,17 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Menu;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Various utilities for working with {@link Button}s
  *
  */
 public final class ButtonUtils {
+
+	@SuppressWarnings("unused")
+	private static final Logger L = LoggerFactory.getLogger(ButtonUtils.class);
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
 

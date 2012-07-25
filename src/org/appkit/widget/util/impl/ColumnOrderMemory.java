@@ -8,10 +8,10 @@ import com.google.common.primitives.Ints;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import org.appkit.concurrent.LoggingRunnable;
+import org.appkit.concurrent.SWTSyncedRunnable;
+import org.appkit.concurrent.Throttle;
 import org.appkit.preferences.PrefStore;
-import org.appkit.util.LoggingRunnable;
-import org.appkit.util.SWTSyncedRunnable;
-import org.appkit.util.Throttle;
 
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.ControlListener;

@@ -1,7 +1,6 @@
 package org.appkit.templating;
 
-import org.appkit.event.EventContext;
-import org.appkit.widget.Options;
+import org.appkit.templating.event.EventContext;
 
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -15,5 +14,5 @@ public interface ControlCreator<E extends Control> {
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
 	/** Creates the widget */
-	E initialize(final EventContext context, final Composite parent, final Options options);
+	E initialize(final EventContext context, final Composite parent, final String name, final Options options);
 }

@@ -15,12 +15,12 @@
             children: 
             [
                 {
-                    name : "stores",
+                    name : "dummy",
                     type : "label",
                     font : "bold"
                 },
                 {
-                    name : "stores",
+                    name : "dummy",
                     type : "table",
                     lines : false,
                     check : true,
@@ -48,12 +48,12 @@
                     name : "status",
                     type : "radioset",
                     h-align: "fill",
-                    choices : "requested ordered delivered"
+                    choices : "showoverlay hideoverlay dummy"
                 }
             ]
         },
         {
-            name : "orders",
+            name : "data",
 			margin-height: 0,
 			margin-width: 0,
             grow : "|-",
@@ -74,17 +74,17 @@
 				    children: 
 				    [
 				        {
-				            name : "mark-ordered",
+				            name : "dropdown",
 				            grow : "-",
 				            h-align : "fill",
 				            type : "button"
 				        },
 				        {
-				            name : "cancel",
+				            name : "shellattach",
 				            type : "button"
 				        },
 				        {
-				            name : "book-in",
+				            name : "dummy",
 				            type : "button"
 				        }
 				    ]

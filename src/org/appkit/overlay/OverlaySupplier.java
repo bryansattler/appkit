@@ -1,6 +1,7 @@
 package org.appkit.overlay;
 
 import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.swt.graphics.Region;
 
 public interface OverlaySupplier {
 
@@ -20,4 +21,6 @@ public interface OverlaySupplier {
 	 * disposes this Supplier
 	 */
 	void dispose();
+
+	Region getRegion();
 }
