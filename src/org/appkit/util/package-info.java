@@ -1,5 +1,5 @@
 /**
- * Various utility-functions
+ * Utilities
  */
 package org.appkit.util;
 

@@ -2,7 +2,6 @@
 javadoc
 *.DS_Store
 /*.jar
-lib
 .classpath
 build
 tools/pmd.html
