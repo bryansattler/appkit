@@ -108,6 +108,7 @@ public final class Sample {
 
 		/* selects the table */
 		final Table t = sample.select("data", Table.class);
+		L.debug("t {}", t.getTopIndex());
 		t.setHeaderVisible(true);
 
 		/* create columns */
@@ -130,23 +131,26 @@ public final class Sample {
 			new ScrollListener() {
 					@Override
 					public void scrolled(final ScrollEvent event) {
-
-						//L.debug("first vis: {}", event.getFirstVisibleRow());
-						//L.debug("last vis: {}", event.getLastVisibleRow());
+						L.debug("first vis: {}", event.getFirstVisibleRow());
+						L.debug("last vis: {}", event.getLastVisibleRow());
 					}
 				});
 
 		this.executor.scheduleAtFixedRate(
-			2,
+			1,
 			TimeUnit.SECONDS,
 			new SWTSyncedRunnable(
 				Display.getCurrent(),
 				new Runnable() {
+
+						private int i = 0;
+
 						@Override
 						public void run() {
 
 							TableItem i1 = new TableItem(t, SWT.NONE);
-							i1.setText("item X");
+							i1.setText("item " + i);
+							this.i = i + 1;
 						}
 					}));
 

@@ -98,13 +98,8 @@ public final class TableUtils {
 
 	/**
 	 * returns the last visible row
-	 *
-	 * @return -1 if no data in the table
 	 */
 	public static int getBottomIndex(final Table table) {
-		if (table.getItemCount() == 0) {
-			return -1;
-		}
 
 		Rectangle rect   = table.getClientArea();
 		int itemHeight   = table.getItemHeight();
@@ -132,13 +127,7 @@ public final class TableUtils {
 		public ScrollEvent(final int totalRows, final int firstVisibleRow, final int lastVisibleRow) {
 			this.totalRows			 = totalRows;
 			this.firstVisibleRow     = firstVisibleRow;
-
-			/* we want visible data-rows, not the blank one at the end */
-			if (lastVisibleRow >= totalRows) {
-				this.lastVisibleRow = totalRows - 1;
-			} else {
-				this.lastVisibleRow = lastVisibleRow;
-			}
+			this.lastVisibleRow		 = lastVisibleRow;
 		}
 
 		public int getFirstVisibleRow() {
@@ -150,7 +139,7 @@ public final class TableUtils {
 		}
 
 		public boolean isFirstRowVisible() {
-			return (firstVisibleRow <= 0);
+			return firstVisibleRow == 0;
 		}
 
 		public boolean isLastRowVisible() {

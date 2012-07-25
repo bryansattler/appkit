@@ -42,12 +42,6 @@ public final class TableScrollDetector implements PaintListener {
 		int newFirstVis = table.getTopIndex();
 		int newLastVis  = TableUtils.getBottomIndex(table);
 
-		/* -1 if no data in table */
-		if (totalRows == 0) {
-			newFirstVis     = -1;
-			newLastVis	    = -1;
-		}
-
 		if ((newFirstVis != firstVisible) || (newLastVis != lastVisible)) {
 			this.firstVisible     = newFirstVis;
 			this.lastVisible	  = newLastVis;
