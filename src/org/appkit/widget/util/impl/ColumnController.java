@@ -1,7 +1,6 @@
 package org.appkit.widget.util.impl;
 
 import org.eclipse.swt.events.ControlListener;
-import org.eclipse.swt.widgets.Scrollable;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Tree;
@@ -11,15 +10,17 @@ public interface ColumnController {
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
+	int getAvailWidth();
+
 	int getColumnCount();
 
 	void setWidth(final int column, final int width);
 
 	int getWidth(final int column);
 
-	int getAvailWidth();
+	void installControlListener(final ControlListener listener);
 
-	Scrollable getControl();
+	void removeControlListener(final ControlListener listener);
 
 	void installColumnControlListener(final int column, final ControlListener listener);
 
@@ -27,7 +28,9 @@ public interface ColumnController {
 
 	int[] getColumnOrder();
 
-	void setColumnsMoveable();
+	void setColumnsMoveable(final boolean movable);
+
+	void setColumnsResizable(final boolean resizable);
 
 	//~ Inner Classes --------------------------------------------------------------------------------------------------
 
@@ -40,13 +43,18 @@ public interface ColumnController {
 		}
 
 		@Override
-		public Scrollable getControl() {
-			return this.table;
+		public void installColumnControlListener(final int column, final ControlListener listener) {
+			this.table.getColumn(column).addControlListener(listener);
 		}
 
 		@Override
-		public void installColumnControlListener(final int column, final ControlListener listener) {
-			this.table.getColumn(column).addControlListener(listener);
+		public void installControlListener(final ControlListener listener) {
+			this.table.addControlListener(listener);
+		}
+
+		@Override
+		public void removeControlListener(final ControlListener listener) {
+			this.table.removeControlListener(listener);
 		}
 
 		@Override
@@ -81,9 +89,16 @@ public interface ColumnController {
 		}
 
 		@Override
-		public void setColumnsMoveable() {
+		public void setColumnsMoveable(final boolean moveable) {
 			for (final TableColumn c : this.table.getColumns()) {
-				c.setMoveable(true);
+				c.setMoveable(moveable);
+			}
+		}
+
+		@Override
+		public void setColumnsResizable(final boolean resizable) {
+			for (final TableColumn c : this.table.getColumns()) {
+				c.setResizable(resizable);
 			}
 		}
 	}
@@ -94,11 +109,6 @@ public interface ColumnController {
 
 		public TreeColumnController(final Tree tree) {
 			this.tree = tree;
-		}
-
-		@Override
-		public Scrollable getControl() {
-			return this.tree;
 		}
 
 		@Override
@@ -127,6 +137,16 @@ public interface ColumnController {
 		}
 
 		@Override
+		public void installControlListener(final ControlListener listener) {
+			this.tree.addControlListener(listener);
+		}
+
+		@Override
+		public void removeControlListener(final ControlListener listener) {
+			this.tree.removeControlListener(listener);
+		}
+
+		@Override
 		public void setColumnOrder(final int order[]) {
 			this.tree.setColumnOrder(order);
 		}
@@ -137,9 +157,16 @@ public interface ColumnController {
 		}
 
 		@Override
-		public void setColumnsMoveable() {
+		public void setColumnsMoveable(final boolean moveable) {
 			for (final TreeColumn c : this.tree.getColumns()) {
-				c.setMoveable(true);
+				c.setMoveable(moveable);
+			}
+		}
+
+		@Override
+		public void setColumnsResizable(final boolean resizable) {
+			for (final TreeColumn c : this.tree.getColumns()) {
+				c.setResizable(resizable);
 			}
 		}
 	}

@@ -43,12 +43,12 @@ public final class ColumnSizeMemory {
 		this.memoryKey		   = key + ".columnsizes";
 
 		/* add initial listener for initial size-setting */
-		colController.getControl().addControlListener(
+		colController.installControlListener(
 			new ControlListener() {
 					@Override
 					public void controlResized(final ControlEvent event) {
 						loadSizes();
-						colController.getControl().removeControlListener(this);
+						colController.removeControlListener(this);
 					}
 
 					@Override

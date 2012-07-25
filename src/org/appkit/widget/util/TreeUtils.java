@@ -2,11 +2,14 @@ package org.appkit.widget.util;
 
 import com.google.common.base.Preconditions;
 
+import java.util.Arrays;
+
 import org.appkit.concurrent.Throttle;
 import org.appkit.preferences.PrefStore;
 import org.appkit.widget.util.impl.ColumnController;
 import org.appkit.widget.util.impl.ColumnOrderMemory;
 import org.appkit.widget.util.impl.ColumnSizeMemory;
+import org.appkit.widget.util.impl.ColumnWeightFixer;
 
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.ControlListener;
@@ -49,6 +52,13 @@ public final class TreeUtils {
 	public static void rememberColumnOrder(final Tree tree, final String memoryKey, final PrefStore prefStore,
 										   final Throttle.Supplier throttleSupplier) {
 		new ColumnOrderMemory(new ColumnController.TreeColumnController(tree), prefStore, throttleSupplier, memoryKey);
+	}
+
+	/**
+	 * fixes weights on a table, also sets setResizable(false) on the columns
+	 */
+	public static void fixColumnWeights(final Tree tree, final Integer weights[]) {
+		new ColumnWeightFixer(new ColumnController.TreeColumnController(tree), Arrays.asList(weights));
 	}
 
 	/**

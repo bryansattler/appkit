@@ -112,7 +112,7 @@ public final class Sample {
 		t.setHeaderVisible(true);
 
 		/* create columns */
-		for (int i = 0; i <= 6; i++) {
+		for (int i = 0; i < 3; i++) {
 
 			TableColumn c1 = new TableColumn(t, SWT.NONE);
 			c1.setText("col " + i);
@@ -121,8 +121,10 @@ public final class Sample {
 		/* divide table equally among columns */
 		TableUtils.fillTableWidth(t);
 
+		//TableUtils.fixColumnWeights(t, new Integer[]{20,0,50});
+
 		/* restore and save column-sizes and order */
-		//TableUtils.rememberColumnSizes(t, "sample", prefStore, executor);
+		TableUtils.rememberColumnSizes(t, "sample", prefStore, executor);
 		TableUtils.rememberColumnOrder(t, "sample", prefStore, executor);
 
 		/* install a ScrollDetector */

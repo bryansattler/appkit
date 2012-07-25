@@ -12,27 +12,30 @@ final class SmartRunnable implements Delayed, Runnable {
 	private final Runnable runnable;
 	private final long delay;
 	private final TimeUnit delayUnit;
-	private final boolean repeat;
+	private final boolean isRepeating;
 	private final String throttleName;
+
+	/* can be reset before re-schedule */
 	private long endOfDelay;
 
 	//~ Constructors ---------------------------------------------------------------------------------------------------
 
 	public SmartRunnable(final Runnable runnable, final long delay, final TimeUnit delayUnit, final boolean repeat,
 						 final String throttleName) {
-		Preconditions.checkArgument((throttleName == null) || ! repeat);
-		this.runnable	   = runnable;
-		this.delay		   = delay;
-		this.delayUnit     = delayUnit;
-		this.repeat		   = repeat;
-		this.reset();
-		this.throttleName = throttleName;
+		Preconditions.checkArgument(! repeat || (throttleName == null), "either specify repeat or a throttle name");
+		this.runnable		  = runnable;
+		this.delay			  = delay;
+		this.delayUnit		  = delayUnit;
+		this.isRepeating	  = repeat;
+		this.throttleName     = throttleName;
+
+		this.endOfDelay = delayUnit.toMillis(delay) + System.currentTimeMillis();
 	}
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
 	public boolean isRepeating() {
-		return this.repeat;
+		return this.isRepeating;
 	}
 
 	public boolean isThrottled() {
@@ -44,7 +47,7 @@ final class SmartRunnable implements Delayed, Runnable {
 	}
 
 	public void reset() {
-		Preconditions.checkState(this.repeat);
+		Preconditions.checkState(this.isRepeating);
 		this.endOfDelay = delayUnit.toMillis(delay) + System.currentTimeMillis();
 	}
 

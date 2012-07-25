@@ -73,7 +73,7 @@ public final class ColumnOrderMemory {
 		this.lastOrder = Ints.asList(colController.getColumnOrder());
 
 		/* set columns movable */
-		this.colController.setColumnsMoveable();
+		this.colController.setColumnsMoveable(true);
 
 		/* add listeners */
 		for (int i = 0; i < this.colController.getColumnCount(); i++) {
