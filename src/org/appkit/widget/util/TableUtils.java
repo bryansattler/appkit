@@ -1,7 +1,6 @@
 package org.appkit.widget.util;
 
 import com.google.common.base.Objects;
-import com.google.common.base.Preconditions;
 
 import java.util.Arrays;
 
@@ -13,8 +12,6 @@ import org.appkit.widget.util.impl.ColumnSizeMemory;
 import org.appkit.widget.util.impl.ColumnWeightFixer;
 import org.appkit.widget.util.impl.TableScrollDetector;
 
-import org.eclipse.swt.events.ControlEvent;
-import org.eclipse.swt.events.ControlListener;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Table;
 
@@ -29,6 +26,7 @@ public final class TableUtils {
 
 	//~ Static fields/initializers -------------------------------------------------------------------------------------
 
+	@SuppressWarnings("unused")
 	private static final Logger L = LoggerFactory.getLogger(TableUtils.class);
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
@@ -66,37 +64,6 @@ public final class TableUtils {
 	 */
 	public static void fixColumnWeights(final Table table, final Integer weights[]) {
 		new ColumnWeightFixer(new ColumnController.TableColumnController(table), Arrays.asList(weights));
-	}
-
-	/**
-	 * adds a controlListener that resizes all columns equally to fill the entire width of the table
-	 *
-	 */
-	public static void fillTableWidth(final Table table) {
-
-		final ControlListener controlListener =
-			new ControlListener() {
-				@Override
-				public void controlResized(final ControlEvent event) {
-					Preconditions.checkState(table.getColumnCount() != 0, "no columns in table!");
-
-					int width    = table.getClientArea().width;
-					int colWidth = width / table.getColumnCount();
-
-					L.debug("fillTableWidth: set column width to {}", colWidth);
-					for (int i = 0; i < table.getColumnCount(); i++) {
-						table.getColumn(i).setWidth(colWidth);
-					}
-
-					table.removeControlListener(this);
-					L.debug("fillTableWidth: done and listener removed");
-				}
-
-				@Override
-				public void controlMoved(final ControlEvent event) {}
-			};
-
-		table.addControlListener(controlListener);
 	}
 
 	/**

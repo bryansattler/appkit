@@ -1,7 +1,5 @@
 package org.appkit.widget.util;
 
-import com.google.common.base.Preconditions;
-
 import java.util.Arrays;
 
 import org.appkit.concurrent.Throttle;
@@ -11,8 +9,6 @@ import org.appkit.widget.util.impl.ColumnOrderMemory;
 import org.appkit.widget.util.impl.ColumnSizeMemory;
 import org.appkit.widget.util.impl.ColumnWeightFixer;
 
-import org.eclipse.swt.events.ControlEvent;
-import org.eclipse.swt.events.ControlListener;
 import org.eclipse.swt.widgets.Tree;
 
 import org.slf4j.Logger;
@@ -26,6 +22,7 @@ public final class TreeUtils {
 
 	//~ Static fields/initializers -------------------------------------------------------------------------------------
 
+	@SuppressWarnings("unused")
 	private static final Logger L = LoggerFactory.getLogger(TreeUtils.class);
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
@@ -59,36 +56,5 @@ public final class TreeUtils {
 	 */
 	public static void fixColumnWeights(final Tree tree, final Integer weights[]) {
 		new ColumnWeightFixer(new ColumnController.TreeColumnController(tree), Arrays.asList(weights));
-	}
-
-	/**
-	 * resizes all columns equally to fill the entire width of the tree
-	 *
-	 */
-	public static void fillTreeWidth(final Tree tree) {
-
-		final ControlListener controlListener =
-			new ControlListener() {
-				@Override
-				public void controlResized(final ControlEvent event) {
-					Preconditions.checkState(tree.getColumnCount() != 0, "no columns in tree!");
-
-					int width    = tree.getClientArea().width;
-					int colWidth = width / tree.getColumnCount();
-
-					L.debug("fillTreeWidth: set column width to {}", colWidth);
-					for (int i = 0; i < tree.getColumnCount(); i++) {
-						tree.getColumn(i).setWidth(colWidth);
-					}
-
-					tree.removeControlListener(this);
-					L.debug("fillTreeWidth: done and listener removed");
-				}
-
-				@Override
-				public void controlMoved(final ControlEvent event) {}
-			};
-
-		tree.addControlListener(controlListener);
 	}
 }

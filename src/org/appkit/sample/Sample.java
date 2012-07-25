@@ -118,11 +118,6 @@ public final class Sample {
 			c1.setText("col " + i);
 		}
 
-		/* divide table equally among columns */
-		TableUtils.fillTableWidth(t);
-
-		//TableUtils.fixColumnWeights(t, new Integer[]{20,0,50});
-
 		/* restore and save column-sizes and order */
 		TableUtils.rememberColumnSizes(t, "sample", prefStore, executor);
 		TableUtils.rememberColumnOrder(t, "sample", prefStore, executor);
