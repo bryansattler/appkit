@@ -21,7 +21,7 @@ import org.slf4j.LoggerFactory;
  * It uses a Scheduler-Thread to schedule and run tasks.
  *
  */
-public final class SmartExecutor implements Executor, Throttle.Supplier, Ticker.Supplier {
+public final class SmartExecutor implements Executor, Throttle.Supplier {
 
 	//~ Static fields/initializers -------------------------------------------------------------------------------------
 
@@ -31,8 +31,8 @@ public final class SmartExecutor implements Executor, Throttle.Supplier, Ticker.
 
 	private final boolean executorCreatedInternally;
 	private final ExecutorService executorService;
-	private final DelayQueue<DelayedRunnable> taskQueue = new DelayQueue<DelayedRunnable>();
-	private final Map<String, ThrottledRunnable> throttledTasks = Maps.newHashMap();
+	private final DelayQueue<SmartRunnable> taskQueue = new DelayQueue<SmartRunnable>();
+	private final Map<String, SmartRunnable> throttledTasks = Maps.newHashMap();
 	private final Set<Runnable> cancelledTasks = Sets.newHashSet();
 	private Thread schedulingThread;
 
@@ -94,12 +94,12 @@ public final class SmartExecutor implements Executor, Throttle.Supplier, Ticker.
 
 	/** Schedules a Runnable to be executed after a fixed period of time */
 	public void schedule(final long delay, final TimeUnit timeUnit, final Runnable runnable) {
-		this.taskQueue.put(new DelayedRunnable(runnable, delay, timeUnit, false));
+		this.taskQueue.put(new SmartRunnable(runnable, delay, timeUnit, false, null));
 	}
 
 	/** Schedules a Runnable to be executed using a fixed delay between the end of a run and the start of the next */
 	public void scheduleAtFixedRate(final long interval, final TimeUnit timeUnit, final Runnable runnable) {
-		this.taskQueue.put(new DelayedRunnable(runnable, interval, timeUnit, true));
+		this.taskQueue.put(new SmartRunnable(runnable, interval, timeUnit, true, null));
 	}
 
 	/** Cancels a scheduled repeating runnable */
@@ -111,12 +111,6 @@ public final class SmartExecutor implements Executor, Throttle.Supplier, Ticker.
 	@Override
 	public Throttle createThrottle(final long delay, final TimeUnit timeUnit) {
 		return new SimpleThrottle(delay, timeUnit);
-	}
-
-	/** Creates a new {@link Ticker} with the given delay */
-	@Override
-	public Ticker createTicker(final long delay, final TimeUnit timeUnit) {
-		return new SimpleTicker(delay, timeUnit);
 	}
 
 	//~ Inner Classes --------------------------------------------------------------------------------------------------
@@ -135,39 +129,9 @@ public final class SmartExecutor implements Executor, Throttle.Supplier, Ticker.
 		@Override
 		public void throttledExecution(final Runnable runnable) {
 
-			ThrottledRunnable thrTask = new ThrottledRunnable(runnable, this.uuid, this.delay, this.timeUnit);
+			SmartRunnable thrTask = new SmartRunnable(runnable, this.delay, this.timeUnit, false, uuid);
 			throttledTasks.put(thrTask.getThrottleName(), thrTask);
 			taskQueue.put(thrTask);
-		}
-	}
-
-	private final class SimpleTicker implements Ticker {
-
-		private final long delay;
-		private final TimeUnit timeUnit;
-		private Runnable runnable;
-
-		public SimpleTicker(final long delay, final TimeUnit timeUnit) {
-			this.delay		  = delay;
-			this.timeUnit     = timeUnit;
-		}
-
-		@Override
-		public void startNotifiying(final TickReceiver receiver) {
-			this.runnable =
-				new Runnable() {
-						@Override
-						public void run() {
-							receiver.tick();
-						}
-					};
-
-			scheduleAtFixedRate(this.delay, this.timeUnit, this.runnable);
-		}
-
-		@Override
-		public void stop() {
-			cancelRepeatingRunnable(this.runnable);
 		}
 	}
 
@@ -179,7 +143,7 @@ public final class SmartExecutor implements Executor, Throttle.Supplier, Ticker.
 				while (true) {
 
 					/* wait for the next runnable to become available */
-					final DelayedRunnable task = SmartExecutor.this.taskQueue.take();
+					final SmartRunnable task = SmartExecutor.this.taskQueue.take();
 
 					if (task.isRepeating()) {
 
@@ -197,19 +161,16 @@ public final class SmartExecutor implements Executor, Throttle.Supplier, Ticker.
 										}
 									});
 						}
-
-					} else if (task instanceof ThrottledRunnable) {
-
-						final ThrottledRunnable thrTask = (ThrottledRunnable) task;
+					} else if (task.isThrottled()) {
 
 						/* run only if this is the latest task in given throttle, otherwise skip execution */
-						if (SmartExecutor.this.throttledTasks.get(thrTask.getThrottleName()) == thrTask) {
+						if (SmartExecutor.this.throttledTasks.get(task.getThrottleName()) == task) {
 							SmartExecutor.this.executorService.execute(task);
 						}
-
 					} else {
 						/* tell the executor to just run the action */
 						SmartExecutor.this.executorService.execute(task);
+
 					}
 				}
 			} catch (final InterruptedException e) {

@@ -2,7 +2,6 @@ package org.appkit.concurrent;
 
 import java.util.concurrent.TimeUnit;
 
-
 /**
  * A throttle to limit expensive calls triggered by often-recurring events.
  *

@@ -21,23 +21,26 @@ public class DefaultCreators {
 
 	static class SpacerCreator implements ControlCreator<Label> {
 		@Override
-		public Label initialize(final EventContext context, final Composite parent, String name, final Options options) {
+		public Label initialize(final EventContext context, final Composite parent, final String name,
+								final Options options) {
 			return new Label(parent, SWT.NONE);
 		}
 	}
 
 	static class ButtonCreator implements ControlCreator<Button> {
 		@Override
-		public Button initialize(final EventContext context, final Composite parent, final String name, final Options options) {
+		public Button initialize(final EventContext context, final Composite parent, final String name,
+								 final Options options) {
+
 			final Button b = new Button(parent, SWT.PUSH);
 			if (name != null) {
-				b.addSelectionListener(new SelectionAdapter() {
-
-					@Override
-					public void widgetSelected(SelectionEvent event) {
-						context.postEvent(new ButtonEvent(b, name));
-					}
-				});
+				b.addSelectionListener(
+					new SelectionAdapter() {
+							@Override
+							public void widgetSelected(final SelectionEvent event) {
+								context.postEvent(new ButtonEvent(b, name));
+							}
+						});
 			}
 
 			return b;
@@ -46,7 +49,8 @@ public class DefaultCreators {
 
 	static class LabelCreator implements ControlCreator<Label> {
 		@Override
-		public Label initialize(final EventContext context, final Composite parent, String name, final Options options) {
+		public Label initialize(final EventContext context, final Composite parent, final String name,
+								final Options options) {
 
 			Label label = new Label(parent, SWT.NONE);
 			label.setText("< empty >");
@@ -62,7 +66,8 @@ public class DefaultCreators {
 
 	static class TextCreator implements ControlCreator<Text> {
 		@Override
-		public Text initialize(final EventContext context, final Composite parent, String name, final Options options) {
+		public Text initialize(final EventContext context, final Composite parent, final String name,
+							   final Options options) {
 
 			int style = SWT.NONE;
 			style |= (options.get("border", true) ? SWT.BORDER : SWT.NONE);
@@ -76,7 +81,8 @@ public class DefaultCreators {
 
 	static class TableCreator implements ControlCreator<Table> {
 		@Override
-		public Table initialize(final EventContext context, final Composite parent, String name, final Options options) {
+		public Table initialize(final EventContext context, final Composite parent, final String name,
+								final Options options) {
 
 			int style = SWT.NONE;
 			style |= (options.get("border", true) ? SWT.BORDER : SWT.NONE);

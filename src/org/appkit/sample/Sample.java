@@ -2,6 +2,7 @@ package org.appkit.sample;
 
 import com.google.common.eventbus.Subscribe;
 
+import java.util.Locale;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
@@ -22,10 +23,10 @@ import org.appkit.templating.widget.RadioSet;
 import org.appkit.util.Texts;
 import org.appkit.widget.util.ButtonUtils;
 import org.appkit.widget.util.MBox;
+import org.appkit.widget.util.MBox.Type;
 import org.appkit.widget.util.SWTUtils;
 import org.appkit.widget.util.ShellUtils;
 import org.appkit.widget.util.TableUtils;
-import org.appkit.widget.util.MBox.Type;
 import org.appkit.widget.util.TableUtils.ScrollEvent;
 import org.appkit.widget.util.TableUtils.ScrollListener;
 import org.appkit.widget.util.TextUtils;
@@ -84,7 +85,7 @@ public final class Sample {
 		this.sample = templating.create("sample", eventContext, shell);
 
 		/* translate component */
-		Texts.translateComponent(sample);
+		Texts.translateComponent(sample, Locale.ENGLISH);
 
 		/* gets all texts with the SWT method */
 		for (final Text text : SWTUtils.findAllChildren(shell, Text.class)) {
@@ -94,7 +95,7 @@ public final class Sample {
 			TextUtils.configureForNumber(text, 0, 5);
 		}
 
-		Menu menu = new Menu(this.shell);
+		Menu menu     = new Menu(this.shell);
 		MenuItem item = new MenuItem(menu, SWT.NONE);
 		item.setText("An Option");
 		item = new MenuItem(menu, SWT.NONE);
@@ -111,6 +112,7 @@ public final class Sample {
 
 		/* create columns */
 		for (int i = 0; i <= 6; i++) {
+
 			TableColumn c1 = new TableColumn(t, SWT.NONE);
 			c1.setText("col " + i);
 		}
@@ -128,6 +130,7 @@ public final class Sample {
 			new ScrollListener() {
 					@Override
 					public void scrolled(final ScrollEvent event) {
+
 						//L.debug("first vis: {}", event.getFirstVisibleRow());
 						//L.debug("last vis: {}", event.getLastVisibleRow());
 					}
@@ -141,12 +144,11 @@ public final class Sample {
 				new Runnable() {
 						@Override
 						public void run() {
+
 							TableItem i1 = new TableItem(t, SWT.NONE);
 							i1.setText("item X");
 						}
 					}));
-
-
 
 		shell.open();
 		while (! shell.isDisposed()) {
@@ -182,13 +184,25 @@ public final class Sample {
 
 			/* opens an attached subshell */
 			Shell subShell = new Shell(shell, SWT.NONE);
-			subShell.setSize(400,150);
+			subShell.setSize(400, 150);
 			subShell.open();
 
 			ShellUtils.smartAttachment(subShell, event.getButton());
 		} else if (event.getOrigin().equals("dummy")) {
 
-			MBox mbox = new MBox(shell, Type.QUESTION, "A question", "What is it going to be?", 1, "ab", "b", "c", "d", "ac", "e");
+			MBox mbox =
+				new MBox(
+					shell,
+					Type.QUESTION,
+					"A question",
+					"What is it going to be?",
+					1,
+					"ab",
+					"b",
+					"c",
+					"d",
+					"ac",
+					"e");
 			MBox.show(shell, Type.INFO, "Answer: " + mbox.showReturningString());
 
 		}
@@ -199,6 +213,7 @@ public final class Sample {
 		L.debug("we got a radio-choice: {}", event.getSelectedChoice());
 		if (event.getSelectedChoice().equals("showoverlay")) {
 			if (this.overlay == null) {
+
 				Table table = sample.select("data$table", Table.class);
 
 				/* display a spinner */
@@ -211,15 +226,11 @@ public final class Sample {
 							}
 						});
 			}
-
-
 		} else if (event.getSelectedChoice().equals("hideoverlay")) {
-
 			if (this.overlay != null) {
 				this.overlay.dispose();
 				this.overlay = null;
 			}
-
 		}
 	}
 

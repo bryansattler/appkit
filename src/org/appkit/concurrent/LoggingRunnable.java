@@ -6,10 +6,6 @@ import org.slf4j.LoggerFactory;
 /** A Runnable that logs all RuntimeExceptions. */
 public abstract class LoggingRunnable implements Runnable {
 
-	//~ Static fields/initializers -------------------------------------------------------------------------------------
-
-	private static final Logger L = LoggerFactory.getLogger(LoggingRunnable.class);
-
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
 	@Override
@@ -17,6 +13,8 @@ public abstract class LoggingRunnable implements Runnable {
 		try {
 			this.runChecked();
 		} catch (final RuntimeException e) {
+
+			Logger L = LoggerFactory.getLogger(this.getClass());
 			L.error(e.getMessage(), e);
 		}
 	}

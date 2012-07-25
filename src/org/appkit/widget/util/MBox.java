@@ -9,7 +9,6 @@ import com.google.common.collect.Iterables;
 import java.util.Arrays;
 import java.util.List;
 
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
@@ -170,7 +169,7 @@ public final class MBox {
 		}
 
 		/* Position in the middle of of parent shell */
-		SWTUtils.moveToCenterOf(this.shell, this.shell.getParent());
+		ShellUtils.moveToCenterOf(this.shell, this.shell.getParent(), 0, -50);
 	}
 
 	//~ Methods --------------------------------------------------------------------------------------------------------

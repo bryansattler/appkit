@@ -63,7 +63,7 @@ public final class TreeUtils {
 				public void controlResized(final ControlEvent event) {
 					Preconditions.checkState(tree.getColumnCount() != 0, "no columns in tree!");
 
-					int width = tree.getClientArea().width;
+					int width    = tree.getClientArea().width;
 					int colWidth = width / tree.getColumnCount();
 
 					L.debug("fillTreeWidth: set column width to {}", colWidth);

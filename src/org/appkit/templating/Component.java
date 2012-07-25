@@ -89,7 +89,8 @@ public class Component {
 			Preconditions.checkArgument(types.containsKey(type), "no type '%s' registered", type);
 			try {
 
-				Constructor<?> con = types.get(type).getConstructor(EventContext.class, Composite.class, String.class, Options.class);
+				Constructor<?> con =
+					types.get(type).getConstructor(EventContext.class, Composite.class, String.class, Options.class);
 				c = (Control) con.newInstance(context, parent, definition.getName(), definition.getOptions());
 
 			} catch (final InvocationTargetException e) {

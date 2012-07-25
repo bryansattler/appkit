@@ -1,12 +1,11 @@
 package org.appkit.concurrent;
 
+import com.google.common.base.Preconditions;
+
 import java.util.concurrent.Delayed;
 import java.util.concurrent.TimeUnit;
 
-import com.google.common.base.Preconditions;
-
-/** delayed runnable */
-class DelayedRunnable implements Delayed, Runnable {
+final class SmartRunnable implements Delayed, Runnable {
 
 	//~ Instance fields ------------------------------------------------------------------------------------------------
 
@@ -14,16 +13,20 @@ class DelayedRunnable implements Delayed, Runnable {
 	private final long delay;
 	private final TimeUnit delayUnit;
 	private final boolean repeat;
+	private final String throttleName;
 	private long endOfDelay;
 
 	//~ Constructors ---------------------------------------------------------------------------------------------------
 
-	public DelayedRunnable(final Runnable runnable, final long delay, final TimeUnit delayUnit, boolean repeat) {
-		this.runnable	    = runnable;
-		this.delay = delay;
-		this.delayUnit = delayUnit;
-		this.repeat = repeat;
+	public SmartRunnable(final Runnable runnable, final long delay, final TimeUnit delayUnit, final boolean repeat,
+						 final String throttleName) {
+		Preconditions.checkArgument((throttleName == null) || ! repeat);
+		this.runnable	   = runnable;
+		this.delay		   = delay;
+		this.delayUnit     = delayUnit;
+		this.repeat		   = repeat;
 		this.reset();
+		this.throttleName = throttleName;
 	}
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
@@ -32,9 +35,17 @@ class DelayedRunnable implements Delayed, Runnable {
 		return this.repeat;
 	}
 
+	public boolean isThrottled() {
+		return this.throttleName != null;
+	}
+
+	public String getThrottleName() {
+		return this.throttleName;
+	}
+
 	public void reset() {
 		Preconditions.checkState(this.repeat);
-		this.endOfDelay     = delayUnit.toMillis(delay) + System.currentTimeMillis();
+		this.endOfDelay = delayUnit.toMillis(delay) + System.currentTimeMillis();
 	}
 
 	@Override

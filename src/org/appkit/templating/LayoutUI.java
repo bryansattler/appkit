@@ -1,6 +1,5 @@
 package org.appkit.templating;
 
-
 import org.eclipse.swt.widgets.Control;
 
 /**

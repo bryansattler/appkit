@@ -52,4 +52,21 @@ public final class ShellUtils {
 	public static void smartAttachment(final Shell shell, final Control control) {
 		new ShellAttacher(shell, control);
 	}
+
+	public static void moveToMonitorCenter(final Shell shell) {
+		moveToMonitorCenter(shell, 0, 0);
+	}
+
+	public static void moveToCenterOf(final Shell shell, final Control referenceControl) {
+		moveToCenterOf(shell, referenceControl, 0, 0);
+	}
+
+	public static void moveToMonitorCenter(final Shell shell, final int xOffset, final int yOffset) {
+		shell.setLocation(SWTUtils.getCenterPosition(shell, xOffset, yOffset));
+	}
+
+	public static void moveToCenterOf(final Shell shell, final Control referenceControl, final int xOffset,
+									  final int yOffset) {
+		shell.setLocation(SWTUtils.getRelativeCenterPosition(shell, referenceControl, xOffset, yOffset));
+	}
 }

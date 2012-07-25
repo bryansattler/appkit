@@ -73,10 +73,14 @@ public class RadioSet extends Composite implements CustomTranlation {
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
-	public void selectChoice(String choice) {
-		Preconditions.checkArgument(this.choices.containsKey(choice), "choices of this radioset %s don't contain '%s'", this.choices.keySet(), choice);
+	public void selectChoice(final String choice) {
+		Preconditions.checkArgument(
+			this.choices.containsKey(choice),
+			"choices of this radioset %s don't contain '%s'",
+			this.choices.keySet(),
+			choice);
 
-		for (Map.Entry<String,Button> btn : this.choices.entrySet()) {
+		for (final Map.Entry<String, Button> btn : this.choices.entrySet()) {
 			if (btn.getKey().equals(choice)) {
 				btn.getValue().setSelection(true);
 			} else {
@@ -98,7 +102,11 @@ public class RadioSet extends Composite implements CustomTranlation {
 			String code		   = i.next();
 			String text		   = i.next();
 
-			Preconditions.checkArgument(this.choices.containsKey(code), "choices of this radioset %s don't contain '%s'", this.choices.keySet(), code);
+			Preconditions.checkArgument(
+				this.choices.containsKey(code),
+				"choices of this radioset %s don't contain '%s'",
+				this.choices.keySet(),
+				code);
 
 			L.debug("i18n text for option '{}' is '{}'", code, text);
 			this.choices.get(code).setText(text);
@@ -106,7 +114,4 @@ public class RadioSet extends Composite implements CustomTranlation {
 
 		this.layout();
 	}
-
-	//~ Inner Classes --------------------------------------------------------------------------------------------------
-
 }

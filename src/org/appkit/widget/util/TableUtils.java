@@ -70,7 +70,7 @@ public final class TableUtils {
 				public void controlResized(final ControlEvent event) {
 					Preconditions.checkState(table.getColumnCount() != 0, "no columns in table!");
 
-					int width = table.getClientArea().width;
+					int width    = table.getClientArea().width;
 					int colWidth = width / table.getColumnCount();
 
 					L.debug("fillTableWidth: set column width to {}", colWidth);

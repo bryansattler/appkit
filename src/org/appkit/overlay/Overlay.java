@@ -4,9 +4,8 @@ import com.google.common.base.Preconditions;
 
 import java.util.concurrent.TimeUnit;
 
-import org.appkit.concurrent.SWTSyncedTickReceiver;
-import org.appkit.concurrent.Ticker;
-import org.appkit.concurrent.Ticker.TickReceiver;
+import org.appkit.concurrent.SWTSyncedRunnable;
+import org.appkit.concurrent.SmartExecutor;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ControlEvent;
@@ -52,21 +51,21 @@ public final class Overlay {
 	private final OverlaySupplier overlaySupplier;
 
 	/* for animation */
-	private final Ticker.Supplier tickerSupplier;
-	private Ticker ticker;
+	private final SmartExecutor smartExecutor;
 
 	/* overlay */
 	private Shell overlayShell;
 	private Image buffer;
 	private boolean redrawBuffer							 = true;
+	private Runnable animationRunnable;
 
 	//~ Constructors ---------------------------------------------------------------------------------------------------
 
-	private Overlay(final Control control, final OverlaySupplier overlaySupplier, final Ticker.Supplier tickerSupplier) {
-		this.control				   = control;
-		this.overlaySupplier		   = overlaySupplier;
-		this.controlChangeListener     = new ControlChangeListener();
-		this.tickerSupplier			   = tickerSupplier;
+	private Overlay(final Control control, final OverlaySupplier overlaySupplier, final SmartExecutor smartExecutor) {
+		this.control										 = control;
+		this.overlaySupplier								 = overlaySupplier;
+		this.controlChangeListener							 = new ControlChangeListener();
+		this.smartExecutor									 = smartExecutor;
 	}
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
@@ -87,12 +86,12 @@ public final class Overlay {
 	 * creates a new animated overlay on the given {@link Control}
 	 */
 	public static Overlay createAnimatedOverlay(final Control control, final AnimatedOverlaySupplier animatedSupplier,
-												final Ticker.Supplier tickerSupplier) {
+												final SmartExecutor smartExecutor) {
 		Preconditions.checkNotNull(control);
 		Preconditions.checkNotNull(animatedSupplier);
-		Preconditions.checkNotNull(tickerSupplier);
+		Preconditions.checkNotNull(smartExecutor);
 
-		return new Overlay(control, animatedSupplier, tickerSupplier);
+		return new Overlay(control, animatedSupplier, smartExecutor);
 	}
 
 	/**
@@ -112,17 +111,19 @@ public final class Overlay {
 						event.doit = false;
 					}
 				});
-		this.overlayShell.addFocusListener(new FocusAdapter() {
-			@Override
-			public void focusGained(FocusEvent event) {
-				control.getShell().getDisplay().asyncExec(new Runnable() {
+		this.overlayShell.addFocusListener(
+			new FocusAdapter() {
 					@Override
-					public void run() {
-						control.getShell().setFocus();
+					public void focusGained(final FocusEvent event) {
+						control.getShell().getDisplay().asyncExec(
+							new Runnable() {
+									@Override
+									public void run() {
+										control.getShell().setFocus();
+									}
+								});
 					}
 				});
-			}
-		});
 
 		this.cover();
 
@@ -135,9 +136,11 @@ public final class Overlay {
 			final AnimatedOverlaySupplier aSupplier = (AnimatedOverlaySupplier) this.overlaySupplier;
 
 			/* create a ticker */
-			this.ticker =
-				this.tickerSupplier.createTicker(aSupplier.getTickerTime(TimeUnit.MILLISECONDS), TimeUnit.MILLISECONDS);
-			this.ticker.startNotifiying(new SWTSyncedTickReceiver(control.getDisplay(), new AnimationUpdateListener()));
+			this.animationRunnable = new SWTSyncedRunnable(this.control.getDisplay(), new AnimationUpdateListener());
+			this.smartExecutor.scheduleAtFixedRate(
+				aSupplier.getTickerTime(TimeUnit.MILLISECONDS),
+				TimeUnit.MILLISECONDS,
+				this.animationRunnable);
 		}
 
 		this.overlayShell.setVisible(true);
@@ -149,8 +152,8 @@ public final class Overlay {
 	public void dispose() {
 
 		/* stop the animator */
-		if (this.ticker != null) {
-			this.ticker.stop();
+		if (this.animationRunnable != null) {
+			this.smartExecutor.cancelRepeatingRunnable(this.animationRunnable);
 		}
 
 		/* remove the control-listeners */
@@ -174,9 +177,9 @@ public final class Overlay {
 
 	//~ Inner Classes --------------------------------------------------------------------------------------------------
 
-	private final class AnimationUpdateListener implements TickReceiver {
+	private final class AnimationUpdateListener implements Runnable {
 		@Override
-		public void tick() {
+		public void run() {
 
 			AnimatedOverlaySupplier aSupplier = (AnimatedOverlaySupplier) overlaySupplier;
 			aSupplier.tick();
