@@ -87,15 +87,15 @@ which you might find useful.</p>
 
 <ul>
 <li>
-<a href="http://google-gson.googlecode.com">gson-2.0</a> fast json parsing library</li>
+<a href="http://google-gson.googlecode.com">gson</a> fast json parsing library</li>
 <li>
-<a href="http://guava-libraries.googlecode.com/">guava-11.0.2</a> google's core java-libraries</li>
+<a href="http://guava-libraries.googlecode.com/">guava</a> google's core java-libraries, a must-use!</li>
 <li>
-<a href="http://github.com/twall/jna">jna-3.4</a> java native access, necessary to get ApplicationData Folder on Windows (O_o)</li>
+<a href="http://github.com/twall/jna">jna</a> java native access, necessary to get ApplicationData Folder on Windows (O_o)</li>
 <li>
-<a href="http://slf4j.org/">slf4j-api-1.6.4</a> simple logging facade for java</li>
+<a href="http://slf4j.org/">slf4j-api</a> simple logging facade for java</li>
 <li>
-<a href="http://www.eclipse.org/swt">swt-3.7.1</a> SWT</li>
+<a href="http://www.eclipse.org/swt">swt/a> Standard Widget Toolkit, you probably now that one</li>
 </ul><h3>Thank you / Donations</h3>
 
 <p>If you want you can <a href="http://flattr.com/profile/cel1ne">flattr</a> me, or send a Paypal donation to the email above.</p>
@@ -164,8 +164,8 @@ which you might find useful.</p>
 <span class="o">}</span>
 
 <span class="nd">@Subscribe</span>
-<span class="kd">public</span> <span class="kt">void</span> <span class="nf">daterangeChange</span><span class="o">(</span><span class="kd">final</span> <span class="n">DateRange</span> <span class="n">daterange</span><span class="o">)</span> <span class="o">{</span>
-    <span class="n">L</span><span class="o">.</span><span class="na">debug</span><span class="o">(</span><span class="s">"we got a date-range of our date picker: {}"</span><span class="o">,</span> <span class="n">daterange</span><span class="o">);</span>
+<span class="kd">public</span> <span class="kt">void</span> <span class="nf">daterangeChange</span><span class="o">(</span><span class="kd">final</span> <span class="n">DatePickerEvent</span> <span class="n">event</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">L</span><span class="o">.</span><span class="na">debug</span><span class="o">(</span><span class="s">"we got a date-range of our date picker: {}"</span><span class="o">,</span> <span class="n">event.getDateRange()</span><span class="o">);</span>
 <span class="o">}</span>
 </pre>
 </div>
@@ -174,7 +174,7 @@ which you might find useful.</p>
 <br />
 <h3>Registries for Colors, Fonts and Images</h3>
 
-<p>Automatic assigning, caching, disposing of Colors, Fonts and Images. Most of the time you won't need more than a one-liner.</p>
+<p>Automatic assigning, caching and disposing of Colors, Fonts and Images. Most of the time you won't need more than a one-liner.</p>
 
 <div class="highlight">
 <pre><span class="n">Button</span> <span class="n">button</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Button</span><span class="o">(</span><span class="n">parent</span><span class="o">,</span> <span class="n">SWT</span><span class="o">.</span><span class="na">PUSH</span><span class="o">);</span>
@@ -231,9 +231,6 @@ which you might find useful.</p>
 <p>A collection of tools i find myself reimplementing in every project.</p>
 
 <div class="highlight">
-<pre><span class="cm">/* size table-coumns equally among available size */</span>
-<span class="n">TableUtils</span><span class="o">.</span><span class="na">fillTableWidth</span><span class="o">(</span><span class="n">table</span><span class="o">);</span>
-
 <span class="cm">/* restore and save column-weights and order */</span>
 <span class="n">TableUtils</span><span class="o">.</span><span class="na">rememberColumnSizes</span><span class="o">(</span><span class="n">prefStore</span><span class="o">,</span> <span class="n">executor</span><span class="o">,</span> <span class="n">table</span><span class="o">,</span> <span class="s">"MyTable"</span><span class="o">);</span>
 <span class="n">TableUtils</span><span class="o">.</span><span class="na">rememberColumnOrder</span><span class="o">(</span><span class="n">prefStore</span><span class="o">,</span> <span class="n">executor</span><span class="o">,</span> <span class="n">table</span><span class="o">,</span> <span class="s">"MyTable"</span><span class="o">);</span>
