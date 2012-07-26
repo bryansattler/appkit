@@ -97,14 +97,18 @@ public final class TableUtils {
 
 	public static final class ScrollEvent {
 
-		private final int totalRows;
+		private final int itemCount;
 		private final int firstVisibleRow;
 		private final int lastVisibleRow;
 
-		public ScrollEvent(final int totalRows, final int firstVisibleRow, final int lastVisibleRow) {
-			this.totalRows			 = totalRows;
+		public ScrollEvent(final int itemCount, final int firstVisibleRow, final int lastVisibleRow) {
+			this.itemCount			 = itemCount;
 			this.firstVisibleRow     = firstVisibleRow;
 			this.lastVisibleRow		 = lastVisibleRow;
+		}
+
+		public int getItemCount() {
+			return this.itemCount;
 		}
 
 		public int getFirstVisibleRow() {
@@ -120,14 +124,14 @@ public final class TableUtils {
 		}
 
 		public boolean isLastRowVisible() {
-			return ((lastVisibleRow + 1) == totalRows);
+			return ((lastVisibleRow + 1) >= itemCount);
 		}
 
 		@Override
 		public String toString() {
 
 			Objects.ToStringHelper helper = Objects.toStringHelper(this);
-			helper.add("total", this.totalRows);
+			helper.add("itemcount", this.itemCount);
 			helper.add("first-vis", this.firstVisibleRow);
 			helper.add("last-vis", this.lastVisibleRow);
 
