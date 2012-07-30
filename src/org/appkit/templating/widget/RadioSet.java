@@ -10,7 +10,7 @@ import java.util.Map;
 import org.appkit.templating.Options;
 import org.appkit.templating.event.EventContext;
 import org.appkit.templating.event.RadioSetEvent;
-import org.appkit.util.Texts.CustomTranlation;
+import org.appkit.util.Texts.Translateable;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -23,7 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /** a component that uses multiple {@link Button}s to form a radio-set */
-public class RadioSet extends Composite implements CustomTranlation {
+public class RadioSet extends Composite implements Translateable {
 
 	//~ Static fields/initializers -------------------------------------------------------------------------------------
 

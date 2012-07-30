@@ -8,7 +8,7 @@ import org.eclipse.swt.widgets.Control;
  * Various utilities for working with {@link GridLayout}s
  *
  */
-public final class GridLayoutUtils {
+public final class GridUtils {
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
@@ -41,6 +41,20 @@ public final class GridLayoutUtils {
 		if (! data.exclude) {
 			layout.numColumns     = layout.numColumns - 1;
 			data.exclude		  = true;
+		}
+	}
+
+	public static void hide(final Control... controls) {
+		for (final Control c : controls) {
+			((GridData) c.getLayoutData()).exclude = true;
+			c.setVisible(false);
+		}
+	}
+
+	public static void show(final Control... controls) {
+		for (final Control c : controls) {
+			((GridData) c.getLayoutData()).exclude = false;
+			c.setVisible(true);
 		}
 	}
 }

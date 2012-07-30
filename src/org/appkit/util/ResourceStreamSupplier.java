@@ -1,10 +1,10 @@
 package org.appkit.util;
 
+import com.google.common.io.InputSupplier;
+
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-
-import java.net.URL;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,12 +13,16 @@ import org.slf4j.LoggerFactory;
  * A {@link ParamSupplier} which returns an InputStream by loading a file from resources.
  *
  */
-public class ResourceStreamSupplier implements ParamSupplier<String, InputStream> {
+public class ResourceStreamSupplier implements ParamInputSupplier<String, InputStream> {
 
 	//~ Static fields/initializers -------------------------------------------------------------------------------------
 
 	@SuppressWarnings("unused")
 	private static final Logger L = LoggerFactory.getLogger(ResourceStreamSupplier.class);
+
+	//~ Constructors ---------------------------------------------------------------------------------------------------
+
+	private ResourceStreamSupplier() {}
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
@@ -26,21 +30,18 @@ public class ResourceStreamSupplier implements ParamSupplier<String, InputStream
 		return new ResourceStreamSupplier();
 	}
 
+	public InputSupplier<InputStream> getSupplier(final String resource) {
+		return new InputSupplier<InputStream>() {
+				@Override
+				public InputStream getInput() throws IOException {
+					return ResourceStreamSupplier.this.getInput(resource);
+				}
+			};
+	}
+
 	/** returns an InputStream for the resource */
 	@Override
-	public InputStream get(final String resource) {
-
-		String fullName = "/resources/" + resource;
-
-		URL url = ResourceStreamSupplier.class.getResource(fullName);
-		if (url == null) {
-			return null;
-		}
-
-		try {
-			return new BufferedInputStream(url.openStream());
-		} catch (final IOException e) {
-			throw new RuntimeException(e.getMessage(), e);
-		}
+	public InputStream getInput(final String resource) throws IOException {
+		return new BufferedInputStream(this.getClass().getResourceAsStream("/resources/" + resource));
 	}
 }

@@ -13,7 +13,6 @@ import java.util.Map;
 
 import org.appkit.templating.event.EventContext;
 import org.appkit.util.Naming;
-import org.appkit.util.Naming.QueryMatcher;
 
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -36,7 +35,7 @@ import org.slf4j.LoggerFactory;
  * <li> <code>sidebar$grid</code> selects the table found somewhere under "sidebar"
  * <li> <code>stores$table</code> selects the table found somewhere under "stores"
  */
-public class Component {
+public final class Component extends Naming<Control> {
 
 	//~ Static fields/initializers -------------------------------------------------------------------------------------
 
@@ -46,7 +45,6 @@ public class Component {
 
 	private final String componentName;
 	private final Composite composite;
-	private final Naming<Control> naming;
 	private final Map<Control, WidgetDefinition> defMap;
 
 	//~ Constructors ---------------------------------------------------------------------------------------------------
@@ -54,23 +52,19 @@ public class Component {
 	protected Component(final String componentName, final WidgetDefinition definition, final Composite parent,
 						final EventContext context, final Map<String, ControlCreator<?>> customCreators,
 						final Map<String, Class<?extends Control>> types) {
-		Preconditions.checkArgument(definition.getFullName().equals(""), "don't give the top-composite a name");
+		Preconditions.checkArgument(definition.getName().isEmpty(), "don't give the top-composite a name");
 
+		this.componentName		  = componentName;
 		this.defMap				  = Maps.newHashMap();
-		this.naming				  = Naming.create(new WidgetMatcher());
+		this.setQueryMatcher(new ControlMatcher());
 
 		/* recursive initialization */
 		Control control = this.initRecursive(definition, parent, context, customCreators, types);
+		Preconditions.checkState(control instanceof Composite, "top-control must be a composite");
+		this.composite = (Composite) control;
 
-		this.componentName = componentName;
-		if (control instanceof Composite) {
-			this.composite = (Composite) control;
-		} else {
-			this.composite = null;
-		}
-
-		this.naming.seal();
-		L.debug("{}", this.naming);
+		this.seal();
+		L.debug("{}", super.toString());
 	}
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
@@ -81,7 +75,7 @@ public class Component {
 
 		String type = definition.getType();
 
-		Control c = null;
+		Control c   = null;
 		if (customCreators.containsKey(type)) {
 			c = customCreators.get(type).initialize(context, parent, definition.getName(), definition.getOptions());
 
@@ -95,26 +89,28 @@ public class Component {
 
 			} catch (final InvocationTargetException e) {
 				L.error(e.getMessage(), e);
-				throw new IllegalArgumentException(e.getMessage(), e);
+				throw new RuntimeException(e);
 			} catch (final NoSuchMethodException e) {
 				L.error(e.getMessage(), e);
-				throw new IllegalArgumentException(e.getMessage(), e);
+				throw new RuntimeException(e);
 			} catch (final InstantiationException e) {
 				L.error(e.getMessage(), e);
-				throw new IllegalArgumentException(e.getMessage(), e);
+				throw new RuntimeException(e);
 			} catch (final IllegalAccessException e) {
 				L.error(e.getMessage(), e);
-				throw new IllegalArgumentException(e.getMessage(), e);
+				throw new RuntimeException(e);
 			}
 		}
 
 		if (! definition.getChildren().isEmpty()) {
 			Preconditions.checkState(
 				c instanceof Composite,
-				"control has children, but is not a composite, what is going on?");
+				"control '%s' has children, but is not a composite, what is going on?",
+				definition.getName());
 			Preconditions.checkState(
 				c instanceof LayoutUI,
-				"control has children, but doesn't implement LayoutUI, what is going on?");
+				"control '%s' has children, but doesn't implement LayoutUI, what is going on?",
+				definition.getName());
 
 			for (final WidgetDefinition childDef : definition.getChildren()) {
 
@@ -123,7 +119,7 @@ public class Component {
 			}
 		}
 
-		this.naming.put(c);
+		this.put(c);
 		this.defMap.put(c, definition);
 
 		return c;
@@ -131,90 +127,63 @@ public class Component {
 
 	/**
 	 * Returns the Composite which is the root of the component.
-	 *
-	 * @throws IllegalStateException if the component doesn't have a composite as root.
 	 */
 	public Composite getComposite() {
-		Preconditions.checkState(composite != null, "this component isn't a composite");
 		return this.composite;
 	}
 
 	/**
-	 * Returns the type/name of the component.
+	 * Returns the name of the component.
 	 */
 	public String getName() {
 		return this.componentName;
 	}
 
-	/**
-	 * Returns the control selected by the given name and class, cast to the class.
-	 *
-	 * @throws IllegalStateException if not exactly one was found
-	 * @see Templating
-	 *
-	 */
-	public final <T extends Control> T select(final String name, final Class<T> clazz) {
-		return this.naming.select(name, clazz);
-	}
-
-	/**
-	 * Returns the control selected by the given name
-	 *
-	 * @throws IllegalStateException if not exactly one was found
-	 * @see Templating
-	 *
-	 */
-	public final Control select(final String name) {
-		return this.naming.select(name);
-	}
-
-	/**
-	 * Returns the control selected by the given class, cast to the class.
-	 *
-	 * @throws IllegalStateException if not exactly one was found
-	 * @see Templating
-	 *
-	 */
-	public final <T extends Control> T select(final Class<T> clazz) {
-		return this.naming.select(clazz);
-	}
-
 	//~ Inner Classes --------------------------------------------------------------------------------------------------
 
-	private final class WidgetMatcher implements QueryMatcher<Control> {
+	private final class ControlMatcher implements QueryMatcher<Control> {
 		@Override
 		public String toStringPrimaryKey(final Control c) {
 
 			WidgetDefinition def = defMap.get(c);
-
-			return def.getFullName() + "$" + def.getType() + ": " + c;
+			return def.getNamePath() + "$" + def.getType() + ": " + c;
 		}
 
 		@Override
 		public boolean matches(final Control c, final String str) {
 
-			String namePortion = null;
-			String typePortion = null;
+			WidgetDefinition def = defMap.get(c);
+
+			String namePortion   = str.toLowerCase();
 			if (str.contains("$")) {
 
 				List<String> list = Lists.newArrayList(Splitter.on("$").split(str));
-				namePortion     = list.get(0).toLowerCase();
-				typePortion     = list.get(1).toLowerCase();
+				namePortion = list.get(0).toLowerCase();
 
-			} else {
-				namePortion = str.toLowerCase();
+				/* compare type */
+				String typePortion = list.get(1).toLowerCase();
+				if (! typePortion.equalsIgnoreCase(def.getType())) {
+					return false;
+				}
+			}
+			if (namePortion.isEmpty()) {
+				return true;
 			}
 
-			WidgetDefinition def = defMap.get(c);
-
-			/* compare type */
-			if ((typePortion != null) && ! typePortion.equals(def.getType())) {
+			int index = def.getNamePath().indexOf(namePortion);
+			if (index == -1) {
 				return false;
 			}
 
-			/* compare name */
-			if (! def.getFullName().endsWith(namePortion) && ! def.getFullName().startsWith(namePortion)) {
-				return false;
+			if (index > 0) {
+				if (def.getNamePath().charAt(index - 1) != '.') {
+					return false;
+				}
+			}
+			if ((index + namePortion.length()) < def.getNamePath().length()) {
+				if (def.getNamePath().charAt(index + str.length()) != '.') {
+					return false;
+				}
 			}
 
 			return true;

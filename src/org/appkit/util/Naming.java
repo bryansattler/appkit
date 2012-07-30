@@ -17,13 +17,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * Extend this class to add a naming-hierarchy to your class.
  * This serves as a generic dictionary which allows objects to be retrieved by combination of a string and a class (or just one of those).
  * If a class was specified, the results contain all objects that can be casted to that class. Test is done by
  * {@link Class#isAssignableFrom(Class)}.
  * If a String was specified the matcher needed for construction will be queried as well.
  *
  */
-public final class Naming<E> {
+public class Naming<E> {
 
 	//~ Static fields/initializers -------------------------------------------------------------------------------------
 
@@ -32,24 +33,31 @@ public final class Naming<E> {
 
 	//~ Instance fields ------------------------------------------------------------------------------------------------
 
-	private final Set<E> data						  = Sets.newHashSet();
-	private final QueryMatcher<?super E> queryMatcher;
+	private final Set<E> data;
+	private QueryMatcher<?super E> queryMatcher;
 	private Map<Integer, ImmutableSet<?>> cache;
 
 	//~ Constructors ---------------------------------------------------------------------------------------------------
 
-	private Naming(final QueryMatcher<?super E> queryMatcher) {
-		this.queryMatcher							  = queryMatcher;
+	public Naming() {
+		this.queryMatcher									 = QueryMatcher.ALL_MATCHER;
+		this.data											 = Sets.newHashSet();
 	}
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
+
+	protected final void setQueryMatcher(final QueryMatcher<E> matcher) {
+		Preconditions.checkState(! this.isSealed(), "naming-sealed, can't change query-matcher");
+		Preconditions.checkNotNull(matcher);
+		this.queryMatcher = matcher;
+	}
 
 	@Override
 	public String toString() {
 
 		StringBuilder sb = new StringBuilder();
 		sb.append("Naming (" + (this.isSealed() ? "" : "NOT ") + "sealed)\n");
-		sb.append("   querymatcher: ");
+		sb.append("querymatcher: ");
 		sb.append(this.queryMatcher.toString());
 		sb.append("\n\ndata (primary keys):\n");
 
@@ -67,23 +75,18 @@ public final class Naming<E> {
 		return sb.toString();
 	}
 
-	/** creates a new Naming */
-	public static <E> Naming<E> create(final QueryMatcher<?super E> queryMatcher) {
-		return new Naming<E>(queryMatcher);
-	}
-
 	/**
 	 * seals the naming, so queries are allowed to be cached
 	 *
 	 * @throws IllegalStateException if naming was already sealed
 	 */
-	public void seal() {
+	public final void seal() {
 		Preconditions.checkState(! this.isSealed(), "naming was already sealed");
 		this.cache = Maps.newHashMap();
 	}
 
 	/** returns if naming was sealed */
-	public boolean isSealed() {
+	private final boolean isSealed() {
 		return (this.cache != null);
 	}
 
@@ -91,137 +94,33 @@ public final class Naming<E> {
 	 * registers a new object with the given name
 	 *
 	 * @throws IllegalStateException if naming was already sealed
-	 * @throws IllegalArgumentException if object is null
+	 * @throws NullPointerException if arguments were null
 	 */
-	public void put(final E object) {
+	public final void put(final E object) {
+		Preconditions.checkNotNull(object, "parameters for put(object) must not be null");
 		Preconditions.checkState(! this.isSealed(), "naming was already sealed");
-		Preconditions.checkArgument((object != null), "nulls are not allowed");
 
 		/* reference-able via exact name */
 		this.data.add(object);
 	}
 
 	/**
-	 * returns the matching object
+	 * returns all matching objects casted to the given class
 	 *
-	 * @see #select(String, Class)
-	 * @throws IllegalStateException if not exactly 1 was found
+	 * @param str string/name-part of query
+	 * @param clazz class-part of query
+	 *
+	 * @throws NullPointerException if arguments where null
 	 */
-	public <C extends E> C select(final String str) {
-		return this.select(str, null);
-	}
-
-	/**
-	 * returns the matching object
-	 *
-	 * @see #select(String, Class)
-	 * @throws IllegalStateException if not exactly 1 was found
-	 */
-	public <T extends E> T select(final Class<T> clazz) {
-		return this.select(null, clazz);
-	}
-
-	/**
-	 * returns the matching object
-	 *
-	 * @see #find(String, Class)
-	 * @throws IllegalStateException if not exactly 1 was found
-	 */
-	public <T extends E> T select(final String str, final Class<T> clazz) {
-
-		ImmutableSet<T> results = this.find(str, clazz);
-
-		Preconditions.checkState(
-			results.size() == 1,
-			"query %s / %s returned %s results instead of exactly 1",
-			((str == null) ? "*" : ("'" + str + "'")),
-			((clazz == null) ? "*" : clazz.getSimpleName()),
-			results.size());
-
-		return results.iterator().next();
-	}
-
-	/**
-	 * returns the count of matching objects
-	 *
-	 * @see #find(String, Class)
-	 */
-	public <T extends E> int count(final String str) {
-		return this.find(str, null).size();
-	}
-
-	/**
-	 * returns the count of matching objects
-	 *
-	 * @see #find(String, Class)
-	 */
-	public <T extends E> int count(final Class<T> clazz) {
-		return this.find(null, clazz).size();
-	}
-
-	/**
-	 * returns the count of matching objects
-	 *
-	 * @see #find(String, Class)
-	 */
-	public <T extends E> int count(final String str, final Class<T> clazz) {
-		return this.find(str, clazz).size();
-	}
-
-	/**
-	 * checks if a query returns exactly one match
-	 *
-	 * @see #find(String, Class)
-	 */
-	public boolean selectable(final String str) {
-		return this.count(str) == 1;
-	}
-
-	/**
-	 * checks if a query returns exactly one match
-	 *
-	 * @see #find(String, Class)
-	 */
-	public <T extends E> boolean selectable(final Class<T> clazz) {
-		return this.count(clazz) == 1;
-	}
-
-	/**
-	 * checks if a query returns exactly one match
-	 *
-	 * @see #find(String, Class)
-	 */
-	public <T extends E> boolean selectable(final String str, final Class<T> clazz) {
-		return this.count(str, clazz) == 1;
-	}
-
-	/**
-	 * returns all matching objects
-	 *
-	 * @see #find(String, Class)
-	 */
-	public <T extends E> ImmutableSet<T> find(final String str) {
-		return this.find(str, null);
-	}
-
-	/**
-	 * returns all matching objects
-	 *
-	 * @see #find(String, Class)
-	 */
-	public <T extends E> ImmutableSet<T> find(final Class<T> clazz) {
-		return this.find(null, clazz);
-	}
-
-	/**
-	 * returns all matching objects, cast to the given class
-	 *
-	 * @param str string-part of query, can be null
-	 * @param clazz class-part of query, can be null
-	 *
-	 */
-	@SuppressWarnings("unchecked")
 	public <T extends E> ImmutableSet<T> find(final String str, final Class<T> clazz) {
+		Preconditions.checkNotNull(str, "parameters for select(string, class) must not be null");
+		Preconditions.checkNotNull(clazz, "parameters for select(string, class) must not be null");
+
+		return impl_find(str, clazz);
+	}
+
+	@SuppressWarnings("unchecked")
+	private <T extends E> ImmutableSet<T> impl_find(final String str, final Class<T> clazz) {
 
 		int hashCode = Objects.hashCode(str, clazz);
 
@@ -252,14 +151,153 @@ public final class Naming<E> {
 		return results;
 	}
 
+	/**
+	 * returns the matching object
+	 *
+	 * @see #find(String, Class)
+	 * @throws NullPointerException if arguments were null
+	 * @throws IllegalStateException if not exactly 1 was found
+	 */
+	public final <T extends E> T select(final String str, final Class<T> clazz) {
+
+		ImmutableSet<T> results = this.impl_find(str, clazz);
+
+		Preconditions.checkState(
+			results.size() == 1,
+			"query %s / %s returned %s results instead of exactly 1",
+			((str == null) ? "*" : ("'" + str + "'")),
+			((clazz == null) ? "*" : clazz.getSimpleName()),
+			results.size());
+
+		return results.iterator().next();
+	}
+
+	/**
+	 * returns the matching object
+	 *
+	 * @see #find(String, Class)
+	 * @throws IllegalStateException if not exactly 1 was found
+	 * @throws NullPointerException if arguments were null
+	 */
+	public final <C extends E> C select(final String str) {
+		return this.select(str, null);
+	}
+
+	/**
+	 * returns the matching object
+	 *
+	 * @see #find(String, Class)
+	 * @throws IllegalStateException if not exactly 1 was found
+	 * @throws NullPointerException if arguments were null
+	 */
+	public final <T extends E> T select(final Class<T> clazz) {
+		return this.select(null, clazz);
+	}
+
+	/**
+	 * returns the count of matching objects
+	 *
+	 * @see #find(String, Class)
+	 * @throws NullPointerException if arguments were null
+	 */
+	public final <T extends E> int count(final String str) {
+		return this.impl_find(str, null).size();
+	}
+
+	/**
+	 * returns the count of matching objects
+	 *
+	 * @see #find(String, Class)
+	 * @throws NullPointerException if arguments were null
+	 */
+	public final <T extends E> int count(final Class<T> clazz) {
+		return this.impl_find(null, clazz).size();
+	}
+
+	/**
+	 * returns the count of matching objects
+	 *
+	 * @see #find(String, Class)
+	 * @throws NullPointerException if arguments were null
+	 */
+	public final <T extends E> int count(final String str, final Class<T> clazz) {
+		return this.impl_find(str, clazz).size();
+	}
+
+	/**
+	 * checks if a query returns exactly one match
+	 *
+	 * @see #find(String, Class)
+	 * @throws NullPointerException if arguments were null
+	 */
+	public final boolean selectable(final String str) {
+		return this.count(str) == 1;
+	}
+
+	/**
+	 * checks if a query returns exactly one match
+	 *
+	 * @see #find(String, Class)
+	 * @throws NullPointerException if arguments were null
+	 */
+	public final <T extends E> boolean selectable(final Class<T> clazz) {
+		return this.count(clazz) == 1;
+	}
+
+	/**
+	 * checks if a query returns exactly one match
+	 *
+	 * @see #find(String, Class)
+	 * @throws NullPointerException if arguments were null
+	 */
+	public final <T extends E> boolean selectable(final String str, final Class<T> clazz) {
+		return this.count(str, clazz) == 1;
+	}
+
+	/**
+	 * returns all matching objects
+	 *
+	 * @see #find(String, Class)
+	 * @throws NullPointerException if arguments were null
+	 */
+	public final <T extends E> ImmutableSet<T> find(final String str) {
+		return this.impl_find(str, null);
+	}
+
+	/**
+	 * returns all matching objects
+	 *
+	 * @see #find(String, Class)
+	 * @throws NullPointerException if arguments were null
+	 */
+	public final <T extends E> ImmutableSet<T> find(final Class<T> clazz) {
+		return this.impl_find(null, clazz);
+	}
+
 	//~ Inner Interfaces -----------------------------------------------------------------------------------------------
 
 	public interface QueryMatcher<E> {
+
+		public static final QueryMatcher<Object> ALL_MATCHER = new AllQueryMatcher();
 
 		/* used for the toString method of Naming */
 		String toStringPrimaryKey(final E object);
 
 		/* checks if the string matches a certain object */
 		boolean matches(final E object, final String query);
+	}
+
+	//~ Inner Classes --------------------------------------------------------------------------------------------------
+
+	public static class AllQueryMatcher implements QueryMatcher<Object> {
+		@Override
+		public String toStringPrimaryKey(final Object object) {
+			return object.toString();
+		}
+
+		@Override
+		public boolean matches(final Object object, final String query) {
+			return true;
+		}
 	}
 }
