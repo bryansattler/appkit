@@ -38,6 +38,7 @@ public final class Colors {
 	/* cache / registry */
 	private static final BiMap<Integer, Color> colorCache = HashBiMap.create();
 	private static final Multiset<Color> usage			  = HashMultiset.create();
+	private static boolean keepCached = false;
 
 	/* currently installed disposeListeners */
 	private static final Map<Control, DisposeListener> fgDisposeListeners = Maps.newHashMap();
@@ -52,6 +53,10 @@ public final class Colors {
 	private Colors() {}
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
+
+	public static void keepCache(final boolean keep) {
+		keepCached = keep;
+	}
 
 	/**
 	 * sets the foreground color of the given control to an RGB-value
@@ -178,9 +183,13 @@ public final class Colors {
 
 		/* if usage is 0 dispose it */
 		if (! usage.contains(color)) {
-			L.debug("disposing {}", color);
-			colorCache.inverse().remove(color);
-			color.dispose();
+			if (keepCached) {
+				L.debug("keeping {} in cache", color);
+			} else {
+				L.debug("disposing {}", color);
+				colorCache.inverse().remove(color);
+				color.dispose();
+			}
 		}
 	}
 
