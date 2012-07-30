@@ -38,7 +38,7 @@ public final class Colors {
 	/* cache / registry */
 	private static final BiMap<Integer, Color> colorCache = HashBiMap.create();
 	private static final Multiset<Color> usage			  = HashMultiset.create();
-	private static boolean keepCached = false;
+	private static boolean keepCached					  = false;
 
 	/* currently installed disposeListeners */
 	private static final Map<Control, DisposeListener> fgDisposeListeners = Maps.newHashMap();

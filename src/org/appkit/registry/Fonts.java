@@ -48,7 +48,7 @@ public final class Fonts {
 	/* cache / registry */
 	private static final BiMap<Integer, Font> fontCache = HashBiMap.create();
 	private static final Multiset<Font> usage		    = HashMultiset.create();
-	private static boolean keepCached = false;
+	private static boolean keepCached				    = false;
 
 	/* currently installed disposeListeners */
 	private static final Map<Widget, DisposeListener> disposeListeners = Maps.newHashMap();

@@ -75,7 +75,7 @@ public final class Component extends Naming<Control> {
 
 		String type = definition.getType();
 
-		Control c   = null;
+		Control c = null;
 		if (customCreators.containsKey(type)) {
 			c = customCreators.get(type).initialize(context, parent, definition.getName(), definition.getOptions());
 
@@ -154,7 +154,7 @@ public final class Component extends Naming<Control> {
 
 			WidgetDefinition def = defMap.get(c);
 
-			String namePortion   = str.toLowerCase();
+			String namePortion = str.toLowerCase();
 			if (str.contains("$")) {
 
 				List<String> list = Lists.newArrayList(Splitter.on("$").split(str));

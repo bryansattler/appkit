@@ -52,7 +52,7 @@ public final class Images {
 	/* cache / registry */
 	private static final BiMap<Integer, Image> imageCache = HashBiMap.create();
 	private static final Multiset<Image> usage			  = HashMultiset.create();
-	private static boolean keepCached = false;
+	private static boolean keepCached					  = false;
 
 	/* currently installed disposeListeners */
 	private static final Map<Widget, DisposeListener> disposeListeners = Maps.newHashMap();
