@@ -25,7 +25,7 @@ public final class WidgetDefinition {
 	//~ Static fields/initializers -------------------------------------------------------------------------------------
 
 	private static final CharMatcher NAMEFILTER =
-		CharMatcher.inRange('a', 'z').or(CharMatcher.inRange('0', '9')).or(CharMatcher.anyOf("?!-"));
+		CharMatcher.inRange('a', 'z').or(CharMatcher.inRange('0', '9')).or(CharMatcher.anyOf("?!-_"));
 
 	//~ Instance fields ------------------------------------------------------------------------------------------------
 
@@ -42,9 +42,7 @@ public final class WidgetDefinition {
 		Preconditions.checkNotNull(type);
 		Preconditions.checkNotNull(children);
 		Preconditions.checkNotNull(options);
-		Preconditions.checkArgument(
-			(name == null) || ! name.isEmpty(),
-			"name can be non-existant, but it most not be empty");
+		Preconditions.checkNotNull(name);
 		Preconditions.checkArgument(
 			(name == null) || NAMEFILTER.matchesAllOf(name),
 			"'%s' didn't satisfy name-filter (%s)",
@@ -60,27 +58,20 @@ public final class WidgetDefinition {
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
-	public void setParent(final WidgetDefinition parentDef) {
-		Preconditions.checkState(this.parentDef == null, "parent is not null");
-		this.parentDef = parentDef;
-	}
-
 	public String getName() {
 		return this.name;
 	}
 
-	public String getFullName() {
-		if ((this.parentDef != null) && ! this.parentDef.getFullName().equals("")) {
-			if (this.name == null) {
-				return this.parentDef.getFullName();
-			} else {
-				return this.parentDef.getFullName() + "." + this.name;
-			}
+	public String getNamePath() {
+		if (this.parentDef == null) {
+			return this.name;
 		} else {
-			if (this.name == null) {
-				return "";
-			} else {
+			if (this.name.isEmpty()) {
+				return this.parentDef.getNamePath();
+			} else if (this.parentDef.getNamePath().isEmpty()) {
 				return this.name;
+			} else {
+				return this.parentDef.getNamePath() + "." + this.name;
 			}
 		}
 	}
@@ -113,12 +104,12 @@ public final class WidgetDefinition {
 
 			/* 1. if component is empty, it's a spacer */
 			if (jsonObject.entrySet().isEmpty()) {
-				return new WidgetDefinition(null, "spacer", ImmutableList.<WidgetDefinition>of(), Options.empty());
+				return new WidgetDefinition("", "spacer", ImmutableList.<WidgetDefinition>of(), Options.empty());
 			}
 
 			/* 2. name */
 			JsonElement jsonName = jsonObject.get("name");
-			String name			 = ((jsonName != null) ? jsonName.getAsString().toLowerCase() : null);
+			String name			 = ((jsonName != null) ? jsonName.getAsString().toLowerCase() : "");
 
 			/* 3. type, defaults to 'grid' if non-existent */
 			JsonElement jsonType    = jsonObject.get("type");
@@ -170,7 +161,7 @@ public final class WidgetDefinition {
 
 			WidgetDefinition def = new WidgetDefinition(name, componentType, children, options);
 			for (final WidgetDefinition childDef : def.getChildren()) {
-				childDef.setParent(def);
+				childDef.parentDef = def;
 			}
 
 			return def;

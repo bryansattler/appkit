@@ -15,7 +15,7 @@ import java.io.InputStream;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.appkit.util.ParamSupplier;
+import org.appkit.util.ParamInputSupplier;
 import org.appkit.util.ResourceStreamSupplier;
 
 import org.eclipse.swt.events.DisposeEvent;
@@ -97,8 +97,8 @@ public final class Images {
 	 * @throws IllegalStateException if called from a non-Display thread
 	 * @throws IllegalArgumentException if image couldn't be set
 	 */
-	public static void set(final Widget widget, final Supplier<String> keySupplier) {
-		set(widget, keySupplier, ResourceStreamSupplier.create());
+	public static void set(final Widget widget, final String image) {
+		set(widget, image, ResourceStreamSupplier.create());
 	}
 
 	/**
@@ -109,8 +109,7 @@ public final class Images {
 	 * @throws IllegalStateException if called from a non-Display thread
 	 * @throws IllegalArgumentException if image couldn't be set
 	 */
-	public static <E> void set(final Widget widget, final Supplier<E> keySupplier,
-							   final ParamSupplier<E, InputStream> streamSupplier) {
+	public static <E> void set(final Widget widget, final E key, final ParamInputSupplier<E, InputStream> streamSupplier) {
 		Preconditions.checkState(
 			Display.getCurrent() != null,
 			"Images is to be used from the display-thread exclusively!");
@@ -125,31 +124,33 @@ public final class Images {
 		}
 
 		/* get image out of cache or load it */
-		final E key		  = keySupplier.get();
-		int hash		  = Objects.hashCode(key);
-		final Image image;
+		int hash    = Objects.hashCode(key);
+		Image image = null;
 
 		L.debug("setting image {} on {}", key, widget);
 		if (imageCache.containsKey(hash)) {
-			image		  = imageCache.get(hash);
+			image = imageCache.get(hash);
 
 		} else {
-
-			InputStream in = streamSupplier.get(key);
-			if (in == null) {
-				L.error("data supplier returned no InputStream for {}", key);
-				return;
-			}
-
-			image = new Image(Display.getCurrent(), in);
-			L.debug("created image: {}", image);
 			try {
+
+				InputStream in = streamSupplier.getInput(key);
+				if (in == null) {
+					L.error("data supplier returned no InputStream for '{}'", key);
+					return;
+				}
+
+				image = new Image(Display.getCurrent(), in);
+				L.debug("created image: {}", image);
+
 				in.close();
 			} catch (final IOException e) {
 				L.error(e.getMessage(), e);
 			}
 
-			imageCache.put(hash, image);
+			if (image != null) {
+				imageCache.put(hash, image);
+			}
 		}
 
 		/* increase usage-counter */

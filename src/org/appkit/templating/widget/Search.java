@@ -9,7 +9,7 @@ import java.util.List;
 import org.appkit.osdependant.OSUtils;
 import org.appkit.templating.Options;
 import org.appkit.templating.event.EventContext;
-import org.appkit.util.Texts.CustomTranlation;
+import org.appkit.util.Texts.Translateable;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.FocusEvent;
@@ -26,7 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /** for creating a component that aims to be a search-field */
-public final class Search extends Composite implements CustomTranlation {
+public final class Search extends Composite implements Translateable {
 
 	//~ Static fields/initializers -------------------------------------------------------------------------------------
 

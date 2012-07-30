@@ -11,7 +11,7 @@ import java.util.List;
 import org.appkit.templating.Options;
 import org.appkit.templating.event.DatePickerEvent;
 import org.appkit.templating.event.EventContext;
-import org.appkit.util.Texts.CustomTranlation;
+import org.appkit.util.Texts.Translateable;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -27,7 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /** for creating a component that is a {@link DateTime} */
-public final class DatePicker extends Composite implements CustomTranlation {
+public final class DatePicker extends Composite implements Translateable {
 
 	//~ Static fields/initializers -------------------------------------------------------------------------------------
 

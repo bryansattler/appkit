@@ -140,9 +140,9 @@ public final class Templating {
 		try {
 			L.debug("deserializing component: {}", componentName);
 			definition = this.gson.fromJson(source, WidgetDefinition.class);
-		} catch (final JsonParseException e) {
+		} catch (final RuntimeException e) {
 			L.error(e.getMessage(), e);
-			throw new IllegalStateException(e.getMessage(), e);
+			throw e;
 		}
 
 		/* initialize controls */
@@ -160,7 +160,7 @@ public final class Templating {
 									 throws JsonParseException
 		{
 
-			Type type2 =
+			Type type2   =
 				ParameterizedTypeImpl.make(List.class, ((ParameterizedType) type).getActualTypeArguments(), null);
 			List<?> list = context.deserialize(json, type2);
 

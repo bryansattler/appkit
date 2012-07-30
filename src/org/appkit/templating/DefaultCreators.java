@@ -1,7 +1,5 @@
 package org.appkit.templating;
 
-import java.util.List;
-
 import org.appkit.registry.Fonts;
 import org.appkit.templating.event.ButtonEvent;
 import org.appkit.templating.event.EventContext;
@@ -15,11 +13,11 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Text;
 
-public class DefaultCreators {
+final class DefaultCreators {
 
 	//~ Inner Classes --------------------------------------------------------------------------------------------------
 
-	static class SpacerCreator implements ControlCreator<Label> {
+	static final class SpacerCreator implements ControlCreator<Label> {
 		@Override
 		public Label initialize(final EventContext context, final Composite parent, final String name,
 								final Options options) {
@@ -27,7 +25,7 @@ public class DefaultCreators {
 		}
 	}
 
-	static class ButtonCreator implements ControlCreator<Button> {
+	static final class ButtonCreator implements ControlCreator<Button> {
 		@Override
 		public Button initialize(final EventContext context, final Composite parent, final String name,
 								 final Options options) {
@@ -47,24 +45,21 @@ public class DefaultCreators {
 		}
 	}
 
-	static class LabelCreator implements ControlCreator<Label> {
+	static final class LabelCreator implements ControlCreator<Label> {
 		@Override
 		public Label initialize(final EventContext context, final Composite parent, final String name,
 								final Options options) {
 
-			Label label = new Label(parent, SWT.NONE);
+			Label label = new Label(parent, (options.get("border", false) ? SWT.BORDER : SWT.NONE));
 			label.setText("< empty >");
 
-			List<String> fontInfo = options.getList("font");
-			if (! fontInfo.isEmpty() && fontInfo.contains("bold")) {
-				Fonts.set(label, Fonts.BOLD);
-			}
+			Fonts.set(label, options.get("font", ""));
 
 			return label;
 		}
 	}
 
-	static class TextCreator implements ControlCreator<Text> {
+	static final class TextCreator implements ControlCreator<Text> {
 		@Override
 		public Text initialize(final EventContext context, final Composite parent, final String name,
 							   final Options options) {
@@ -79,7 +74,7 @@ public class DefaultCreators {
 		}
 	}
 
-	static class TableCreator implements ControlCreator<Table> {
+	static final class TableCreator implements ControlCreator<Table> {
 		@Override
 		public Table initialize(final EventContext context, final Composite parent, final String name,
 								final Options options) {

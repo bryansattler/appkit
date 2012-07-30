@@ -61,10 +61,10 @@ public final class SmartExecutor implements Executor, Throttle.Supplier {
 		return new SmartExecutor(executorService);
 	}
 
-	/** Shuts the executor down ({@see ExecutorService#shutdownNow()})
+	/** Shuts the executor down
 	 *
 	 * @throws IllegalStateException if this executor was created based on another ExecutorService
-	 *
+	 * @see ExecutorService#shutdownNow()
 	 */
 	public void shutdownNow() {
 		Preconditions.checkState(
@@ -73,10 +73,10 @@ public final class SmartExecutor implements Executor, Throttle.Supplier {
 		this.executorService.shutdownNow();
 	}
 
-	/** Shuts the executor down ({@see ExecutorService#shutdown()})
+	/** Shuts the executor down
 	 *
 	 * @throws IllegalStateException if this executor was created based on another ExecutorService
-	 *
+	 * @see ExecutorService#shutdown()
 	 */
 	public void shutdown() {
 		Preconditions.checkState(

@@ -40,9 +40,9 @@ public final class PrefStore {
 	}
 
 	/**
-	 * store an int
+	 * stores a long
 	 */
-	public void store(final String key, final int value) {
+	public void store(final String key, final long value) {
 		this.backend.store(key, String.valueOf(value));
 	}
 
@@ -69,11 +69,11 @@ public final class PrefStore {
 	}
 
 	/**
-	 * retrieve an int
+	 * retrieves a long
 	 *
-	 * @param def default to be returned if key wasn't found or {@link Integer#valueOf(int)} failed.
+	 * @param def default to be returned if key wasn't found or {@link Long#valueOf(long_string)} failed.
 	 */
-	public int get(final String key, final int def) {
+	public long get(final String key, final long def) {
 
 		String pref = this.backend.get(key);
 		if (pref == null) {
@@ -81,7 +81,7 @@ public final class PrefStore {
 		}
 
 		try {
-			return Integer.valueOf(pref);
+			return Long.valueOf(pref);
 		} catch (final NumberFormatException e) {
 			return def;
 		}
@@ -151,13 +151,13 @@ public final class PrefStore {
 	}
 
 	/**
-	 * returns all stored properties, starting with a prefix as a map of integer
+	 * returns all stored properties, starting with a prefix as a map of longs
 	 *
-	 * @param def value if matched property couldn't be converted to an integer
+	 * @param def value if matched property couldn't be converted to a long
 	 */
-	public ImmutableMap<String, Integer> getPrefixMap(final String prefix, final int def) {
+	public ImmutableMap<String, Long> getPrefixMap(final String prefix, final long def) {
 
-		ImmutableMap.Builder<String, Integer> hm = ImmutableMap.builder();
+		ImmutableMap.Builder<String, Long> hm = ImmutableMap.builder();
 		for (final String key : this.backend.getKeys()) {
 			if (key.startsWith(prefix)) {
 				hm.put(key, this.get(key, def));

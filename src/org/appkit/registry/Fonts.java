@@ -3,6 +3,7 @@ package org.appkit.registry;
 import com.google.common.base.Joiner;
 import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
+import com.google.common.base.Splitter;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.HashMultiset;
@@ -11,8 +12,6 @@ import com.google.common.collect.Multiset;
 
 import java.util.Map;
 import java.util.Map.Entry;
-
-import org.appkit.osdependant.OSUtils;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
@@ -40,14 +39,10 @@ public final class Fonts {
 
 	//~ Static fields/initializers -------------------------------------------------------------------------------------
 
-	private static final Logger L	    = LoggerFactory.getLogger(Fonts.class);
-	public static final Style BOLD	    = new Bold();
-	public static final Style HUGEBOLD  = new HugeBold();
-	public static final Style MONOSPACE = new Monospace();
+	private static final Logger L = LoggerFactory.getLogger(Fonts.class);
 
 	/* default font options */
 	private static final String defaultFontName;
-	private static final int defaultFontStyle;
 	private static final int defaultFontHeight;
 
 	/* cache / registry */
@@ -63,7 +58,6 @@ public final class Fonts {
 	static {
 		Preconditions.checkArgument(Display.getCurrent() != null, "can't instantiate Fonts on a non-display thread");
 		defaultFontName		  = Display.getCurrent().getSystemFont().getFontData()[0].getName();
-		defaultFontStyle	  = Display.getCurrent().getSystemFont().getFontData()[0].getStyle();
 		defaultFontHeight     = Display.getCurrent().getSystemFont().getFontData()[0].getHeight();
 
 		addFontSetter(Control.class, new ControlFontInterface());
@@ -99,7 +93,16 @@ public final class Fonts {
 	 *
 	 * @throws IllegalStateException if called from a non-Display thread
 	 */
-	public static void set(final Widget widget, final Style fontStyle) {
+	public static void set(final Widget widget, final String styleString) {
+		set(widget, styleString, null);
+	}
+
+	/**
+	 * sets a Font, described by a fontStyle on a widget
+	 *
+	 * @throws IllegalStateException if called from a non-Display thread
+	 */
+	public static void set(final Widget widget, final String styleString, final String fontName) {
 		Preconditions.checkState(
 			Display.getCurrent() != null,
 			"Fonts is to be used from the display-thread exclusively!");
@@ -114,9 +117,10 @@ public final class Fonts {
 		}
 
 		/* load / create font */
-		String name = fontStyle.getName(defaultFontName);
-		int height  = fontStyle.getHeight(defaultFontHeight);
-		int style   = defaultFontStyle;
+		FontStyle fontStyle = FontStyle.parse(styleString);
+		String name		    = (fontName != null) ? fontName : defaultFontName;
+		int height		    = defaultFontHeight + fontStyle.getHeightDiff();
+		int style		    = SWT.NONE;
 		if (fontStyle.bold()) {
 			style = style | SWT.BOLD;
 		}
@@ -178,19 +182,6 @@ public final class Fonts {
 	//~ Inner Interfaces -----------------------------------------------------------------------------------------------
 
 	/**
-	 * styles for usage with the fonts-registry
-	 */
-	public interface Style {
-		int getHeight(final int defaultHeight);
-
-		String getName(final String defaultName);
-
-		boolean bold();
-
-		boolean italic();
-	}
-
-	/**
 	 * Implement this to enable the use of Fonts for a custom widget.
 	 *
 	 */
@@ -209,84 +200,47 @@ public final class Fonts {
 		}
 	}
 
-	/**
-	 * default font, but bold
-	 */
-	public static class Bold implements Style {
-		@Override
-		public int getHeight(final int defaultHeight) {
-			return defaultHeight;
-		}
+	private static final class FontStyle {
 
-		@Override
-		public String getName(final String defaultName) {
-			return defaultName;
-		}
+		private boolean italic = false;
+		private boolean bold   = false;
+		private int heightDiff = 0;
 
-		@Override
-		public boolean bold() {
-			return true;
-		}
+		private FontStyle() {}
 
-		@Override
-		public boolean italic() {
-			return false;
-		}
-	}
+		public static FontStyle parse(final String fontString) {
 
-	/**
-	 * default font, but bold and height increased by 4
-	 */
-	public static class HugeBold implements Style {
-		@Override
-		public int getHeight(final int defaultHeight) {
-			return defaultHeight + 4;
-		}
-
-		@Override
-		public String getName(final String defaultName) {
-			return defaultName;
-		}
-
-		@Override
-		public boolean bold() {
-			return true;
-		}
-
-		@Override
-		public boolean italic() {
-			return false;
-		}
-	}
-
-	/**
-	 * monospace font, returns "Lucida Console" on Windows and "Monaco" on Mac.
-	 */
-	public static class Monospace implements Style {
-		@Override
-		public int getHeight(final int defaultHeight) {
-			return defaultHeight;
-		}
-
-		@Override
-		public String getName(final String defaultName) {
-			if (OSUtils.isWindows()) {
-				return "Lucida Console";
-			} else if (OSUtils.isMac()) {
-				return "Monaco";
-			} else {
-				return defaultName;
+			FontStyle style = new FontStyle();
+			for (final String option : Splitter.on(' ').trimResults().split(fontString)) {
+				if (option.equalsIgnoreCase("bold")) {
+					style.bold = true;
+				} else if (option.equalsIgnoreCase("italic")) {
+					style.italic = true;
+				} else if (option.length() > 1) {
+					if (option.charAt(0) == '+') {
+						try {
+							style.heightDiff = Integer.parseInt(option.substring(1));
+						} catch (final NumberFormatException e) {}
+					} else if (option.charAt(0) == '-') {
+						try {
+							style.heightDiff = -Integer.parseInt(option.substring(1));
+						} catch (final NumberFormatException e) {}
+					}
+				}
 			}
+			return style;
 		}
 
-		@Override
+		public int getHeightDiff() {
+			return this.heightDiff;
+		}
+
 		public boolean bold() {
-			return false;
+			return this.bold;
 		}
 
-		@Override
 		public boolean italic() {
-			return false;
+			return this.italic;
 		}
 	}
 

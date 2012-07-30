@@ -12,8 +12,6 @@ import java.io.File;
 
 import java.util.Map;
 
-import org.eclipse.swt.SWT;
-
 /**
  * provides OS-specific utilities
  */
@@ -21,26 +19,33 @@ public class OSUtils {
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
-	/**
-	 * check if application is running on windows
-	 */
-	public static boolean isWindows() {
-		if (SWT.getPlatform().equalsIgnoreCase("win32") || SWT.getPlatform().equalsIgnoreCase("win64")) {
-			return true;
-		}
-
-		return false;
+	public static String getJVMPath() {
+		return System.getProperty("java.home") + File.separator + "bin" + File.separator + "java";
 	}
 
-	/**
-	 * check if application is running on Mac OSX / cocoa.
-	 */
-	public static boolean isMac() {
-		if (SWT.getPlatform().equalsIgnoreCase("cocoa") || SWT.getPlatform().equalsIgnoreCase("carbon")) {
-			return true;
-		}
+	public static boolean isWindows() {
 
-		return false;
+		String os = System.getProperty("os.name").toLowerCase();
+		return (os.indexOf("win") >= 0);
+
+	}
+
+	public static boolean isMac() {
+
+		String os = System.getProperty("os.name").toLowerCase();
+		return (os.indexOf("mac") >= 0);
+	}
+
+	public static boolean isUnix() {
+
+		String os = System.getProperty("os.name").toLowerCase();
+		return ((os.indexOf("nix") >= 0) || (os.indexOf("nux") >= 0));
+	}
+
+	public static boolean isSolaris() {
+
+		String os = System.getProperty("os.name").toLowerCase();
+		return (os.indexOf("sunos") >= 0);
 	}
 
 	/**
