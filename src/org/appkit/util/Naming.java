@@ -46,7 +46,15 @@ public class Naming<E> {
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
-	protected final void setQueryMatcher(final QueryMatcher<E> matcher) {
+	public static <T> Naming<T> create(final QueryMatcher<?super T> queryMatcher) {
+
+		Naming<T> naming = new Naming<T>();
+		naming.queryMatcher = queryMatcher;
+
+		return naming;
+	}
+
+	public final void setQueryMatcher(final QueryMatcher<E> matcher) {
 		Preconditions.checkState(! this.isSealed(), "naming-sealed, can't change query-matcher");
 		Preconditions.checkNotNull(matcher);
 		this.queryMatcher = matcher;
@@ -54,6 +62,10 @@ public class Naming<E> {
 
 	@Override
 	public String toString() {
+		return this.namingEntriesToString();
+	}
+
+	public final String namingEntriesToString() {
 
 		StringBuilder sb = new StringBuilder();
 		sb.append("Naming (" + (this.isSealed() ? "" : "NOT ") + "sealed)\n");
@@ -112,7 +124,7 @@ public class Naming<E> {
 	 *
 	 * @throws NullPointerException if arguments where null
 	 */
-	public <T extends E> ImmutableSet<T> find(final String str, final Class<T> clazz) {
+	public final <T extends E> ImmutableSet<T> find(final String str, final Class<T> clazz) {
 		Preconditions.checkNotNull(str, "parameters for select(string, class) must not be null");
 		Preconditions.checkNotNull(clazz, "parameters for select(string, class) must not be null");
 
@@ -120,7 +132,7 @@ public class Naming<E> {
 	}
 
 	@SuppressWarnings("unchecked")
-	private <T extends E> ImmutableSet<T> impl_find(final String str, final Class<T> clazz) {
+	private final <T extends E> ImmutableSet<T> impl_find(final String str, final Class<T> clazz) {
 
 		int hashCode = Objects.hashCode(str, clazz);
 
@@ -289,7 +301,7 @@ public class Naming<E> {
 
 	//~ Inner Classes --------------------------------------------------------------------------------------------------
 
-	public static class AllQueryMatcher implements QueryMatcher<Object> {
+	private static final class AllQueryMatcher implements QueryMatcher<Object> {
 		@Override
 		public String toStringPrimaryKey(final Object object) {
 			return object.toString();

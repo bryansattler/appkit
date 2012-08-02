@@ -3,10 +3,7 @@ package org.appkit.sample;
 import com.google.common.eventbus.Subscribe;
 
 import java.util.Locale;
-import java.util.Properties;
 import java.util.concurrent.TimeUnit;
-
-import org.apache.log4j.PropertyConfigurator;
 
 import org.appkit.concurrent.SWTSyncedRunnable;
 import org.appkit.concurrent.SmartExecutor;
@@ -63,8 +60,8 @@ public final class Sample {
 	//~ Constructors ---------------------------------------------------------------------------------------------------
 
 	public Sample() {
-		/* Log4J Configuration */
-		PropertyConfigurator.configure(log4jProperties());
+		/* SLF4J Configuration */
+		System.setProperty("org.slf4j.simplelogger.defaultlog", "debug");
 
 		/* New Shell */
 		shell					  = new Shell();
@@ -234,18 +231,5 @@ public final class Sample {
 				this.overlay = null;
 			}
 		}
-	}
-
-	public static Properties log4jProperties() {
-
-		Properties props = new Properties();
-
-		props.setProperty("log4j.rootLogger", "DEBUG,console");
-		props.setProperty("log4j.appender.console", "org.apache.log4j.ConsoleAppender");
-		props.setProperty("log4j.appender.console.Threshold", "DEBUG");
-		props.setProperty("log4j.appender.console.layout", "org.apache.log4j.PatternLayout");
-		props.setProperty("log4j.appender.console.layout.ConversionPattern", "%d [%t] %-5p %c - %m%n");
-
-		return props;
 	}
 }

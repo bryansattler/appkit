@@ -102,8 +102,19 @@ public final class Images {
 	 * @throws IllegalStateException if called from a non-Display thread
 	 * @throws IllegalArgumentException if image couldn't be set
 	 */
-	public static void set(final Widget widget, final String image) {
-		set(widget, image, ResourceStreamSupplier.create());
+	public static void set(final Widget widget, final Supplier<String> keySupplier) {
+		set(widget, keySupplier.get(), ResourceStreamSupplier.create());
+	}
+
+	/**
+	 * Sets an image on the widget. The InputStream for loading the image
+	 * is retrieved by passing the key into a {@link ResourceStreamSupplier}.
+	 *
+	 * @throws IllegalStateException if called from a non-Display thread
+	 * @throws IllegalArgumentException if image couldn't be set
+	 */
+	public static void set(final Widget widget, final String key) {
+		set(widget, key, ResourceStreamSupplier.create());
 	}
 
 	/**

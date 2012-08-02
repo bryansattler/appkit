@@ -6,6 +6,7 @@ import com.google.common.collect.Lists;
 import java.util.Arrays;
 import java.util.List;
 
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Button;
@@ -22,6 +23,10 @@ import org.eclipse.swt.widgets.Table;
 public final class SWTUtils {
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
+
+	public static void checkForSWTCompatibility() {
+		System.out.println(SWT.isLoadable());
+	}
 
 	/** adjusts a rectangle, so that it stays on the client-ares of a given monitor */
 	public static Point moveOntoMonitor(final Rectangle controlBounds, final Monitor monitor) {

@@ -64,7 +64,7 @@ public final class Component extends Naming<Control> {
 		this.composite = (Composite) control;
 
 		this.seal();
-		L.debug("{}", super.toString());
+		L.debug("{}", this.namingEntriesToString());
 	}
 
 	//~ Methods --------------------------------------------------------------------------------------------------------

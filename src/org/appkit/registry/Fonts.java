@@ -99,7 +99,7 @@ public final class Fonts {
 	 * @throws IllegalStateException if called from a non-Display thread
 	 */
 	public static void set(final Widget widget, final String styleString) {
-		set(widget, styleString, null);
+		set(widget, StringFontStyle.parse(styleString));
 	}
 
 	/**
@@ -107,7 +107,7 @@ public final class Fonts {
 	 *
 	 * @throws IllegalStateException if called from a non-Display thread
 	 */
-	public static void set(final Widget widget, final String styleString, final String fontName) {
+	public static void set(final Widget widget, final Style fontStyle) {
 		Preconditions.checkState(
 			Display.getCurrent() != null,
 			"Fonts is to be used from the display-thread exclusively!");
@@ -122,10 +122,9 @@ public final class Fonts {
 		}
 
 		/* load / create font */
-		FontStyle fontStyle = FontStyle.parse(styleString);
-		String name		    = (fontName != null) ? fontName : defaultFontName;
-		int height		    = defaultFontHeight + fontStyle.getHeightDiff();
-		int style		    = SWT.NONE;
+		String name = fontStyle.getName(defaultFontName);
+		int height  = defaultFontHeight + fontStyle.getHeightDiff();
+		int style   = SWT.NONE;
 		if (fontStyle.bold()) {
 			style = style | SWT.BOLD;
 		}
@@ -200,6 +199,16 @@ public final class Fonts {
 		Font getFont(final Widget widget);
 	}
 
+	public interface Style {
+		public String getName(final String def);
+
+		public int getHeightDiff();
+
+		public boolean bold();
+
+		public boolean italic();
+	}
+
 	//~ Inner Classes --------------------------------------------------------------------------------------------------
 
 	private static final class FontDisposeListener implements DisposeListener {
@@ -209,17 +218,15 @@ public final class Fonts {
 		}
 	}
 
-	private static final class FontStyle {
+	private static final class StringFontStyle implements Style {
 
 		private boolean italic = false;
 		private boolean bold   = false;
 		private int heightDiff = 0;
 
-		private FontStyle() {}
+		public static StringFontStyle parse(final String fontString) {
 
-		public static FontStyle parse(final String fontString) {
-
-			FontStyle style = new FontStyle();
+			StringFontStyle style = new StringFontStyle();
 			for (final String option : Splitter.on(' ').trimResults().split(fontString)) {
 				if (option.equalsIgnoreCase("bold")) {
 					style.bold = true;
@@ -240,16 +247,24 @@ public final class Fonts {
 			return style;
 		}
 
+		@Override
 		public int getHeightDiff() {
 			return this.heightDiff;
 		}
 
+		@Override
 		public boolean bold() {
 			return this.bold;
 		}
 
+		@Override
 		public boolean italic() {
 			return this.italic;
+		}
+
+		@Override
+		public String getName(final String defName) {
+			return defName;
 		}
 	}
 
