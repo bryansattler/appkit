@@ -6,14 +6,23 @@ import com.google.common.collect.Lists;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.swing.JOptionPane;
+
+import org.appkit.osdependant.OSUtils;
+import org.appkit.util.Texts;
+
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.SWTError;
+import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Monitor;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 
 /**
@@ -24,8 +33,56 @@ public final class SWTUtils {
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
-	public static void checkForSWTCompatibility() {
-		System.out.println(SWT.isLoadable());
+	public static void checkStartup(final Texts texts) {
+		if (! SWT.isLoadable()) {
+
+			String error	  = texts.get("error_swt");
+			String systemInfo = "\n\nSystem: ";
+			String jvmInfo    = "\nJVM: ";
+			if (OSUtils.isMac()) {
+				systemInfo = systemInfo + " Mac";
+			} else if (OSUtils.isWindows()) {
+				systemInfo = systemInfo + " Mac";
+			} else if (OSUtils.isUnix()) {
+				systemInfo = systemInfo + " Linux";
+			} else {
+				systemInfo = systemInfo + " <unknown>";
+			}
+
+			String bitage = System.getProperty("sun.arch.data.model");
+			switch (bitage) {
+				case "32":
+					jvmInfo = jvmInfo + "32 bit";
+					break;
+				case "64":
+					jvmInfo = jvmInfo + "64 bit";
+					break;
+				default:
+					jvmInfo = jvmInfo + "<unknown>";
+			}
+			JOptionPane.showMessageDialog(null, error + systemInfo + jvmInfo);
+			System.exit(-1);
+		}
+	}
+
+	public static void checkForBrowser(final int browserStyle, final Texts texts) {
+		checkStartup(texts);
+		try {
+
+			Shell shell = new Shell();
+			new Browser(shell, browserStyle);
+			shell.dispose();
+
+		} catch (final SWTError e) {
+			if ((browserStyle & SWT.WEBKIT) != 0) {
+				MBox.show(new Shell(), MBox.Type.ERROR, texts.get("error_nowebkit"));
+				Program.launch(texts.get("error_nowebkit_url"));
+			} else if ((browserStyle & SWT.MOZILLA) != 0) {
+				MBox.show(new Shell(), MBox.Type.ERROR, texts.get("error_nomozilla"));
+				Program.launch(texts.get("error_nomozilla_url"));
+			}
+			System.exit(-1);
+		}
 	}
 
 	/** adjusts a rectangle, so that it stays on the client-ares of a given monitor */

@@ -63,8 +63,13 @@ public final class Sample {
 		/* SLF4J Configuration */
 		System.setProperty("org.slf4j.simplelogger.defaultlog", "debug");
 
+		/* check swt-startup */
+		Texts texts = Texts.fromResources(Locale.ENGLISH);
+		SWTUtils.checkStartup(texts);
+		//SWTUtils.checkForBrowser(SWT.MOZILLA, texts);
+
 		/* New Shell */
-		shell					  = new Shell();
+		shell = new Shell();
 		shell.setLayout(new FillLayout());
 
 		/* for saving and loading Preferences */

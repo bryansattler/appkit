@@ -163,7 +163,7 @@ public final class Texts {
 		String text = this.texts.get(identifier);
 
 		if (text == null) {
-			text = "<missing identifier>";
+			text = "<missing identifier: '" + identifier + "'>";
 			L.error("missing identifier: " + identifier);
 		}
 
