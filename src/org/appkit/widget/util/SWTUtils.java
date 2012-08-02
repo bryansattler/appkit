@@ -95,7 +95,7 @@ public final class SWTUtils {
 		while (! workList.isEmpty()) {
 
 			Control c = workList.remove(0);
-			if (c.getClass().isAssignableFrom(clazz)) {
+			if (clazz.isAssignableFrom(c.getClass())) {
 				results.add((E) c);
 			} else if (c instanceof Composite) {
 				workList.addAll(Arrays.asList(((Composite) c).getChildren()));

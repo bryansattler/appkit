@@ -52,6 +52,9 @@ public class ResourceStringSupplier implements ParamSupplier<String, String> {
 
 			InputStream in  = ResourceStreamSupplier.create().getInput(resource);
 			Scanner scanner = new Scanner(in, "UTF8");
+			if (scanner.ioException() != null)
+				scanner.ioException();
+
 			s			    = scanner.useDelimiter("\\A").next();
 
 			scanner.close();
