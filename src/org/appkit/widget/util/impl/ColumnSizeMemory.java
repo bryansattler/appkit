@@ -7,7 +7,6 @@ import com.google.common.collect.Lists;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import org.appkit.concurrent.LoggingRunnable;
 import org.appkit.concurrent.SWTSyncedRunnable;
 import org.appkit.concurrent.Throttle;
 import org.appkit.preferences.PrefStore;
@@ -101,9 +100,9 @@ public final class ColumnSizeMemory {
 		final String widthString = Joiner.on(",").join(sizes);
 
 		Runnable runnable =
-			new LoggingRunnable() {
+			new Runnable() {
 				@Override
-				public void runChecked() {
+				public void run() {
 					L.debug("writing out weights {} to key {}", widthString, memoryKey);
 					prefStore.store(memoryKey, widthString);
 				}

@@ -8,7 +8,6 @@ import com.google.common.primitives.Ints;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import org.appkit.concurrent.LoggingRunnable;
 import org.appkit.concurrent.SWTSyncedRunnable;
 import org.appkit.concurrent.Throttle;
 import org.appkit.preferences.PrefStore;
@@ -95,9 +94,9 @@ public final class ColumnOrderMemory {
 		final String orderString = Joiner.on(",").join(order);
 
 		Runnable runnable =
-			new LoggingRunnable() {
+			new Runnable() {
 				@Override
-				public void runChecked() {
+				public void run() {
 					L.debug("writing out order {} to key {}", orderString, memoryKey);
 					prefStore.store(memoryKey, orderString);
 				}

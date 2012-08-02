@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.appkit.templating.event.EventContext;
+import org.appkit.templating.event.EventContexts;
 import org.appkit.templating.widget.DatePicker;
 import org.appkit.templating.widget.GridComposite;
 import org.appkit.templating.widget.RadioSet;
@@ -119,7 +120,7 @@ public final class Templating {
 	 * @throws IllegalStateException when JSON loading or parsing failed
 	 */
 	public Component create(final String componentName, final Composite parent) {
-		return this.create(componentName, EventContext.NOOP, parent);
+		return this.create(componentName, EventContexts.NOOP, parent);
 	}
 
 	/**

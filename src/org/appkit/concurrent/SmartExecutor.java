@@ -43,7 +43,7 @@ public final class SmartExecutor implements Executor, Throttle.Supplier {
 			this.executorService  = executorService;
 			this.executorCreatedInternally = false;
 		} else {
-			this.executorService			   = Executors.newCachedThreadPool();
+			this.executorService			   = Executors.newCachedThreadPool(LoggingThreadFactory.create());
 			this.executorCreatedInternally     = true;
 		}
 		this.executorService.execute(new Scheduler());

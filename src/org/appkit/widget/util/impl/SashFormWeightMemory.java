@@ -7,7 +7,6 @@ import com.google.common.collect.Lists;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import org.appkit.concurrent.LoggingRunnable;
 import org.appkit.concurrent.SWTSyncedRunnable;
 import org.appkit.concurrent.Throttle;
 import org.appkit.preferences.PrefStore;
@@ -83,9 +82,9 @@ public final class SashFormWeightMemory {
 			final String weightString = Joiner.on(",").join(weights[0], weights[1]);
 
 			Runnable runnable =
-				new LoggingRunnable() {
+				new Runnable() {
 					@Override
-					public void runChecked() {
+					public void run() {
 						L.debug("writing out weights {} to key {}", weightString, memoryKey);
 						prefStore.store(memoryKey, weightString);
 					}
