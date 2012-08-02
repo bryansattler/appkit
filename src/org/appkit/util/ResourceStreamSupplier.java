@@ -1,5 +1,6 @@
 package org.appkit.util;
 
+import com.google.common.base.Preconditions;
 import com.google.common.io.InputSupplier;
 
 import java.io.BufferedInputStream;
@@ -42,6 +43,16 @@ public class ResourceStreamSupplier implements ParamInputSupplier<String, InputS
 	/** returns an InputStream for the resource */
 	@Override
 	public InputStream getInput(final String resource) throws IOException {
-		return new BufferedInputStream(this.getClass().getResourceAsStream("/resources/" + resource));
+
+		String res			   = "/resources/" + resource;
+		BufferedInputStream in = new BufferedInputStream(this.getClass().getResourceAsStream(res));
+
+		try {
+			in.available();
+			return in;
+		} catch (final IOException e) {
+			Preconditions.checkArgument(false, "Resource '%s' not found", res);
+			return null;
+		}
 	}
 }

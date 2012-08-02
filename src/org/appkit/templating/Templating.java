@@ -130,7 +130,7 @@ public final class Templating {
 	 */
 	public Component create(final String componentName, final EventContext context, final Composite parent) {
 		/* get file */
-		L.debug("loading component: {}", componentName);
+		L.debug("loading component: '{}'", componentName);
 
 		String file   = "components/" + componentName + ".json";
 		String source = this.templateSupplier.get(file);

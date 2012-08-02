@@ -46,11 +46,10 @@ public final class Texts {
 	 */
 	public Texts(final ParamInputSupplier<String, InputStream> dataSupplier, final String resourceName) {
 		try {
-			L.debug("loading language-properties out of resource: '{}'", resourceName);
+			L.debug("loading language-properties '{}'", resourceName);
 
 			Properties i18n		  = new Properties();
 			InputStream in		  = dataSupplier.getInput(resourceName);
-
 			i18n.load(in);
 			in.close();
 
