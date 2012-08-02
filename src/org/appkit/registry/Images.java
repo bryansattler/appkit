@@ -52,6 +52,7 @@ public final class Images {
 	/* cache / registry */
 	private static final BiMap<Integer, Image> imageCache = HashBiMap.create();
 	private static final Multiset<Image> usage			  = HashMultiset.create();
+	private static boolean keepCached					  = false;
 
 	/* currently installed disposeListeners */
 	private static final Map<Widget, DisposeListener> disposeListeners = Maps.newHashMap();
@@ -71,6 +72,10 @@ public final class Images {
 	private Images() {}
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
+
+	public static void keepCache(final boolean keep) {
+		keepCached = keep;
+	}
 
 	private static ImageInterface getSetter(final Widget widget) {
 		for (final Entry<Class<?extends Widget>, ImageInterface> entry : setters.entrySet()) {
@@ -191,9 +196,13 @@ public final class Images {
 
 		/* if usage is 0 dispose it */
 		if (! usage.contains(image)) {
-			L.debug("disposing {}", image);
-			imageCache.inverse().remove(image);
-			image.dispose();
+			if (keepCached) {
+				L.debug("keeping {} in cache", image);
+			} else {
+				L.debug("disposing {}", image);
+				imageCache.inverse().remove(image);
+				image.dispose();
+			}
 		}
 	}
 

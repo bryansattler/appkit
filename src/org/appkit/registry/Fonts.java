@@ -48,6 +48,7 @@ public final class Fonts {
 	/* cache / registry */
 	private static final BiMap<Integer, Font> fontCache = HashBiMap.create();
 	private static final Multiset<Font> usage		    = HashMultiset.create();
+	private static boolean keepCached				    = false;
 
 	/* currently installed disposeListeners */
 	private static final Map<Widget, DisposeListener> disposeListeners = Maps.newHashMap();
@@ -70,6 +71,10 @@ public final class Fonts {
 	private Fonts() {}
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
+
+	public static void keepCache(final boolean keep) {
+		keepCached = keep;
+	}
 
 	/**
 	 * Tells Fonts how to set a Font on a certain widget.
@@ -173,9 +178,13 @@ public final class Fonts {
 
 		/* if usage is 0 dispose it */
 		if (! usage.contains(font)) {
-			L.debug("disposing {}", font);
-			fontCache.inverse().remove(font);
-			font.dispose();
+			if (keepCached) {
+				L.debug("keeping {} in cache", font);
+			} else {
+				L.debug("disposing {}", font);
+				fontCache.inverse().remove(font);
+				font.dispose();
+			}
 		}
 	}
 

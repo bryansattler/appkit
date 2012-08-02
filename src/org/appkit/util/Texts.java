@@ -118,7 +118,7 @@ public final class Texts {
 			String query	   = entry.getKey();
 			String translation = entry.getValue();
 
-			int count		   = component.count(query);
+			int count = component.count(query);
 			if (count == 0) {
 				L.debug("skipping '{}', not needed", query);
 			} else if (count > 1) {
