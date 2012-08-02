@@ -9,6 +9,7 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
+import com.google.gson.JsonSyntaxException;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -137,17 +138,19 @@ public final class Templating {
 		Preconditions.checkArgument(source != null, "file '%s' not found", file);
 
 		/* parse json */
+		L.debug("deserializing component: '{}'", componentName);
+
 		WidgetDefinition definition = null;
+
 		try {
-			L.debug("deserializing component: {}", componentName);
 			definition = this.gson.fromJson(source, WidgetDefinition.class);
-		} catch (final RuntimeException e) {
-			L.error(e.getMessage(), e);
-			throw e;
+		} catch (final JsonSyntaxException e) {
+			L.error(e.getMessage());
+			return null;
 		}
 
 		/* initialize controls */
-		L.debug("creating component: {}", componentName);
+		L.debug("creating component: '{}'", componentName);
 
 		return new Component(componentName, definition, parent, context, customCreators, types);
 	}
