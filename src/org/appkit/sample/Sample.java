@@ -17,7 +17,8 @@ import org.appkit.templating.Component;
 import org.appkit.templating.Templating;
 import org.appkit.templating.event.ButtonEvent;
 import org.appkit.templating.event.DatePickerEvent;
-import org.appkit.templating.event.LocalEventContext;
+import org.appkit.templating.event.EventContext;
+import org.appkit.templating.event.EventContexts;
 import org.appkit.templating.event.RadioSetEvent;
 import org.appkit.templating.widget.RadioSet;
 import org.appkit.util.Texts;
@@ -76,7 +77,7 @@ public final class Sample {
 		executor = SmartExecutor.start();
 
 		/* for catching all local events (see the methods tagged with @Subscribe) */
-		LocalEventContext eventContext = new LocalEventContext(this);
+		EventContext eventContext = EventContexts.forSendingTo(this);
 
 		/* create templating */
 		Templating templating = Templating.fromResources();
