@@ -5,7 +5,6 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.Region;
 import org.eclipse.swt.widgets.Display;
 
@@ -35,7 +34,9 @@ public final class SpinnerOverlay implements AnimatedOverlaySupplier {
 	@Override
 	public void dispose() {
 		for (final Image img : this.cache) {
-			img.dispose();
+			if (img != null) {
+				img.dispose();
+			}
 		}
 	}
 
@@ -62,15 +63,11 @@ public final class SpinnerOverlay implements AnimatedOverlaySupplier {
 
 	/** return an image of this spinner at it's current step */
 	@Override
-	public ImageData getImageData(final int overlayWidth, final int overlayHeight) {
-
-		/* create a new image width the given height and width */
-		Image overlayImage = new Image(Display.getCurrent(), overlayWidth, overlayHeight);
-
-		if ((overlayWidth > SPINNER_SIDE) && (overlayWidth > SPINNER_SIDE)) {
+	public void paintImage(final Image buffer) {
+		if ((buffer.getBounds().width > SPINNER_SIDE) && (buffer.getBounds().height > SPINNER_SIDE)) {
 
 			/* draw the spinner and set it in the middle of the image */
-			GC gc = new GC(overlayImage);
+			GC gc = new GC(buffer);
 
 			Image spinnerImage = this.cache[step];
 			if (spinnerImage == null) {
@@ -78,18 +75,11 @@ public final class SpinnerOverlay implements AnimatedOverlaySupplier {
 				this.cache[step]     = spinnerImage;
 			}
 
-			int x = rDiv(overlayWidth - spinnerImage.getBounds().width, 2);
-			int y = rDiv(overlayHeight - spinnerImage.getBounds().height, 2);
+			int x = rDiv(buffer.getBounds().width - spinnerImage.getBounds().width, 2);
+			int y = rDiv(buffer.getBounds().height - spinnerImage.getBounds().height, 2);
 			gc.drawImage(spinnerImage, x, y);
-
-			//	gc.dispose();
+			gc.dispose();
 		}
-
-		/* save image data and dispose image */
-		ImageData imageData = overlayImage.getImageData();
-
-		//overlayImage.dispose();
-		return imageData;
 	}
 
 	/* draw spinner */

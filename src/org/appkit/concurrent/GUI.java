@@ -29,6 +29,7 @@ public abstract class GUI<E extends Enum<E>> {
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
 	public abstract GUIState getGUIState(final E state);
+
 	protected abstract void closeGUI();
 
 	public ReportQueue getReports() {
@@ -37,12 +38,12 @@ public abstract class GUI<E extends Enum<E>> {
 
 	public final void close() {
 		Display.getDefault().syncExec(
-				new Runnable() {
-						@Override
-						public void run() {
-							closeGUI();
-						}
-					});
+			new Runnable() {
+					@Override
+					public void run() {
+						closeGUI();
+					}
+				});
 	}
 
 	public final void showState(final E state, final Object... data) {

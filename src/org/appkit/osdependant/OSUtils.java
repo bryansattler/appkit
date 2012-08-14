@@ -18,15 +18,19 @@ import java.util.Map;
  */
 public class OSUtils {
 
-	//~ Methods --------------------------------------------------------------------------------------------------------
+	//~ Enumerations ---------------------------------------------------------------------------------------------------
 
-	public enum Platform{WIN32, WIN64, MAC32, MAC64, LINUX32, LINUX64}
+	public enum Platform {WIN32, WIN64, MAC32, MAC64, LINUX32, LINUX64;
+	}
+
+	//~ Methods --------------------------------------------------------------------------------------------------------
 
 	public static String getJVMPath() {
 		return System.getProperty("java.home") + File.separator + "bin" + File.separator + "java";
 	}
 
 	public static Platform getPlatform() {
+
 		String bitage = System.getProperty("sun.arch.data.model");
 		boolean bit64 = false;
 		if (bitage.equals("32")) {
@@ -34,7 +38,7 @@ public class OSUtils {
 		} else if (bitage.equals("64")) {
 			bit64 = true;
 		} else {
-			Preconditions.checkState(false,"unknown data-model: '%s'", bitage);
+			Preconditions.checkState(false, "unknown data-model: '%s'", bitage);
 		}
 
 		String os = System.getProperty("os.name").toLowerCase();
@@ -45,21 +49,21 @@ public class OSUtils {
 		} else if (os.indexOf("linux") != -1) {
 			return (bit64 ? Platform.LINUX64 : Platform.LINUX32);
 		} else {
-			Preconditions.checkState(false,"unknown os: '%s'", os);
+			Preconditions.checkState(false, "unknown os: '%s'", os);
 			return null;
 		}
 	}
 
 	public static boolean isWindows() {
-		return (getPlatform() == Platform.WIN32 || getPlatform() == Platform.WIN64);
+		return ((getPlatform() == Platform.WIN32) || (getPlatform() == Platform.WIN64));
 	}
 
 	public static boolean isMac() {
-		return (getPlatform() == Platform.MAC32 || getPlatform() == Platform.MAC64);
+		return ((getPlatform() == Platform.MAC32) || (getPlatform() == Platform.MAC64));
 	}
 
 	public static boolean isLinux() {
-		return (getPlatform() == Platform.LINUX32 || getPlatform() == Platform.LINUX64);
+		return ((getPlatform() == Platform.LINUX32) || (getPlatform() == Platform.LINUX64));
 	}
 
 	/**

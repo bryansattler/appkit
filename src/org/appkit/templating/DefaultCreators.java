@@ -63,7 +63,7 @@ final class DefaultCreators {
 	static final class ProgressBarCreator implements ControlCreator<ProgressBar> {
 		@Override
 		public ProgressBar initialize(final EventContext context, final Composite parent, final String name,
-								final Options options) {
+									  final Options options) {
 
 			int style = SWT.SMOOTH;
 			style |= (options.get("border", true) ? SWT.BORDER : SWT.NONE);

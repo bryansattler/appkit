@@ -16,9 +16,7 @@ import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.events.TraverseEvent;
 import org.eclipse.swt.events.TraverseListener;
-import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
@@ -157,7 +155,7 @@ public final class Overlay {
 		}
 
 		/* remove the control-listeners */
-		this.control.removeControlListener(this.controlChangeListener);
+		this.control.getShell().removeControlListener(this.controlChangeListener);
 
 		/* dispose the shell */
 		this.overlayShell.dispose();
@@ -233,13 +231,7 @@ public final class Overlay {
 				redrawBuffer = false;
 
 				/* paint image on buffer */
-				ImageData imageData = overlaySupplier.getImageData(control.getSize().x, control.getSize().y);
-				Image temp		    = new Image(Display.getCurrent(), imageData);
-
-				GC gcBuffer = new GC(buffer);
-				gcBuffer.drawImage(temp, 0, 0);
-				gcBuffer.dispose();
-				temp.dispose();
+				overlaySupplier.paintImage(buffer);
 
 			}
 			event.gc.drawImage(buffer, 0, 0); //, event.width, event.height, 0, 0, event.width, event.height);

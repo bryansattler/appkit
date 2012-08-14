@@ -170,6 +170,7 @@ public final class SWTUtils {
 
 	public static void fixCocoaAlignments(final Composite parent) {
 		for (final ProgressBar bar : SWTUtils.findAllChildren(parent, ProgressBar.class)) {
+
 			Rectangle bounds = bar.getBounds();
 			if ((bounds.x + 5 + bounds.width) == bar.getParent().getClientArea().width) {
 				bar.setBounds(bounds.x, bounds.y, bounds.width - 5, bounds.height);
@@ -196,9 +197,8 @@ public final class SWTUtils {
 				table.setLocation(7, location.y);
 			}
 
-
 			Rectangle bounds = table.getBounds();
-			if ((bounds.x + 5 - 2 + bounds.width) == table.getParent().getClientArea().width) {
+			if (((bounds.x + 5) - 2 + bounds.width) == table.getParent().getClientArea().width) {
 				table.setBounds(bounds.x, bounds.y, bounds.width - 7, bounds.height);
 			}
 		}

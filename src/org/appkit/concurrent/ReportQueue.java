@@ -49,7 +49,7 @@ public class ReportQueue {
 	}
 
 	public static ReportQueue funnel(final Executor executor, final ReportQueue reports,
-										final ReportQueue... moreReports) {
+									 final ReportQueue... moreReports) {
 
 		List<ReportQueue> sources = Lists.newArrayList();
 		sources.add(reports);
@@ -58,8 +58,8 @@ public class ReportQueue {
 		ReportQueue funnel = create();
 		L.debug("creating FunnelProcess for {} sources", sources.size());
 		for (final ReportQueue source : sources) {
-
 			L.debug("creating FunnelProcess for source");
+
 			FunnelingProcess process = new FunnelingProcess();
 			process.source     = source;
 			process.funnel     = funnel;
@@ -81,6 +81,7 @@ public class ReportQueue {
 			L.debug("[FunnelingProcess] begin");
 			try {
 				while (true) {
+
 					Report r = source.take();
 					funnel.report(r);
 				}
