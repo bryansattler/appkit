@@ -2,16 +2,17 @@ package org.appkit.concurrent;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Queues;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.DelayQueue;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Executor;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ReportQueue<E extends Enum<E>> {
+public class ReportQueue {
 
 	//~ Static fields/initializers -------------------------------------------------------------------------------------
 
@@ -19,7 +20,7 @@ public class ReportQueue<E extends Enum<E>> {
 
 	//~ Instance fields ------------------------------------------------------------------------------------------------
 
-	private final DelayQueue<Report<E>> queue = new DelayQueue<Report<E>>();
+	private final BlockingQueue<Report> queue = Queues.newLinkedBlockingQueue();
 
 	//~ Constructors ---------------------------------------------------------------------------------------------------
 
@@ -27,36 +28,38 @@ public class ReportQueue<E extends Enum<E>> {
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
-	public static <T extends Enum<T>> ReportQueue<T> create() {
-		return new ReportQueue<T>();
+	public static ReportQueue create() {
+		return new ReportQueue();
 	}
 
-	public void report(final Report<E> r) {
-		this.queue.put(r);
+	public void report(final Report r) {
+		this.queue.add(r);
 	}
 
-	public void report(final E type, Object... data) {
-		this.queue.put(new Report<E>(type, ImmutableList.copyOf(data)));
+	public void report(final Enum<?> type, Object... data) {
+		this.queue.add(new Report(type, ImmutableList.copyOf(data)));
 	}
 
-	public Report<E> take() throws InterruptedException {
+	public Report take() throws InterruptedException {
 		return this.queue.take();
 	}
 
-	public Report<E> poll() {
+	public Report poll() {
 		return this.queue.poll();
 	}
 
-	public static ReportQueue<?> funnel(final Executor executor, final ReportQueue<?> reports,
-										final ReportQueue<?>... moreReports) {
+	public static ReportQueue funnel(final Executor executor, final ReportQueue reports,
+										final ReportQueue... moreReports) {
 
-		List<ReportQueue<?>> sources = Lists.newArrayList();
+		List<ReportQueue> sources = Lists.newArrayList();
 		sources.add(reports);
 		sources.addAll(Arrays.asList(moreReports));
 
-		ReportQueue<?> funnel = create();
-		for (final ReportQueue<?> source : sources) {
+		ReportQueue funnel = create();
+		L.debug("creating FunnelProcess for {} sources", sources.size());
+		for (final ReportQueue source : sources) {
 
+			L.debug("creating FunnelProcess for source");
 			FunnelingProcess process = new FunnelingProcess();
 			process.source     = source;
 			process.funnel     = funnel;
@@ -70,22 +73,21 @@ public class ReportQueue<E extends Enum<E>> {
 
 	private static final class FunnelingProcess implements Runnable {
 
-		@SuppressWarnings("rawtypes")
 		private ReportQueue source;
-		@SuppressWarnings("rawtypes")
 		private ReportQueue funnel;
 
-		@SuppressWarnings("unchecked")
 		@Override
 		public void run() {
-			L.debug("running FunnelingProcess");
+			L.debug("[FunnelingProcess] begin");
 			try {
-
-				Report<?> r = source.take();
-				funnel.report(r);
+				while (true) {
+					Report r = source.take();
+					funnel.report(r);
+				}
 			} catch (final InterruptedException e) {
 				L.error(e.getMessage(), e);
 			}
+			L.debug("[FunnelingProcess] exit");
 		}
 	}
 }

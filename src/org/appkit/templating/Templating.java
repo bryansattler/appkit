@@ -65,6 +65,7 @@ public final class Templating {
 		this.addCustomCreator(new DefaultCreators.TableCreator(), "table");
 		this.addCustomCreator(new DefaultCreators.SpacerCreator(), "spacer");
 		this.addCustomCreator(new DefaultCreators.TextCreator(), "text");
+		this.addCustomCreator(new DefaultCreators.ProgressBarCreator(), "progressbar");
 		this.addType(Search.class, "search");
 		this.addType(DatePicker.class, "datepicker");
 		this.addType(RadioSet.class, "radioset");

@@ -33,6 +33,10 @@ public class GridComposite extends Composite implements LayoutUI {
 		GridLayout gl = new GridLayout(-1, false);
 		gl.marginHeight			 = options.get("margin-height", gl.marginHeight);
 		gl.marginWidth			 = options.get("margin-width", gl.marginWidth);
+		gl.marginLeft     = options.get("margin-left", gl.marginLeft);
+		gl.marginRight     = options.get("margin-right", gl.marginRight);
+		gl.marginTop     = options.get("margin-top", gl.marginTop);
+		gl.marginBottom     = options.get("margin-bottom", gl.marginBottom);
 		gl.verticalSpacing		 = options.get("v-spacing", gl.verticalSpacing);
 		gl.horizontalSpacing     = options.get("h-spacing", gl.horizontalSpacing);
 

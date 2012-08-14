@@ -1,5 +1,6 @@
 package org.appkit.osdependant;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 
 import com.sun.jna.Library;
@@ -19,33 +20,46 @@ public class OSUtils {
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
+	public enum Platform{WIN32, WIN64, MAC32, MAC64, LINUX32, LINUX64}
+
 	public static String getJVMPath() {
 		return System.getProperty("java.home") + File.separator + "bin" + File.separator + "java";
 	}
 
-	public static boolean isWindows() {
+	public static Platform getPlatform() {
+		String bitage = System.getProperty("sun.arch.data.model");
+		boolean bit64 = false;
+		if (bitage.equals("32")) {
+			bit64 = false;
+		} else if (bitage.equals("64")) {
+			bit64 = true;
+		} else {
+			Preconditions.checkState(false,"unknown data-model: '%s'", bitage);
+		}
 
 		String os = System.getProperty("os.name").toLowerCase();
-		return (os.indexOf("win") >= 0);
+		if (os.indexOf("win") != -1) {
+			return (bit64 ? Platform.WIN64 : Platform.WIN32);
+		} else if (os.indexOf("mac") != -1) {
+			return (bit64 ? Platform.MAC64 : Platform.MAC32);
+		} else if (os.indexOf("linux") != -1) {
+			return (bit64 ? Platform.LINUX64 : Platform.LINUX32);
+		} else {
+			Preconditions.checkState(false,"unknown os: '%s'", os);
+			return null;
+		}
+	}
 
+	public static boolean isWindows() {
+		return (getPlatform() == Platform.WIN32 || getPlatform() == Platform.WIN64);
 	}
 
 	public static boolean isMac() {
-
-		String os = System.getProperty("os.name").toLowerCase();
-		return (os.indexOf("mac") >= 0);
+		return (getPlatform() == Platform.MAC32 || getPlatform() == Platform.MAC64);
 	}
 
-	public static boolean isUnix() {
-
-		String os = System.getProperty("os.name").toLowerCase();
-		return ((os.indexOf("nix") >= 0) || (os.indexOf("nux") >= 0));
-	}
-
-	public static boolean isSolaris() {
-
-		String os = System.getProperty("os.name").toLowerCase();
-		return (os.indexOf("sunos") >= 0);
+	public static boolean isLinux() {
+		return (getPlatform() == Platform.LINUX32 || getPlatform() == Platform.LINUX64);
 	}
 
 	/**

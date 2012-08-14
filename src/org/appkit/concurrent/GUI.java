@@ -7,7 +7,7 @@ import org.eclipse.swt.widgets.Display;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class GUI<E extends Enum<E>, F extends Enum<F>> {
+public abstract class GUI<E extends Enum<E>> {
 
 	//~ Static fields/initializers -------------------------------------------------------------------------------------
 
@@ -16,8 +16,8 @@ public abstract class GUI<E extends Enum<E>, F extends Enum<F>> {
 
 	//~ Instance fields ------------------------------------------------------------------------------------------------
 
-	protected final ReportQueue<E> queue;
-	private F currentState;
+	protected final ReportQueue queue;
+	private E currentState;
 	private GUIState currentGUIState;
 
 	//~ Constructors ---------------------------------------------------------------------------------------------------
@@ -28,13 +28,24 @@ public abstract class GUI<E extends Enum<E>, F extends Enum<F>> {
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
-	public abstract GUIState getGUIState(final F state);
+	public abstract GUIState getGUIState(final E state);
+	protected abstract void closeGUI();
 
-	public ReportQueue<E> getReports() {
+	public ReportQueue getReports() {
 		return this.queue;
 	}
 
-	public final void showState(final F state, final Object... data) {
+	public final void close() {
+		Display.getDefault().syncExec(
+				new Runnable() {
+						@Override
+						public void run() {
+							closeGUI();
+						}
+					});
+	}
+
+	public final void showState(final E state, final Object... data) {
 		Preconditions.checkNotNull(state);
 		Display.getDefault().syncExec(
 			new Runnable() {

@@ -22,6 +22,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Monitor;
+import org.eclipse.swt.widgets.ProgressBar;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 
@@ -43,7 +44,7 @@ public final class SWTUtils {
 				systemInfo = systemInfo + " Mac";
 			} else if (OSUtils.isWindows()) {
 				systemInfo = systemInfo + " Mac";
-			} else if (OSUtils.isUnix()) {
+			} else if (OSUtils.isLinux()) {
 				systemInfo = systemInfo + " Linux";
 			} else {
 				systemInfo = systemInfo + " <unknown>";
@@ -168,16 +169,17 @@ public final class SWTUtils {
 	}
 
 	public static void fixCocoaAlignments(final Composite parent) {
+		for (final ProgressBar bar : SWTUtils.findAllChildren(parent, ProgressBar.class)) {
+			Rectangle bounds = bar.getBounds();
+			if ((bounds.x + 5 + bounds.width) == bar.getParent().getClientArea().width) {
+				bar.setBounds(bounds.x, bounds.y, bounds.width - 5, bounds.height);
+			}
+		}
 		for (final Button btn : SWTUtils.findAllChildren(parent, Button.class)) {
 
 			Point location = btn.getLocation();
 			if (location.x == 5) {
 				btn.setLocation(0, location.y);
-			}
-
-			Rectangle bounds = btn.getBounds();
-			if ((bounds.x + 5 + bounds.width) == btn.getParent().getBounds().width) {
-				btn.setBounds(bounds.x, bounds.y, bounds.width + 7, bounds.height);
 			}
 		}
 		for (final Label label : SWTUtils.findAllChildren(parent, Label.class)) {
@@ -191,11 +193,14 @@ public final class SWTUtils {
 
 			Point location = table.getLocation();
 			if (location.x == 5) {
-				table.setLocation(6, location.y);
+				table.setLocation(7, location.y);
 			}
 
+
 			Rectangle bounds = table.getBounds();
-			table.setBounds(bounds.x, bounds.y, bounds.width, bounds.height);
+			if ((bounds.x + 5 - 2 + bounds.width) == table.getParent().getClientArea().width) {
+				table.setBounds(bounds.x, bounds.y, bounds.width - 7, bounds.height);
+			}
 		}
 	}
 }

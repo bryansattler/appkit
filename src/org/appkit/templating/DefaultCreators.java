@@ -10,6 +10,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.ProgressBar;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Text;
 
@@ -56,6 +57,19 @@ final class DefaultCreators {
 			Fonts.set(label, options.get("font", ""));
 
 			return label;
+		}
+	}
+
+	static final class ProgressBarCreator implements ControlCreator<ProgressBar> {
+		@Override
+		public ProgressBar initialize(final EventContext context, final Composite parent, final String name,
+								final Options options) {
+
+			int style = SWT.SMOOTH;
+			style |= (options.get("border", true) ? SWT.BORDER : SWT.NONE);
+			style |= (options.get("indeterminate", false) ? SWT.INDETERMINATE : SWT.NONE);
+
+			return new ProgressBar(parent, style);
 		}
 	}
 
