@@ -20,11 +20,15 @@ import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Monitor;
 import org.eclipse.swt.widgets.ProgressBar;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Various utilities for working with SWT.
@@ -32,10 +36,18 @@ import org.eclipse.swt.widgets.Table;
  */
 public final class SWTUtils {
 
+	//~ Static fields/initializers -------------------------------------------------------------------------------------
+
+	private static final Logger L = LoggerFactory.getLogger(SWTUtils.class);
+
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
 	public static void checkStartup(final Texts texts) {
-		if (! SWT.isLoadable()) {
+		try {
+			Display.getDefault();
+
+		} catch (final LinkageError e) {
+			L.error(e.getMessage(), e);
 
 			String error	  = texts.get("error_swt");
 			String systemInfo = "\n\nSystem: ";
@@ -43,7 +55,7 @@ public final class SWTUtils {
 			if (OSUtils.isMac()) {
 				systemInfo = systemInfo + " Mac";
 			} else if (OSUtils.isWindows()) {
-				systemInfo = systemInfo + " Mac";
+				systemInfo = systemInfo + " Windows";
 			} else if (OSUtils.isLinux()) {
 				systemInfo = systemInfo + " Linux";
 			} else {
@@ -198,7 +210,7 @@ public final class SWTUtils {
 			}
 
 			Rectangle bounds = table.getBounds();
-			if (((bounds.x + 5) - 2 + bounds.width) == table.getParent().getClientArea().width) {
+			if ((((bounds.x + 5) - 2) + bounds.width) == table.getParent().getClientArea().width) {
 				table.setBounds(bounds.x, bounds.y, bounds.width - 7, bounds.height);
 			}
 		}

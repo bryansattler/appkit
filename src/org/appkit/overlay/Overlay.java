@@ -126,7 +126,11 @@ public final class Overlay {
 		this.cover();
 
 		/* adjust size of overlay-shell when control changes size or position */
-		this.control.getShell().addControlListener(this.controlChangeListener);
+		if (this.control instanceof Shell) {
+			this.control.addControlListener(this.controlChangeListener);
+		} else {
+			this.control.getShell().addControlListener(this.controlChangeListener);
+		}
 
 		/* start animation if applicable */
 		if (this.overlaySupplier instanceof AnimatedOverlaySupplier) {
@@ -155,11 +159,17 @@ public final class Overlay {
 		}
 
 		/* remove the control-listeners */
-		this.control.getShell().removeControlListener(this.controlChangeListener);
+		if (this.control instanceof Shell) {
+			this.control.removeControlListener(this.controlChangeListener);
+		} else {
+			this.control.getShell().removeControlListener(this.controlChangeListener);
+		}
 
 		/* dispose the shell */
 		this.overlayShell.dispose();
-		this.buffer.dispose();
+		if (this.buffer != null) {
+			this.buffer.dispose();
+		}
 
 		/* dispose the supplier */
 		this.overlaySupplier.dispose();
@@ -167,8 +177,15 @@ public final class Overlay {
 
 	private void cover() {
 
-		final Rectangle compBounds = this.control.getBounds();
-		final Point absLocation    = this.control.getParent().toDisplay(compBounds.x, compBounds.y);
+		Rectangle compBounds;
+		Point absLocation;
+		if (this.control instanceof Shell) {
+			compBounds	    = ((Shell) this.control).getClientArea();
+			absLocation     = this.control.toDisplay(compBounds.x, compBounds.y);
+		} else {
+			compBounds	    = this.control.getBounds();
+			absLocation     = this.control.getParent().toDisplay(compBounds.x, compBounds.y);
+		}
 		this.overlayShell.setLocation(absLocation);
 		this.overlayShell.setSize(compBounds.width, compBounds.height);
 	}
@@ -178,6 +195,9 @@ public final class Overlay {
 	private final class AnimationUpdateListener implements Runnable {
 		@Override
 		public void run() {
+			if (overlayShell.isDisposed()) {
+				return;
+			}
 
 			AnimatedOverlaySupplier aSupplier = (AnimatedOverlaySupplier) overlaySupplier;
 			aSupplier.tick();
