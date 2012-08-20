@@ -3,9 +3,9 @@ package org.appkit.overlay;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.Region;
 import org.eclipse.swt.widgets.Display;
 
 import org.slf4j.Logger;
@@ -22,27 +22,20 @@ public final class SpinnerOverlay implements AnimatedOverlaySupplier {
 	@SuppressWarnings("unused")
 	private static final Logger L							 = LoggerFactory.getLogger(SpinnerOverlay.class);
 	private static final int SPINNER_SIDE					 = 70;
-	private static final int INNER_CIRCLE_RADIUS			 = 20;
+	private static final int INNER_CIRCLE_RADIUS			 = 18;
 
 	//~ Instance fields ------------------------------------------------------------------------------------------------
 
-	private final Image cache[] = new Image[12];
-	private int step		    = 0;
+	private int step = 0;
 
 	//~ Methods --------------------------------------------------------------------------------------------------------
 
 	@Override
-	public void dispose() {
-		for (final Image img : this.cache) {
-			if (img != null) {
-				img.dispose();
-			}
-		}
-	}
+	public void dispose() {}
 
 	@Override
-	public int getAlpha() {
-		return 90;
+	public boolean copyBackground() {
+		return false;
 	}
 
 	@Override
@@ -61,42 +54,28 @@ public final class SpinnerOverlay implements AnimatedOverlaySupplier {
 		return targetUnit.convert(70, TimeUnit.MILLISECONDS);
 	}
 
-	/** return an image of this spinner at it's current step */
 	@Override
-	public void paintImage(final Image buffer) {
+	public void paintBuffer(final Image buffer) {
 		if ((buffer.getBounds().width > SPINNER_SIDE) && (buffer.getBounds().height > SPINNER_SIDE)) {
-
-			/* draw the spinner and set it in the middle of the image */
-			GC gc = new GC(buffer);
-
-			Image spinnerImage = this.cache[step];
-			if (spinnerImage == null) {
-				spinnerImage		 = this.drawSpinner();
-				this.cache[step]     = spinnerImage;
-			}
-
-			int x = rDiv(buffer.getBounds().width - spinnerImage.getBounds().width, 2);
-			int y = rDiv(buffer.getBounds().height - spinnerImage.getBounds().height, 2);
-			gc.drawImage(spinnerImage, x, y);
-			gc.dispose();
+			this.drawSpinner(buffer);
 		}
 	}
 
 	/* draw spinner */
-	private final Image drawSpinner() {
+	private final void drawSpinner(final Image buffer) {
 
-		/* draw spinner */
-		Image image = new Image(Display.getCurrent(), SPINNER_SIDE, SPINNER_SIDE);
-		GC gc	    = new GC(image);
+		Color background = Display.getCurrent().getSystemColor(SWT.COLOR_WIDGET_BACKGROUND);
+
+		GC gc = new GC(buffer);
 		gc.setAntialias(SWT.ON);
 
-		/* fill rectangle with white */
-		gc.fillRectangle(0, 0, image.getBounds().width, image.getBounds().height);
-		gc.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_BLACK));
+		/* fill with BG */
+		gc.setBackground(background);
+		gc.fillRectangle(0, 0, buffer.getBounds().width, buffer.getBounds().height);
 
-		/* draw rounded rectangle */
-		int borderRadius = rDiv(SPINNER_SIDE, 4);
-		gc.fillRoundRectangle(0, 0, SPINNER_SIDE, SPINNER_SIDE, borderRadius, borderRadius);
+		/* draw arc */
+		int x = rDiv(buffer.getBounds().width - SPINNER_SIDE, 2);
+		int y = rDiv(buffer.getBounds().height - SPINNER_SIDE, 2);
 
 		/* normal arc-angle = 10 */
 		int spans[] = new int[12];
@@ -110,45 +89,31 @@ public final class SpinnerOverlay implements AnimatedOverlaySupplier {
 		spans[(step + 10) % 12]     = 11;
 
 		/* draw the arcs */
-		gc.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
+		gc.setAlpha(150);
+		gc.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_BLACK));
 		for (int i = 0; i < 12; i++) {
 
-			int startAngle = (i * 30) - Math.round(spans[i] / (float) 2);
-			this.paintArc(gc, startAngle, spans[i]);
+			int startAngle = (i * 30) - rDiv(spans[i], 2) - 90;
+			int diameter   = Math.round(SPINNER_SIDE * (float) 0.6);
+			int arcX	   = rDiv(SPINNER_SIDE - diameter, 2);
+			int arcY	   = arcX;
+			gc.fillArc(x + arcX, y + arcY, diameter, diameter, -startAngle, -spans[i]);
 		}
 
 		/* draw circle in the middle */
-		gc.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_BLACK));
+		gc.setAlpha(255);
+		gc.setBackground(background);
 		gc.fillOval(
-			rDiv(SPINNER_SIDE, 2) - rDiv(INNER_CIRCLE_RADIUS, 2),
-			rDiv(SPINNER_SIDE, 2) - rDiv(INNER_CIRCLE_RADIUS, 2),
+			(x + rDiv(SPINNER_SIDE, 2)) - rDiv(INNER_CIRCLE_RADIUS, 2),
+			(y + rDiv(SPINNER_SIDE, 2)) - rDiv(INNER_CIRCLE_RADIUS, 2),
 			INNER_CIRCLE_RADIUS,
 			INNER_CIRCLE_RADIUS);
 
-		/* dispose gc */
 		gc.dispose();
-
-		return image;
 	}
 
 	/* utility function: division */
 	private final int rDiv(final int dividend, final int divisor) {
 		return Math.round(dividend / (float) divisor);
-	}
-
-	/* utility function: arc-painting */
-	private final void paintArc(final GC gc, final int startAngle, final int span) {
-
-		int adjustedStartAngle = startAngle - 90;
-
-		int diameter = Math.round(SPINNER_SIDE * (float) 0.6);
-		int x		 = rDiv(SPINNER_SIDE - diameter, 2);
-		int y		 = x;
-		gc.fillArc(x, y, diameter, diameter, -adjustedStartAngle, -span);
-	}
-
-	@Override
-	public Region getRegion() {
-		return null;
 	}
 }
