@@ -170,10 +170,13 @@ public final class SWTUtils {
 		while (! workList.isEmpty()) {
 
 			Control c = workList.remove(0);
+
+			if ((c instanceof Composite) && !(c instanceof Table)) {
+				workList.addAll(Arrays.asList(((Composite) c).getChildren()));
+			}
+
 			if (clazz.isAssignableFrom(c.getClass())) {
 				results.add((E) c);
-			} else if (c instanceof Composite) {
-				workList.addAll(Arrays.asList(((Composite) c).getChildren()));
 			}
 		}
 
@@ -181,6 +184,10 @@ public final class SWTUtils {
 	}
 
 	public static void fixCocoaAlignments(final Composite parent) {
+		if (!OSUtils.isMac()) {
+			return;
+		}
+
 		for (final ProgressBar bar : SWTUtils.findAllChildren(parent, ProgressBar.class)) {
 
 			Rectangle bounds = bar.getBounds();

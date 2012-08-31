@@ -98,10 +98,6 @@ public class OSUtils {
 			} else {
 				System.err.println("Error: " + hResult);
 			}
-		} else if (isLinux()) {
-		    folder = System.getenv("XDG_DATA_HOME");
-		    if (folder == null)
-		        folder = System.getenv("HOME") + File.separator + ".local" + File.separator + "share";
 		}
 
 		folder = folder + File.separator + applicationName + File.separator;

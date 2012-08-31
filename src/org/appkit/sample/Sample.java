@@ -40,6 +40,8 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.ToolBar;
+import org.eclipse.swt.widgets.ToolItem;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -189,6 +191,18 @@ public final class Sample {
 			/* opens an attached subshell */
 			Shell subShell = new Shell(shell, SWT.NONE);
 			subShell.setSize(400, 150);
+			subShell.setLayout(new FillLayout());
+			ToolBar tb = new ToolBar(subShell, SWT.FLAT | SWT.SHADOW_OUT);
+			ToolItem t1 = new ToolItem(tb, SWT.NONE);
+			t1.setText("adf");
+			ToolItem t2 = new ToolItem(tb, SWT.PUSH);
+			t2.setText("adddddf");
+			ToolItem t3 = new ToolItem(tb, SWT.CHECK);
+			t3.setText("adddddf");
+			ToolItem t4 = new ToolItem(tb, SWT.SEPARATOR);
+			t4.setText("adddddf");
+			ToolItem t5 = new ToolItem(tb, SWT.DROP_DOWN);
+			t5.setText("adddddf");
 			subShell.open();
 
 			ShellUtils.smartAttachment(subShell, event.getButton());
