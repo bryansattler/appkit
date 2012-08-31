@@ -192,15 +192,20 @@ public final class Sample {
 			Shell subShell = new Shell(shell, SWT.NONE);
 			subShell.setSize(400, 150);
 			subShell.setLayout(new FillLayout());
-			ToolBar tb = new ToolBar(subShell, SWT.FLAT | SWT.SHADOW_OUT);
+
+			ToolBar tb  = new ToolBar(subShell, SWT.FLAT | SWT.SHADOW_OUT);
 			ToolItem t1 = new ToolItem(tb, SWT.NONE);
 			t1.setText("adf");
+
 			ToolItem t2 = new ToolItem(tb, SWT.PUSH);
 			t2.setText("adddddf");
+
 			ToolItem t3 = new ToolItem(tb, SWT.CHECK);
 			t3.setText("adddddf");
+
 			ToolItem t4 = new ToolItem(tb, SWT.SEPARATOR);
 			t4.setText("adddddf");
+
 			ToolItem t5 = new ToolItem(tb, SWT.DROP_DOWN);
 			t5.setText("adddddf");
 			subShell.open();
